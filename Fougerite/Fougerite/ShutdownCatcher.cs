@@ -25,6 +25,7 @@ namespace Fougerite
         {
             Hooks.IsShuttingDown = true;
             Logger.LogWarning("[Fougerite] Detecting Shutdown...");
+            WinHttpClient.CloseSession();
             switch (sig)
             {
                 case CtrlType.CTRL_C_EVENT:

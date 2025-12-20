@@ -78,6 +78,11 @@ namespace Fougerite
         [Obsolete("Use CreateAsyncHTTPRequest instead.", false)]
         public string GET(string url)
         {
+            if (url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            {
+                return WinHttpClient.GetBlocking(url);
+            }
+            
             using (WebClient client = new WebClient())
             {
                 return client.DownloadString(url);
@@ -94,6 +99,11 @@ namespace Fougerite
         [Obsolete("Use CreateAsyncHTTPRequest instead.", false)]
         public string POST(string url, string data, string contentType = "application/x-www-form-urlencoded")
         {
+            if (url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            {
+                return WinHttpClient.PostBlocking(url, data, contentType);
+            }
+            
             using (WebClient client = new WebClient())
             {
                 client.Headers[HttpRequestHeader.ContentType] = contentType;
@@ -155,6 +165,12 @@ namespace Fougerite
             float timeout = 0f,
             bool allowDecompression = false)
         {
+            if (url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+            {
+                WinHttpClient.MakeRequest(url, callback, method, inputBody, additionalHeaders, contentType, timeout);
+                return;
+            }
+            
             HttpWebRequest request = (HttpWebRequest) WebRequest.Create(url);
             request.Method = method;
             request.Credentials = CredentialCache.DefaultCredentials;
