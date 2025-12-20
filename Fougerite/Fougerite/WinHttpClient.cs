@@ -76,7 +76,16 @@ namespace Fougerite
         public const uint WAIT_OBJECT_0 = 0;
         public const uint WAIT_TIMEOUT = 0x102;
 
+        /// <summary>
+        /// Session handle for WinHTTP.
+        /// No need to access this from a plugin.
+        /// </summary>
         public static IntPtr SessionHandle = IntPtr.Zero;
+        
+        /// <summary>
+        /// Session lock for thread safety.
+        /// No need to access this from a plugin.
+        /// </summary>
         public static readonly object SessionLock = new object();
 
         /// <summary>
