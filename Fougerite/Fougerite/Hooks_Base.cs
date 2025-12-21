@@ -528,6 +528,11 @@ namespace Fougerite
         public delegate void SleeperSpawnEventDelegate(Sleeper sleeper);
 
         public delegate void CommandRestrictionEventDelegate(CommandRestrictionEvent commandRestrictionEvent);
+        
+        /// <summary>
+        /// Flags for Method.Invoke
+        /// </summary>
+        private static readonly BindingFlags Flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic;
 
         /// <summary>
         /// Safely calls all subscribers of the event and handles each error individually
@@ -546,7 +551,6 @@ namespace Fougerite
             }
             
             // Additional stuff
-            BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic;
             Binder binder = Type.DefaultBinder;
             CultureInfo cultureInfo = CultureInfo.CurrentCulture;
             
@@ -555,7 +559,7 @@ namespace Fougerite
             {
                 try
                 {
-                    x.Method.Invoke(x.Target, flags, binder, parameters, cultureInfo);
+                    x.Method.Invoke(x.Target, Flags, binder, parameters, cultureInfo);
                 }
                 catch (Exception ex)
                 {
