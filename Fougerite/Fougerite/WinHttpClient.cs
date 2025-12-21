@@ -15,7 +15,7 @@ namespace Fougerite
     public class WinHttpClient
     {
         private static WinHttpClient _instance;
-        
+
         [DllImport("winhttp.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern IntPtr WinHttpOpen(string pszAgentW, uint dwAccessType, string pszProxyW,
             string pszProxyBypassW, uint dwFlags);
@@ -104,7 +104,7 @@ namespace Fougerite
             _sessionLock = new object();
             _sessionHandle = IntPtr.Zero;
         }
-        
+
         /// <summary>
         /// Returns the instance of the Web class.
         /// </summary>
@@ -129,7 +129,8 @@ namespace Fougerite
             {
                 if (_sessionHandle == IntPtr.Zero)
                 {
-                    _sessionHandle = WinHttpOpen("Fougerite Mod", WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, null, null, 0);
+                    _sessionHandle = WinHttpOpen($"Fougerite Mod (v{Bootstrap.Version}; https://fougerite.com)",
+                        WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, null, null, 0);
                 }
             }
         }
