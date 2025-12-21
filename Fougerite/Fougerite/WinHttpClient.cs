@@ -14,6 +14,8 @@ namespace Fougerite
     /// </summary>
     public class WinHttpClient
     {
+        private static WinHttpClient _instance;
+        
         [DllImport("winhttp.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern IntPtr WinHttpOpen(string pszAgentW, uint dwAccessType, string pszProxyW,
             string pszProxyBypassW, uint dwFlags);
@@ -78,36 +80,56 @@ namespace Fougerite
         /// <summary>
         /// The buffer size for reading response data per chunk (4 KB).
         /// </summary>
-        public static int BUFFER_SIZE = 4096;
+        public int BUFFER_SIZE = 4096;
 
         /// <summary>
         /// The maximum size of the response body to read (10 MB).
         /// </summary>
-        public static int MAX_SIZE = 10 * 1024 * 1024;
+        public int MAX_SIZE = 10 * 1024 * 1024;
 
         /// <summary>
         /// Session handle for WinHTTP.
         /// No need to access this from a plugin.
         /// </summary>
-        public static IntPtr SessionHandle = IntPtr.Zero;
+        private IntPtr _sessionHandle;
 
         /// <summary>
         /// Session lock for thread safety.
         /// No need to access this from a plugin.
         /// </summary>
-        public static readonly object SessionLock = new object();
+        private readonly object _sessionLock;
+
+        private WinHttpClient()
+        {
+            _sessionLock = new object();
+            _sessionHandle = IntPtr.Zero;
+        }
+        
+        /// <summary>
+        /// Returns the instance of the Web class.
+        /// </summary>
+        /// <returns></returns>
+        public static WinHttpClient GetInstance()
+        {
+            if (_instance == null)
+            {
+                _instance = new WinHttpClient();
+            }
+
+            return _instance;
+        }
 
         /// <summary>
         /// Initializes the WinHTTP session.
         /// No need to call this from a plugin.
         /// </summary>
-        public static void InitSession()
+        public void InitSession()
         {
-            lock (SessionLock)
+            lock (_sessionLock)
             {
-                if (SessionHandle == IntPtr.Zero)
+                if (_sessionHandle == IntPtr.Zero)
                 {
-                    SessionHandle = WinHttpOpen("Fougerite Mod", WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, null, null, 0);
+                    _sessionHandle = WinHttpOpen("Fougerite Mod", WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, null, null, 0);
                 }
             }
         }
@@ -116,14 +138,14 @@ namespace Fougerite
         /// Closes the WinHTTP session.
         /// No need to call this from a plugin.
         /// </summary>
-        public static void CloseSession()
+        public void CloseSession()
         {
-            lock (SessionLock)
+            lock (_sessionLock)
             {
-                if (SessionHandle != IntPtr.Zero)
+                if (_sessionHandle != IntPtr.Zero)
                 {
-                    WinHttpCloseHandle(SessionHandle);
-                    SessionHandle = IntPtr.Zero;
+                    WinHttpCloseHandle(_sessionHandle);
+                    _sessionHandle = IntPtr.Zero;
                 }
             }
         }
@@ -149,7 +171,7 @@ namespace Fougerite
         /// <param name="timeout">
         /// Timeout in seconds applied to connect, send, and receive operations. Use 0 for the default.
         /// </param>
-        public static void MakeRequest(string url, Action<int, string> callback, string method = "GET",
+        public void MakeRequest(string url, Action<int, string> callback, string method = "GET",
             string inputBody = null, Dictionary<string, string> additionalHeaders = null,
             string contentType = "application/x-www-form-urlencoded", float timeout = 0f)
         {
@@ -170,9 +192,9 @@ namespace Fougerite
         /// <param name="timeout">Timeout in seconds. Use 0 for default.</param>
         /// <remarks>
         /// Blocks thread during WinHttpConnect, WinHttpSendRequest, WinHttpReceiveResponse, WinHttpReadData.
-        /// SSL validation disabled. Response limited to 10MB, you can change static variable.
+        /// SSL validation disabled. Response limited to 10MB, you can change class variable.
         /// </remarks>
-        public static void DoWinHttpRequest(string url, Action<int, string> callback, string method, string inputBody,
+        public void DoWinHttpRequest(string url, Action<int, string> callback, string method, string inputBody,
             Dictionary<string, string> additionalHeaders, string contentType, float timeout)
         {
             IntPtr connectHandle = IntPtr.Zero;
@@ -184,7 +206,7 @@ namespace Fougerite
             {
                 InitSession();
 
-                if (SessionHandle == IntPtr.Zero)
+                if (_sessionHandle == IntPtr.Zero)
                 {
                     callback(0, "NoSession");
                     return;
@@ -207,7 +229,7 @@ namespace Fougerite
                 uint flags = uri.Scheme == "https" ? WINHTTP_FLAG_SECURE : 0;
 
                 // Create connection handle
-                connectHandle = WinHttpConnect(SessionHandle, uri.Host, port, 0);
+                connectHandle = WinHttpConnect(_sessionHandle, uri.Host, port, 0);
                 if (connectHandle == IntPtr.Zero)
                 {
                     callback(0, "ConnectFail");
@@ -389,7 +411,7 @@ namespace Fougerite
         /// "Timeout" if request exceeded timeout duration.
         /// "Error {exception}" if request failed with an exception.
         /// </returns>
-        public static string GetBlocking(string url, float timeout = 10f)
+        public string GetBlocking(string url, float timeout = 10f)
         {
             try
             {
@@ -436,7 +458,7 @@ namespace Fougerite
         /// "Timeout" if request exceeded timeout duration.
         /// "Error {exception}" if request failed with an exception.
         /// </returns>
-        public static string PostBlocking(string url, string inputBody,
+        public string PostBlocking(string url, string inputBody,
             string contentType = "application/x-www-form-urlencoded", float timeout = 10f)
         {
             try

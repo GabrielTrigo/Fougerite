@@ -103,6 +103,7 @@ namespace Fougerite.PluginLoaders
             Scope.SetVariable("DataStore", DataStore.GetInstance());
             Scope.SetVariable("Data", Data.GetData());
             Scope.SetVariable("Web", Web.GetInstance());
+            Scope.SetVariable("WinHttpClient", WinHttpClient.GetInstance());
             Scope.SetVariable("Util", Util.GetUtil());
             Scope.SetVariable("World", World.GetWorld());
             #pragma warning disable 618

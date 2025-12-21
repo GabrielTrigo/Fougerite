@@ -83,7 +83,7 @@ namespace Fougerite
         {
             if (url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
             {
-                return WinHttpClient.GetBlocking(url);
+                return WinHttpClient.GetInstance().GetBlocking(url);
             }
             
             using (WebClient client = new WebClient())
@@ -107,7 +107,7 @@ namespace Fougerite
         {
             if (url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
             {
-                return WinHttpClient.PostBlocking(url, data, contentType);
+                return WinHttpClient.GetInstance().PostBlocking(url, data, contentType);
             }
             
             using (WebClient client = new WebClient())
@@ -190,7 +190,7 @@ namespace Fougerite
         {
             if (url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
             {
-                WinHttpClient.MakeRequest(url, callback, method, inputBody, additionalHeaders, contentType, timeout);
+                WinHttpClient.GetInstance().MakeRequest(url, callback, method, inputBody, additionalHeaders, contentType, timeout);
                 return;
             }
             

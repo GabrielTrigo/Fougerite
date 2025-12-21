@@ -81,6 +81,7 @@ namespace Fougerite.PluginLoaders
                 script.Globals.Set("DataStore", UserData.Create(DataStore.GetInstance()));
                 script.Globals.Set("Data", UserData.Create(Data.GetData()));
                 script.Globals.Set("Web", UserData.Create(Web.GetInstance()));
+                script.Globals.Set("WinHttpClient", UserData.Create(WinHttpClient.GetInstance()));
                 script.Globals.Set("World", UserData.Create(World.GetWorld()));
                 #pragma warning disable 618
                 script.Globals.Set("PluginCollector", UserData.Create(GlobalPluginCollector.GetPluginCollector()));
