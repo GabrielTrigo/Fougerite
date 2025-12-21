@@ -57,7 +57,7 @@ namespace Fougerite
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern uint WaitForSingleObject(IntPtr hHandle, uint dwMilliseconds);
-        
+
         public const uint WINHTTP_ACCESS_TYPE_DEFAULT_PROXY = 0;
         public const uint WINHTTP_FLAG_SECURE = 0x00800000;
         public const ushort INTERNET_DEFAULT_HTTPS_PORT = 443;
@@ -72,16 +72,25 @@ namespace Fougerite
         public const uint SECURITY_FLAG_IGNORE_CERT_DATE_INVALID = 0x00002000;
         public const uint WINHTTP_QUERY_STATUS_CODE = 19;
         public const uint WINHTTP_QUERY_FLAG_NUMBER = 0x20000000;
-        public const int BUFFER_SIZE = 4096;
         public const uint WAIT_OBJECT_0 = 0;
         public const uint WAIT_TIMEOUT = 0x102;
+
+        /// <summary>
+        /// The buffer size for reading response data per chunk (4 KB).
+        /// </summary>
+        public static int BUFFER_SIZE = 4096;
+
+        /// <summary>
+        /// The maximum size of the response body to read (10 MB).
+        /// </summary>
+        public static int MAX_SIZE = 10 * 1024 * 1024;
 
         /// <summary>
         /// Session handle for WinHTTP.
         /// No need to access this from a plugin.
         /// </summary>
         public static IntPtr SessionHandle = IntPtr.Zero;
-        
+
         /// <summary>
         /// Session lock for thread safety.
         /// No need to access this from a plugin.
@@ -119,6 +128,27 @@ namespace Fougerite
             }
         }
 
+        /// <summary>
+        /// Queues an HTTP request to be executed asynchronously on a ThreadPool thread using WinHTTP.
+        /// Non-blocking for the caller, the result is returned via the callback when the request completes.
+        /// </summary>
+        /// <param name="url">Full URL including protocol (https://example.com/api).</param>
+        /// <param name="callback">
+        /// Delegate invoked as callback(statusCode, responseBody) after the request finishes.
+        /// This runs on a ThreadPool thread, use Loom.QueueOnMainThread if you need to touch Unity objects in your callback.
+        /// </param>
+        /// <param name="method">HTTP method to use (GET, POST, PUT, DELETE). Defaults to GET.</param>
+        /// <param name="inputBody">Optional request body payload. Use null or empty for methods like GET.</param>
+        /// <param name="additionalHeaders">
+        /// Optional collection of extra HTTP headers to send with the request.
+        /// </param>
+        /// <param name="contentType">
+        /// Content-Type header for the request body (application/json, application/x-www-form-urlencoded).
+        /// Defaults to application/x-www-form-urlencoded.
+        /// </param>
+        /// <param name="timeout">
+        /// Timeout in seconds applied to connect, send, and receive operations. Use 0 for the default.
+        /// </param>
         public static void MakeRequest(string url, Action<int, string> callback, string method = "GET",
             string inputBody = null, Dictionary<string, string> additionalHeaders = null,
             string contentType = "application/x-www-form-urlencoded", float timeout = 0f)
@@ -127,6 +157,21 @@ namespace Fougerite
                 DoWinHttpRequest(url, callback, method, inputBody, additionalHeaders, contentType, timeout));
         }
 
+        /// <summary>
+        /// Executes a synchronous HTTP request using WinHTTP. Blocks the calling thread until completion.
+        /// Should only be called from background threads (automatically handled by MakeRequest).
+        /// </summary>
+        /// <param name="url">Full URL including protocol (https://example.com/api)</param>
+        /// <param name="callback">Action invoked with (statusCode, responseBody) on the same thread after request completes</param>
+        /// <param name="method">HTTP method: GET, POST, PUT, DELETE</param>
+        /// <param name="inputBody">Request body data. Use null for GET requests.</param>
+        /// <param name="additionalHeaders">Custom HTTP headers</param>
+        /// <param name="contentType">Content-Type header value</param>
+        /// <param name="timeout">Timeout in seconds. Use 0 for default.</param>
+        /// <remarks>
+        /// Blocks thread during WinHttpConnect, WinHttpSendRequest, WinHttpReceiveResponse, WinHttpReadData.
+        /// SSL validation disabled. Response limited to 10MB, you can change static variable.
+        /// </remarks>
         public static void DoWinHttpRequest(string url, Action<int, string> callback, string method, string inputBody,
             Dictionary<string, string> additionalHeaders, string contentType, float timeout)
         {
@@ -145,6 +190,7 @@ namespace Fougerite
                     return;
                 }
 
+                // Parse the URL
                 Uri uri;
                 try
                 {
@@ -156,9 +202,11 @@ namespace Fougerite
                     return;
                 }
 
+                // We support http as well as https
                 ushort port = uri.Scheme == "https" ? INTERNET_DEFAULT_HTTPS_PORT : INTERNET_DEFAULT_HTTP_PORT;
                 uint flags = uri.Scheme == "https" ? WINHTTP_FLAG_SECURE : 0;
 
+                // Create connection handle
                 connectHandle = WinHttpConnect(SessionHandle, uri.Host, port, 0);
                 if (connectHandle == IntPtr.Zero)
                 {
@@ -176,6 +224,7 @@ namespace Fougerite
                     return;
                 }
 
+                // Calculate timeout in milliseconds based on input float seconds
                 uint timeoutMs = timeout > 0 ? (uint)(timeout * 1000) : 30000;
 
                 byte[] connectTimeoutBuf = BitConverter.GetBytes(timeoutMs);
@@ -196,18 +245,23 @@ namespace Fougerite
                     sizeof(uint));
                 recvTimeoutPin.Free();
 
+                // Initialize ignore flags
                 uint ignoreFlags = SECURITY_FLAG_IGNORE_UNKNOWN_CA | SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE |
                                    SECURITY_FLAG_IGNORE_CERT_CN_INVALID | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID;
 
+                // Allocate pinned memory for ignore flags
                 byte[] flagsBuffer = BitConverter.GetBytes(ignoreFlags);
                 flagsPin = GCHandle.Alloc(flagsBuffer, GCHandleType.Pinned);
                 IntPtr flagsPtr = flagsPin.AddrOfPinnedObject();
 
+                // Set security flags to ignore certificate errors
                 bool sslSet = WinHttpSetOption(requestHandle, WINHTTP_OPTION_SECURITY_FLAGS, flagsPtr, sizeof(uint));
 
+                // Prepare body
                 byte[] bodyBytes = string.IsNullOrEmpty(inputBody) ? new byte[0] : Encoding.UTF8.GetBytes(inputBody);
                 uint bodyLength = (uint)bodyBytes.Length;
 
+                // Allocate pinned memory for body if needed
                 IntPtr bodyPtr = IntPtr.Zero;
                 if (bodyLength > 0)
                 {
@@ -215,9 +269,40 @@ namespace Fougerite
                     bodyPtr = bodyPin.AddrOfPinnedObject();
                 }
 
+                // Total length is body length for now
                 uint totalLength = bodyLength;
 
-                bool sent = WinHttpSendRequest(requestHandle, null, 0, bodyPtr, bodyLength, totalLength, IntPtr.Zero);
+                // Prepare headers
+                string headersString = null;
+                if (!string.IsNullOrEmpty(contentType) || (additionalHeaders != null && additionalHeaders.Count > 0))
+                {
+                    StringBuilder headerBuilder = new StringBuilder();
+
+                    if (!string.IsNullOrEmpty(contentType) && bodyLength > 0)
+                    {
+                        headerBuilder.Append("Content-Type: ");
+                        headerBuilder.Append(contentType);
+                        headerBuilder.Append("\r\n");
+                    }
+
+                    if (additionalHeaders != null)
+                    {
+                        foreach (var header in additionalHeaders)
+                        {
+                            headerBuilder.Append(header.Key);
+                            headerBuilder.Append(": ");
+                            headerBuilder.Append(header.Value);
+                            headerBuilder.Append("\r\n");
+                        }
+                    }
+
+                    headersString = headerBuilder.ToString();
+                }
+
+                // Send the request
+                bool sent = WinHttpSendRequest(requestHandle, headersString,
+                    headersString != null ? (uint)headersString.Length : 0, bodyPtr, bodyLength, totalLength,
+                    IntPtr.Zero);
 
                 if (!sent)
                 {
@@ -225,6 +310,7 @@ namespace Fougerite
                     return;
                 }
 
+                // Receive the response
                 bool received = WinHttpReceiveResponse(requestHandle, IntPtr.Zero);
 
                 if (!received)
@@ -237,7 +323,10 @@ namespace Fougerite
                 uint bufLen = sizeof(uint);
                 uint index = 0;
 
+                // Allocate pinned memory for status code
                 GCHandle statusCodePin = GCHandle.Alloc(statusCode, GCHandleType.Pinned);
+
+                // Query the HTTP status code
                 bool queryResult = WinHttpQueryHeaders(requestHandle,
                     WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER, null, statusCodePin.AddrOfPinnedObject(),
                     ref bufLen, ref index);
@@ -254,8 +343,8 @@ namespace Fougerite
                 byte[] buffer = new byte[BUFFER_SIZE];
                 uint bytesRead;
                 int totalRead = 0;
-                const int MAX_SIZE = 10 * 1024 * 1024;
 
+                // Read response data in chunks until done or max size reached
                 while (WinHttpReadData(requestHandle, buffer, (uint)BUFFER_SIZE, out bytesRead) && bytesRead > 0)
                 {
                     totalRead += (int)bytesRead;
@@ -276,14 +365,30 @@ namespace Fougerite
             }
             finally
             {
-                if (bodyPin.IsAllocated) bodyPin.Free();
-                if (flagsPin.IsAllocated) flagsPin.Free();
+                if (bodyPin != null && bodyPin.IsAllocated) bodyPin.Free();
+                if (flagsPin != null && flagsPin.IsAllocated) flagsPin.Free();
                 if (requestHandle != IntPtr.Zero) WinHttpCloseHandle(requestHandle);
                 if (connectHandle != IntPtr.Zero) WinHttpCloseHandle(connectHandle);
             }
         }
 
 
+        /// <summary>
+        /// Performs a synchronous HTTP GET request that blocks the calling thread until completion or timeout.
+        /// WARNING: Calling this from Unity's main thread may freeze game for x time.
+        /// Use MakeRequest with callbacks for non-blocking behavior, or call this from a background thread.
+        /// </summary>
+        /// <param name="url">Full URL to request (https://example.com/api).</param>
+        /// <param name="timeout">
+        /// Request timeout in seconds. Defaults to 10 seconds.
+        /// Actual wait time is timeout + 5 seconds to allow for cleanup.
+        /// </param>
+        /// <returns>
+        /// Response body string if status code is 2xx (success).
+        /// "HTTP {statusCode}" string if request succeeded but returned non-2xx status.
+        /// "Timeout" if request exceeded timeout duration.
+        /// "Error {exception}" if request failed with an exception.
+        /// </returns>
         public static string GetBlocking(string url, float timeout = 10f)
         {
             try
@@ -310,6 +415,27 @@ namespace Fougerite
             }
         }
 
+        /// <summary>
+        /// Performs a synchronous HTTP POST request that blocks the calling thread until completion or timeout.
+        /// WARNING: Calling this from Unity's main thread may freeze game for x time.
+        /// Use MakeRequest with callbacks for non-blocking behavior, or call this from a background thread.
+        /// </summary>
+        /// <param name="url">Full URL to request (e.g., https://example.com/api).</param>
+        /// <param name="inputBody">Request body payload to send. Use null or empty for no body.</param>
+        /// <param name="contentType">
+        /// Content-Type header value. Use 'application/json' for JSON payloads.
+        /// Defaults to 'application/x-www-form-urlencoded'.
+        /// </param>
+        /// <param name="timeout">
+        /// Request timeout in seconds. Defaults to 10 seconds.
+        /// Actual wait time is timeout + 5 seconds to allow for cleanup.
+        /// </param>
+        /// <returns>
+        /// Response body string if status code is 2xx (success).
+        /// "HTTP {statusCode}" string if request succeeded but returned non-2xx status.
+        /// "Timeout" if request exceeded timeout duration.
+        /// "Error {exception}" if request failed with an exception.
+        /// </returns>
         public static string PostBlocking(string url, string inputBody,
             string contentType = "application/x-www-form-urlencoded", float timeout = 10f)
         {

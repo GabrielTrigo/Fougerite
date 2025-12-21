@@ -71,10 +71,13 @@ namespace Fougerite
         }
 
         /// <summary>
-        /// Does a GET request to the specified URL.
+        /// Performs a synchronous HTTP GET request to the specified URL.
+        /// WARNING: This method blocks the calling thread until the request completes. 
+        /// Calling from Unity's main thread will freeze the game server.
+        /// Use CreateAsyncHTTPRequest instead to avoid blocking the main thread.
         /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>
+        /// <param name="url">Full URL to request (https://example.com/api). HTTPS uses WinHTTP, HTTP uses WebClient.</param>
+        /// <returns>Response body as a string, or error message on failure.</returns>
         [Obsolete("Use CreateAsyncHTTPRequest instead.", false)]
         public string GET(string url)
         {
@@ -90,12 +93,15 @@ namespace Fougerite
         }
 
         /// <summary>
-        /// Does a post request to the specified URL with the data.
+        /// Performs a synchronous HTTP POST request to the specified URL with data.
+        /// WARNING: This method blocks the calling thread until the request completes.
+        /// Calling from Unity's main thread will freeze the game server until completion.
+        /// Use CreateAsyncHTTPRequest instead to avoid blocking the main thread.
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="data"></param>
-        /// <param name="contentType">For JSON format specify 'application/json'</param>
-        /// <returns></returns>
+        /// <param name="url">Full URL to request (https://example.com/api). HTTPS uses WinHTTP, HTTP uses WebClient.</param>
+        /// <param name="data">Request body payload to send.</param>
+        /// <param name="contentType">Content-Type header value. For JSON format specify 'application/json'. Defaults to 'application/x-www-form-urlencoded'.</param>
+        /// <returns>Response body as a string, or error message on failure.</returns>
         [Obsolete("Use CreateAsyncHTTPRequest instead.", false)]
         public string POST(string url, string data, string contentType = "application/x-www-form-urlencoded")
         {
@@ -113,10 +119,13 @@ namespace Fougerite
         }
 
         /// <summary>
-        /// Does a GET request to the specified URL, and accepts all SSL certificates.
+        /// Performs a synchronous HTTP GET request to the specified URL.
+        /// WARNING: This method blocks the calling thread until the request completes. 
+        /// Calling from Unity's main thread will freeze the game server.
+        /// Use CreateAsyncHTTPRequest instead to avoid blocking the main thread.
         /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>
+        /// <param name="url">Full URL to request (https://example.com/api). HTTPS uses WinHTTP, HTTP uses WebClient.</param>
+        /// <returns>Response body as a string, or error message on failure.</returns>
         [Obsolete("Use CreateAsyncHTTPRequest instead.", false)]
         public string GETWithSSL(string url)
         {
@@ -124,11 +133,15 @@ namespace Fougerite
         }
 
         /// <summary>
-        /// Does a post request to the specified URL with the data, and accepts all SSL certificates.
+        /// Performs a synchronous HTTP POST request to the specified URL with data.
+        /// WARNING: This method blocks the calling thread until the request completes.
+        /// Calling from Unity's main thread will freeze the game server until completion.
+        /// Use CreateAsyncHTTPRequest instead to avoid blocking the main thread.
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="data"></param>
-        /// <returns></returns>
+        /// <param name="url">Full URL to request (https://example.com/api). HTTPS uses WinHTTP, HTTP uses WebClient.</param>
+        /// <param name="data">Request body payload to send.</param>
+        /// <param name="contentType">Content-Type header value. For JSON format specify 'application/json'. Defaults to 'application/x-www-form-urlencoded'.</param>
+        /// <returns>Response body as a string, or error message on failure.</returns>
         [Obsolete("Use CreateAsyncHTTPRequest instead.", false)]
         public string POSTWithSSL(string url, string data)
         {
@@ -145,19 +158,28 @@ namespace Fougerite
         /// import System
         /// import json
         /// from System import Action
-        /// Web.CreateAsyncHTTPRequest('url', Action[int, str](self.webCallback), 'POST', json.dumps({'name':'test'}))
+        /// Web.CreateAsyncHTTPRequest('url', Action[int, str](self.webCallback), 'POST', json.dumps({'name':'test'}), None, 'application/json')
+        ///
+        /// Example2:
+        /// MyExtraArguments = Plugin.CreateStringDict()
+        /// MyExtraArguments["X-Custom-Header"] = "test"
+        /// Web.CreateAsyncHTTPRequest('https://www.postb.in/1766312967243-4069704979192', Action[int, str](self.webCallback), 'POST','hello=world', MyExtraArguments,'application/x-www-form-urlencoded')
+        ///
+        /// Example3:
+        /// Web.CreateAsyncHTTPRequest('https://www.postb.in/1766312967243-4069704979192?hello=world', Action[int, str](self.webCallback), 'GET')
         /// 
         /// WARNING: This is an async call. The callback will be on a subthread. If you have something that you need to run
-        /// on the main thread, because It's thread sensitive then call Loom's QueueOnMainThread function.
+        /// on the main thread (UnityEngine related like FindObjectsOfAllType), because It's thread sensitive then call Loom's QueueOnMainThread function.
+        /// Otherwise you may crash the server.
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="callback"></param>
-        /// <param name="method"></param>
-        /// <param name="inputBody"></param>
-        /// <param name="additionalHeaders"></param>
-        /// <param name="contentType">For JSON format specify 'application/json'</param>
-        /// <param name="timeout"></param>
-        /// <param name="allowDecompression"></param>
+        /// <param name="url">Full URL to request (https://example.com/api). HTTPS URLs use WinHTTP, HTTP URLs use HttpWebRequest.</param>
+        /// <param name="callback">Action invoked as callback(statusCode, responseBody) when request completes. Executes on a background thread.</param>
+        /// <param name="method">HTTP method to use (GET, POST, PUT, DELETE, etc.). Defaults to GET.</param>
+        /// <param name="inputBody">Optional request body payload. Pass null or empty string for GET requests. For JSON, use json.dumps() or JsonConvert.</param>
+        /// <param name="additionalHeaders">Optional dictionary of custom HTTP headers to include in the request ({"Authorization": "Bearer token"}).</param>
+        /// <param name="contentType">Content-Type header value. Use 'application/json' for JSON payloads. Defaults to 'application/x-www-form-urlencoded'.</param>
+        /// <param name="timeout">Request timeout in seconds. Use 0 for default timeout.</param>
+        /// <param name="allowDecompression">Enable automatic GZip/Deflate decompression for HTTP requests. Not applicable to HTTPS (WinHTTP) requests.</param>
         public void CreateAsyncHTTPRequest(string url, Action<int, string> callback, string method = "GET",
             string inputBody = null,
             Dictionary<string, string> additionalHeaders = null, 
