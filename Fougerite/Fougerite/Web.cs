@@ -169,7 +169,8 @@ namespace Fougerite
         /// Web.CreateAsyncHTTPRequest('https://www.postb.in/1766312967243-4069704979192?hello=world', Action[int, str](self.webCallback), 'GET')
         /// 
         /// WARNING: This is an async call. The callback will be on a subthread. If you have something that you need to run
-        /// on the main thread (UnityEngine related like FindObjectsOfAllType), because It's thread sensitive then call Loom's QueueOnMainThread function.
+        /// on the main thread (UnityEngine related like FindObjectsOfAllType), because It's thread sensitive then call Loom's QueueOnMainThread function in the
+        /// provided callback function.
         /// Otherwise you may crash the server.
         /// </summary>
         /// <param name="url">Full URL to request (https://example.com/api). HTTPS URLs use WinHTTP, HTTP URLs use HttpWebRequest.</param>
