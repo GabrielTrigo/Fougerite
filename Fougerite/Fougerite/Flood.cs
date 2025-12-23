@@ -7,15 +7,14 @@ namespace Fougerite
     /// </summary>
     public class Flood
     {
-        private ExtendedTimedEvent _te;
+        private TimedEvent _te;
         private int _count = 1;
         private readonly string _ip;
             
         public Flood(string ip)
         {
             _ip = ip;
-            _te = new ExtendedTimedEvent(3000);
-            _te.OnFire += Check;
+            _te = Util.GetUtil().CreateTimer($"Flood.{ip}", 3000, Check, false, $"{nameof(Fougerite)}.{nameof(Flood)}");
             _te.Start();
         }
 
@@ -32,8 +31,7 @@ namespace Fougerite
         public void Reset()
         {
             _te.Kill();
-            _te = new ExtendedTimedEvent(3000);
-            _te.OnFire += Check;
+            _te = Util.GetUtil().CreateTimer($"Flood.{_ip}", 3000, Check, false, $"{nameof(Fougerite)}.{nameof(Flood)}");
             _te.Start();
         }
 
@@ -42,7 +40,7 @@ namespace Fougerite
             _te.Kill();
         }
 
-        private void Check(ExtendedTimedEvent evt)
+        private void Check(TimedEvent evt)
         {
             evt.Kill();
             if (Hooks.FloodChecks.ContainsKey(_ip))

@@ -9,7 +9,6 @@ using Fougerite.Concurrent;
 using Fougerite.Events;
 using UnityEngine;
 using String = Facepunch.Utility.String;
-using Timer = System.Timers.Timer;
 
 namespace Fougerite
 {
@@ -633,7 +632,7 @@ namespace Fougerite
             {
                 float maxSafeDistance = 360f;
                 float seaLevel = 256f;
-                double ms = 500d;
+                int ms = 500;
                 string me = "SafeTeleport";
 
                 float bumpConst = 0.75f;
@@ -671,13 +670,10 @@ namespace Fougerite
 
                     if (TeleportTo(terrain + bump * 2, callhook))
                     {
-                        Timer timer = new Timer();
-                        timer.Interval = ms;
-                        timer.AutoReset = false;
-                        timer.Elapsed += delegate
+                        var timer = Util.GetUtil().CreateTimer(nameof(Player) + "." + nameof(SafeTeleportTo) + "." + Name, ms, (timerObj) =>
                         {
                             TeleportTo(target, callhook);
-                        };
+                        }, false, nameof(Fougerite));
                         timer.Start();
                         return true;
                     }

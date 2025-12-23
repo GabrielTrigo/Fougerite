@@ -9,7 +9,9 @@ namespace Fougerite
     {
         private void FixedUpdate()
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             CTimer.OnUpdate();
+#pragma warning restore CS0618 // Type or member is obsolete
         }
     }
     
