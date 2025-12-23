@@ -16,6 +16,7 @@ namespace Fougerite.Events
         private int _elapsedCount;
         private bool _running;
         private bool _killed;
+        private string _pluginName;
         public event Action<string> OnKilled;
         
         /// <summary>
@@ -69,7 +70,7 @@ namespace Fougerite.Events
         private void InternalFire()
         {
             // Call the event
-            using (new Stopper(nameof(TimedEvent), _name))
+            using (new Stopper(nameof(TimedEvent), $"{PluginName}.{_name}"))
             {
                 try
                 {
@@ -80,7 +81,7 @@ namespace Fougerite.Events
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Error occured at timer: {Name} Error: {ex}");
+                    Logger.LogError($"Error occured at timer: {PluginName}.{_name} Error: {ex}");
                 }
             }
 
@@ -218,6 +219,22 @@ namespace Fougerite.Events
             set
             {
                 _name = value;
+            }
+        }
+
+        /// <summary>
+        /// The name of the plugin that created this timer
+        /// This is optionally set by the plugin system
+        /// </summary>
+        public string PluginName
+        {
+            get
+            {
+                return _pluginName;
+            }
+            set
+            {
+                _pluginName = value;
             }
         }
 

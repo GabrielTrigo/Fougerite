@@ -450,6 +450,7 @@ namespace Fougerite.PluginLoaders
                 timedEvent = go.AddComponent<TimedEvent>();
         
                 timedEvent.Name = name;
+                timedEvent.PluginName = Name;
                 timedEvent.Interval = timeoutDelay;
                 timedEvent.AutoReset = autoReset;
                 timedEvent.OnFire += OnTimerCB;
@@ -479,6 +480,7 @@ namespace Fougerite.PluginLoaders
                 timedEvent = go.AddComponent<TimedEvent>();
         
                 timedEvent.Name = name;
+                timedEvent.PluginName = Name;
                 timedEvent.Interval = timeoutDelay;
                 timedEvent.AutoReset = autoReset;
                 timedEvent.OnFire += new TimedEvent.TimedEventFireDelegate(callback);
@@ -509,6 +511,7 @@ namespace Fougerite.PluginLoaders
                 timedEvent = go.AddComponent<TimedEvent>();
 
                 timedEvent.Name = name;
+                timedEvent.PluginName = Name;
                 timedEvent.Interval = timeoutDelay;
                 timedEvent.Args = args;
                 timedEvent.AutoReset = autoReset;
@@ -541,6 +544,7 @@ namespace Fougerite.PluginLoaders
                 timedEvent = go.AddComponent<TimedEvent>();
 
                 timedEvent.Name = name;
+                timedEvent.PluginName = Name;
                 timedEvent.Interval = timeoutDelay;
                 timedEvent.Args = args;
                 timedEvent.AutoReset = autoReset;
@@ -611,6 +615,7 @@ namespace Fougerite.PluginLoaders
             TimedEvent timedEvent = go.AddComponent<TimedEvent>();
 
             timedEvent.Name = name;
+            timedEvent.PluginName = Name;
             timedEvent.Interval = timeoutDelay;
             timedEvent.Args = args;
             timedEvent.AutoReset = autoReset;
@@ -638,6 +643,7 @@ namespace Fougerite.PluginLoaders
             TimedEvent timedEvent = go.AddComponent<TimedEvent>();
 
             timedEvent.Name = name;
+            timedEvent.PluginName = Name;
             timedEvent.Interval = timeoutDelay;
             timedEvent.Args = args;
             timedEvent.AutoReset = autoReset;

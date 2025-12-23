@@ -90,6 +90,7 @@ namespace Fougerite
             UnityEngine.Object.DontDestroyOnLoad(go);
             timedEvent = go.AddComponent<TimedEvent>();
             timedEvent.Name = name;
+            timedEvent.PluginName = Name;
             timedEvent.Interval = timeoutDelay;
             timedEvent.AutoReset = autoReset;
             timedEvent.OnFire += new TimedEvent.TimedEventFireDelegate(callback);
@@ -114,6 +115,7 @@ namespace Fougerite
             UnityEngine.Object.DontDestroyOnLoad(go);
             TimedEvent timedEvent = go.AddComponent<TimedEvent>();
             timedEvent.Name = name;
+            timedEvent.PluginName = Name;
             timedEvent.Interval = timeoutDelay;
             timedEvent.Args = args;
             timedEvent.AutoReset = autoReset;
