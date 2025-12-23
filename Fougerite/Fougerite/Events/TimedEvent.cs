@@ -1,20 +1,23 @@
 ﻿using System.Collections.Generic;
 using System;
-using System.Timers;
+using System.Collections;
+using UnityEngine;
 
 namespace Fougerite.Events
 {
-    public class TimedEvent
+    public class TimedEvent : MonoBehaviour
     {
         private Dictionary<string, object> _args;
         private string _name;
-        private Timer _timer;
         private long _lastTick;
         private DateTime _lastTickDate;
         private double _interval;
         private bool _autoReset;
         private int _elapsedCount;
-
+        private bool _running;
+        private bool _killed;
+        public event Action<string> OnKilled;
+        
         /// <summary>
         /// The delegate type of the timer.
         /// </summary>
@@ -23,6 +26,14 @@ namespace Fougerite.Events
         /// This is the event you must subscribe to.
         /// </summary>
         public event TimedEventFireDelegate OnFire;
+
+        /// <summary>
+        /// Creates an empty timer.
+        /// </summary>
+        public TimedEvent()
+        {
+            
+        }
         
         /// <summary>
         /// Creates a timer.
@@ -36,11 +47,7 @@ namespace Fougerite.Events
             _elapsedCount = 0;
             _autoReset = autoreset;
             _interval = interval;
-            
-            _timer = new Timer();
-            _timer.Interval = interval;
-            _timer.Elapsed += TimerElapsed;
-            _timer.AutoReset = autoreset;
+            _running = false;
         }
 
         /// <summary>
@@ -56,16 +63,8 @@ namespace Fougerite.Events
             _args = args;
         }
 
-        /// <summary>
-        /// Gets called when the timer is elapsed.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void TimerElapsed(object sender, ElapsedEventArgs e)
+        private void InternalFire()
         {
-            // Dispose the timer first, as It has always been unreliable on long run in mono
-            Kill();
-
             // Call the event
             try
             {
@@ -84,23 +83,17 @@ namespace Fougerite.Events
             _lastTickDate = DateTime.Now;
             _elapsedCount += 1;
 
-            // Re-Start the timer only, if auto reset was true
-            if (_autoReset)
+            // Auto reset is false, we stop here
+            if (!_autoReset)
             {
-                // Start
-                Start();
+                // Dispose the timer
+                Kill();
             }
         }
 
-        /// <summary>
-        /// Re-creates the whole timer object.
-        /// </summary>
-        private void ReCreate()
+        public void OnDisable()
         {
-            _timer = new Timer();
-            _timer.Interval = _interval;
-            _timer.Elapsed += TimerElapsed;
-            _timer.AutoReset = _autoReset;
+            _running = false;
         }
 
         /// <summary>
@@ -108,20 +101,13 @@ namespace Fougerite.Events
         /// </summary>
         public void Start()
         {
-            // It's already running
-            if (_timer != null && _timer.Enabled)
-            {
-                return;
-            }
+            if (_running) return;
             
-            // Re-Create is always.
-            ReCreate();
-            
-            // Should have a value by this time.
-            _timer?.Start();
-            
+            _running = true;
             _lastTick = DateTime.UtcNow.Ticks;
             _lastTickDate = DateTime.Now;
+            
+            StartCoroutine(TimerLoop());
         }
 
         /// <summary>
@@ -129,8 +115,8 @@ namespace Fougerite.Events
         /// </summary>
         public void Stop()
         {
-            if (_timer != null)
-                _timer.Stop();
+            _running = false;
+            StopAllCoroutines();
         }
 
         /// <summary>
@@ -138,10 +124,25 @@ namespace Fougerite.Events
         /// </summary>
         public void Kill()
         {
+            if (_killed) return;
+            _killed = true;
             Stop();
-            if (_timer != null)
-                _timer.Dispose();
-            _timer = null;
+            OnKilled?.Invoke(_name);
+            DestroyImmediate(gameObject);
+        }
+
+        private IEnumerator TimerLoop()
+        {
+            while (_running)
+            {
+                float waitTime = (float)(_interval / 1000f);
+                yield return new WaitForSeconds(waitTime);
+        
+                if (_running)
+                {
+                    InternalFire();
+                }
+            }
         }
 
         /// <summary>
