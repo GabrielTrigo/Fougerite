@@ -23,7 +23,7 @@ namespace Fougerite.Events
         /// </summary>
         public delegate void TimedEventFireDelegate(TimedEvent te);
         /// <summary>
-        /// This is the event you must subscribe to.
+        /// This event is fired when the timer elapses.
         /// </summary>
         public event TimedEventFireDelegate OnFire;
 
@@ -63,6 +63,9 @@ namespace Fougerite.Events
             _args = args;
         }
 
+        /// <summary>
+        /// Fires the timer event internally.
+        /// </summary>
         private void InternalFire()
         {
             // Call the event
@@ -91,6 +94,9 @@ namespace Fougerite.Events
             }
         }
 
+        /// <summary>
+        /// Do not call this method directly. This is used by Unity when the object is disabled.
+        /// </summary>
         public void OnDisable()
         {
             _running = false;
@@ -131,6 +137,10 @@ namespace Fougerite.Events
             DestroyImmediate(gameObject);
         }
 
+        /// <summary>
+        /// The internal loop that runs the timer.
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator TimerLoop()
         {
             while (_running)
@@ -249,6 +259,28 @@ namespace Fougerite.Events
             get
             {
                 return _elapsedCount;
+            }
+        }
+
+        /// <summary>
+        /// Tells whether the timer is currently running.
+        /// </summary>
+        public bool IsRunning
+        {
+            get
+            {
+                return _running;
+            }
+        }
+
+        /// <summary>
+        /// Tells whether the timer has been killed/disposed.
+        /// </summary>
+        public bool IsKilled
+        {
+            get
+            {
+                return _killed;
             }
         }
     }
