@@ -44,6 +44,7 @@ namespace Fougerite
     /// <summary>
     /// Sorted list of timers.
     /// </summary>
+    [Obsolete("Use BasePlugin/Module Timer functions", false)]
     public class CTimer
     {
         private static readonly List<CTimer> timer = new List<CTimer>();

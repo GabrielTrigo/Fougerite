@@ -69,16 +69,19 @@ namespace Fougerite.Events
         private void InternalFire()
         {
             // Call the event
-            try
+            using (new Stopper(nameof(TimedEvent), _name))
             {
-                if (OnFire != null)
+                try
                 {
-                    OnFire(this);
+                    if (OnFire != null)
+                    {
+                        OnFire(this);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"Error occured at timer: {Name} Error: {ex}");
+                catch (Exception ex)
+                {
+                    Logger.LogError($"Error occured at timer: {Name} Error: {ex}");
+                }
             }
 
             // Set some infos
