@@ -26,7 +26,7 @@ namespace Fougerite.PluginLoaders
         public string Version;
 
         /// <summary>
-        /// Makes pluginloader ignore this plugin at 'pluton.reload'.
+        /// Makes pluginloader ignore this plugin at 'fougerite.reload'.
         /// </summary>
         public bool DontReload = false;
 

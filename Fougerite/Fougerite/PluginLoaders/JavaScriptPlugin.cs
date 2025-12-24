@@ -14,7 +14,7 @@ namespace Fougerite.PluginLoaders
         public Program Program;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Pluton.JSPlugin"/> class.
+        /// Initializes a new instance of the <see cref="JavaScriptPlugin"/> class.
         /// </summary>
         /// <param name="name">Name.</param>
         /// <param name="code">Code.</param>
@@ -51,6 +51,8 @@ namespace Fougerite.PluginLoaders
             catch (Exception ex)
             {
                 string fileinfo = ("[Error] Failed to invoke: " + $"{Name}<{Type}>.{func}()" + Environment.NewLine);
+                HasErrors = true;
+                LastError = FormatException(ex);
                 Logger.LogError(fileinfo + FormatException(ex));
             }
             return null;
