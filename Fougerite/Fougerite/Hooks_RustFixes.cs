@@ -5,6 +5,7 @@ using Fougerite.Events;
 using uLink;
 using Debug = UnityEngine.Debug;
 using Facepunch.MeshBatch;
+using Fougerite.Concurrent;
 using UnityEngine;
 
 namespace Fougerite
@@ -23,6 +24,7 @@ namespace Fougerite
         private static DateTime _lasTime10 = DateTime.Now;
         private static DateTime _lasTime11 = DateTime.Now;
         internal static readonly Dictionary<ulong, int> ActionCooldown = new Dictionary<ulong, int>();
+        internal static ConcurrentDictionary<string, DateTime> AntiDdos = new ConcurrentDictionary<string, DateTime>();
 
         private static double CalculateDiff(ref DateTime then)
         {
@@ -1283,6 +1285,324 @@ namespace Fougerite
                 {
                     item.inventory.RemoveItem(item.slot);
                 }
+            }
+        }
+
+        public static void AntiDDos(Class1 instance, Class35 class35_0, IPEndPoint ipendPoint_0)
+        {
+            double num = Class23.smethod_1();
+            int num2 = class35_0.class18_0.method_83();
+            if (instance.method_18(class35_0))
+            {
+                return;
+            }
+
+            if (class35_0.enum3_0 == Enum3.OutOfBand)
+            {
+                if ((instance.enum4_0 & (Enum4)2) != (Enum4)2)
+                {
+                    return;
+                }
+
+                class35_0.enum4_0 = (Enum4)2;
+                class35_0.ipendPoint_0 = ipendPoint_0;
+                instance.method_8(class35_0);
+                return;
+            }
+            else if (class35_0.class56_0 == null)
+            {
+                if (class35_0.enum3_0 != Enum3.System)
+                {
+                    if ((instance.enum4_0 & (Enum4)256) == (Enum4)256)
+                    {
+                        instance.method_37((Enum4)256,
+                            "Rejecting non-system message from unconnected source: " +
+                            ((class35_0 != null) ? class35_0.ToString() : null), null, class35_0.ipendPoint_0);
+                    }
+
+                    return;
+                }
+
+                Enum11 @enum = (Enum11)class35_0.class18_0.method_2();
+                Enum11 enum2 = @enum;
+                switch (enum2)
+                {
+                    case Enum11.Connect:
+                    {
+                        string text = ipendPoint_0.Address.ToString();
+                        DateTime dateTime;
+                        if (AntiDdos.TryGetValue(text, out dateTime) &&
+                            (DateTime.UtcNow - dateTime).TotalSeconds < 5.0)
+                        {
+                            Class18 @class = new Class18("Fougerite AntiDDOS");
+                            instance.method_25(Enum11.ConnectionRejected, @class, ipendPoint_0, false);
+                            AntiDdos[text] = DateTime.UtcNow;
+                            return;
+                        }
+
+                        AntiDdos[text] = DateTime.UtcNow;
+                        Class56 class2;
+                        if (instance.dictionary_1.TryGetValue(ipendPoint_0, out class2))
+                        {
+                            if ((instance.enum4_0 & (Enum4)256) == (Enum4)256)
+                            {
+                                instance.method_37((Enum4)256, "Ignore connection request received because already pending",
+                                    class2, ipendPoint_0);
+                            }
+
+                            return;
+                        }
+
+                        if (instance.dictionary_0.TryGetValue(ipendPoint_0, out class2))
+                        {
+                            if ((instance.enum4_0 & (Enum4)256) == (Enum4)256)
+                            {
+                                instance.method_37((Enum4)256,
+                                    "Ignore connection request received because already connected", class2,
+                                    ipendPoint_0);
+                            }
+
+                            return;
+                        }
+
+                        if (num2 < 4)
+                        {
+                            if ((instance.enum4_0 & (Enum4)256) == (Enum4)256)
+                            {
+                                instance.method_37((Enum4)256,
+                                    "Malformed Connect message received from " +
+                                    ((ipendPoint_0 != null) ? ipendPoint_0.ToString() : null), null, ipendPoint_0);
+                            }
+
+                            return;
+                        }
+
+                        if (class35_0.class18_0.method_27() != instance.class20_0.method_2())
+                        {
+                            if ((instance.enum4_0 & (Enum4)512) == (Enum4)512)
+                            {
+                                instance.method_37((Enum4)512, "Bad app id", null, ipendPoint_0);
+                            }
+
+                            Class18 class3 = new Class18("Bad app id");
+                            instance.method_25(Enum11.ConnectionRejected, class3, ipendPoint_0, false);
+                            return;
+                        }
+
+                        byte[] array = class35_0.class18_0.method_5(16);
+                        if (Class58.smethod_10(array, instance.byte_0))
+                        {
+                            if ((instance.enum4_0 & (Enum4)512) == (Enum4)512)
+                            {
+                                instance.method_37((Enum4)512, "Connection to self not allowed", null, ipendPoint_0);
+                            }
+
+                            return;
+                        }
+
+                        int num3 = class35_0.class18_0.method_9();
+                        int num4 = class35_0.class18_0.method_89();
+                        int num5 = class35_0.class18_0.method_83() - num4;
+                        byte[] array2 = null;
+                        if (num5 > 0)
+                        {
+                            array2 = new byte[num5];
+                            Buffer.BlockCopy(class35_0.class18_0.byte_0, num4, array2, 0, num5);
+                        }
+
+                        if (instance.class20_0.int_4 != -1 && instance.list_3.Count >= instance.class20_0.int_4)
+                        {
+                            if ((instance.enum4_0 & (Enum4)512) == (Enum4)512)
+                            {
+                                instance.method_37((Enum4)512, "Max connections", null, ipendPoint_0);
+                            }
+
+                            Class18 class4 = new Class18("Server full");
+                            instance.method_25(Enum11.ConnectionRejected, class4, ipendPoint_0, false);
+                            return;
+                        }
+
+                        class2 = new Class56(instance, ipendPoint_0, null, array2, array, num3);
+                        instance.dictionary_1.Add(ipendPoint_0, class2);
+                        if ((instance.enum4_0 & (Enum4)16) == (Enum4)16)
+                        {
+                            Class35 class5 = instance.method_10();
+                            class5.enum4_0 = (Enum4)16;
+                            if (array2 != null)
+                            {
+                                class5.class18_0.method_36(array2);
+                            }
+
+                            class5.class56_0 = class2;
+                            class2.bool_0 = false;
+                            instance.method_8(class5);
+                            return;
+                        }
+
+                        instance.method_62(num, class2);
+                        return;
+                    }
+                    case Enum11.ConnectResponse:
+                        break;
+                    case Enum11.ConnectionEstablished:
+                        if ((instance.enum4_0 & (Enum4)256) == (Enum4)256)
+                        {
+                            instance.method_37((Enum4)256,
+                                "Connection established received from non-connection! " +
+                                ((ipendPoint_0 != null) ? ipendPoint_0.ToString() : null), null, ipendPoint_0);
+                        }
+
+                        return;
+                    default:
+                        if (enum2 != Enum11.Discovery)
+                        {
+                            if (enum2 != Enum11.DiscoveryResponse)
+                            {
+                                if (enum2 == Enum11.Ping)
+                                {
+                                    Class18 class18_ = instance.class18_2;
+                                    class18_.method_93();
+                                    class18_.method_58("We're not connected");
+                                    instance.method_26(Enum11.Disconnect, class18_, ipendPoint_0, false, null);
+                                    if ((instance.enum4_0 & (Enum4)256) == (Enum4)256)
+                                    {
+                                        instance.method_37((Enum4)256,
+                                            string.Concat(new object[]
+                                            {
+                                                "Ignore ", instance, " receiving system type ", @enum, ": ", class35_0,
+                                                " from unconnected source"
+                                            }), null, ipendPoint_0);
+                                        return;
+                                    }
+
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                if (!instance.bool_3)
+                                {
+                                    return;
+                                }
+
+                                Class35 class6 = instance.class14_0.method_6(class35_0, ipendPoint_0);
+                                if (class6 != null)
+                                {
+                                    class6.ipendPoint_0 = ipendPoint_0;
+                                    instance.method_8(class6);
+                                    return;
+                                }
+
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            if (instance.class20_0.method_34())
+                            {
+                                instance.class14_0.method_4(class35_0, ipendPoint_0);
+                                return;
+                            }
+
+                            return;
+                        }
+
+                        break;
+                }
+
+                if ((instance.enum4_0 & (Enum4)256) == (Enum4)256)
+                {
+                    instance.method_37((Enum4)256,
+                        string.Concat(new object[]
+                        {
+                            "Ignore ", instance, " receiving system type ", @enum, ": ", class35_0,
+                            " from unconnected source"
+                        }), null, ipendPoint_0);
+                }
+
+                return;
+            }
+            else
+            {
+                if (class35_0.enum3_0 == Enum3.Acknowledge)
+                {
+                    class35_0.class56_0.method_38(num, class35_0);
+                    return;
+                }
+
+                if (class35_0.enum3_0 != Enum3.System)
+                {
+                    class35_0.class56_0.method_32(class35_0);
+                    return;
+                }
+
+                if (num2 < 1)
+                {
+                    if ((instance.enum4_0 & (Enum4)256) == (Enum4)256)
+                    {
+                        instance.method_37((Enum4)256, "Received malformed system message; payload length less than 1 byte",
+                            null, ipendPoint_0);
+                    }
+
+                    return;
+                }
+
+                Enum11 enum3 = (Enum11)class35_0.class18_0.method_2();
+                Enum11 enum4 = enum3;
+                if (enum4 <= Enum11.Discovery)
+                {
+                    switch (enum4)
+                    {
+                        case Enum11.Connect:
+                        case Enum11.ConnectionEstablished:
+                        case Enum11.ConnectionRejected:
+                        case Enum11.Disconnect:
+                            goto IL_66C;
+                        case Enum11.ConnectResponse:
+                            if (instance.bool_3)
+                            {
+                                class35_0.class56_0.method_23(class35_0, num);
+                                return;
+                            }
+
+                            if ((instance.enum4_0 & (Enum4)256) == (Enum4)256)
+                            {
+                                instance.method_37((Enum4)256,
+                                    "Undefined behaviour for server and system type " + enum3.ToString(), null,
+                                    ipendPoint_0);
+                                return;
+                            }
+
+                            return;
+                        default:
+                            if (enum4 == Enum11.Discovery)
+                            {
+                                if (instance.class20_0.method_34())
+                                {
+                                    instance.class14_0.method_4(class35_0, ipendPoint_0);
+                                    return;
+                                }
+
+                                return;
+                            }
+
+                            break;
+                    }
+                }
+                else if (enum4 - Enum11.Ping <= 1 || enum4 == Enum11.StringTableAck)
+                {
+                    goto IL_66C;
+                }
+
+                if ((instance.enum4_0 & (Enum4)256) == (Enum4)256)
+                {
+                    instance.method_37((Enum4)256, "Undefined behaviour for server and system type " + enum3.ToString(),
+                        null, ipendPoint_0);
+                }
+
+                return;
+                IL_66C:
+                class35_0.class56_0.method_23(class35_0, num);
             }
         }
     }

@@ -109,6 +109,109 @@ namespace Fougerite.Patcher
             FacepunchMeshBatch.Write("Facepunch.MeshBatch.dll");
         }
 
+        private void PatchuLink2(ref AssemblyDefinition asm)
+        {
+            ModuleDefinition mod = asm.MainModule;
+
+            TypeDefinition Class1 = mod.GetType("Class1");
+            TypeDefinition Class0 = mod.GetType("Class0");
+            TypeDefinition Class33 = mod.GetType("Class33");
+            TypeDefinition Class35 = mod.GetType("Class35");
+            TypeDefinition Class56 = mod.GetType("Class56");
+            TypeDefinition Class18 = mod.GetType("Class18");
+            TypeDefinition Class23 = mod.GetType("Class23");
+            TypeDefinition Class20 = mod.GetType("Class20");
+            TypeDefinition Class58 = mod.GetType("Class58");
+            TypeDefinition Class14 = mod.GetType("Class14");
+            TypeDefinition Enum3 = mod.GetType("Enum3");
+            TypeDefinition Enum4 = mod.GetType("Enum4");
+            TypeDefinition Enum11 = mod.GetType("Enum11");
+            
+            MethodDefinition AntiDDos = hooksClass.GetMethod("AntiDDos");
+            MethodDefinition vmethod_2 = Class1.GetMethod("vmethod_2");
+
+            Class1.IsPublic = true;
+            Class0.IsPublic = true;
+            Class33.IsPublic = true;
+            Class35.IsPublic = true;
+            Class56.IsPublic = true;
+            Class18.IsPublic = true;
+            Class23.IsPublic = true;
+            Class20.IsPublic = true;
+            Class58.IsPublic = true;
+            Class14.IsPublic = true;
+            Enum3.IsPublic = true;
+            Enum4.IsPublic = true;
+            Enum11.IsPublic = true;
+            
+            Class33.Fields.First(f => f.Name == "class18_0").SetPublic(true);
+            Class33.Fields.First(f => f.Name == "enum3_0").SetPublic(true);
+            Class33.Fields.First(f => f.Name == "enum4_0").SetPublic(true);
+
+            Class35.Fields.First(f => f.Name == "class56_0").SetPublic(true);
+            Class35.Fields.First(f => f.Name == "ipendPoint_0").SetPublic(true);
+            
+            Class1.Fields.First(f => f.Name == "dictionary_1").SetPublic(true);
+            Class1.Fields.First(f => f.Name == "dictionary_0").SetPublic(true);
+            Class1.Fields.First(f => f.Name == "list_3").SetPublic(true);
+            Class1.Fields.First(f => f.Name == "bool_3").SetPublic(true);
+            
+            Class1.Methods.First(m => m.Name == "method_62").SetPublic(true);
+
+            Class0.Fields.First(f => f.Name == "class18_2").SetPublic(true);
+            Class0.Fields.First(f => f.Name == "class14_0").SetPublic(true);
+            Class0.Fields.First(f => f.Name == "byte_0").SetPublic(true);
+            Class0.Fields.First(f => f.Name == "class20_0").SetPublic(true);
+            Class0.Fields.First(f => f.Name == "enum4_0").SetPublic(true);
+            Class0.Methods.First(m => m.Name == "method_25").SetPublic(true);
+            Class0.Methods.First(m => m.Name == "method_37").SetPublic(true);
+            Class0.Methods.First(m => m.Name == "method_10").SetPublic(true);
+            Class0.Methods.First(m => m.Name == "method_26").SetPublic(true);
+            Class0.Methods.First(m => m.Name == "method_18").SetPublic(true);
+            Class0.Methods.First(m => m.Name == "method_8").SetPublic(true);
+
+            Class56.Fields.First(f => f.Name == "bool_0").SetPublic(true);
+            Class56.Methods.First(m => m.Name == "method_38").SetPublic(true);
+            Class56.Methods.First(m => m.Name == "method_32").SetPublic(true);
+            Class56.Methods.First(m => m.Name == "method_23").SetPublic(true);
+            
+            foreach (var ctor in Class56.Methods.Where(m => m.IsConstructor))
+            {
+                ctor.IsPublic = true;
+            }
+
+            Class18.Fields.First(f => f.Name == "byte_0").SetPublic(true);
+            Class18.Methods.First(m => m.Name == "method_2").SetPublic(true);
+            Class18.Methods.First(m => m.Name == "method_83").SetPublic(true);
+            Class18.Methods.First(m => m.Name == "method_27").SetPublic(true);
+            Class18.Methods.First(m => m.Name == "method_5").SetPublic(true);
+            Class18.Methods.First(m => m.Name == "method_9").SetPublic(true);
+            Class18.Methods.First(m => m.Name == "method_89").SetPublic(true);
+            Class18.Methods.First(m => m.Name == "method_36").SetPublic(true);
+            Class18.Methods.First(m => m.Name == "method_93").SetPublic(true);
+            Class18.Methods.First(m => m.Name == "method_58").SetPublic(true);
+
+            Class23.Methods.First(m => m.Name == "smethod_1").SetPublic(true);
+
+            Class20.Fields.First(f => f.Name == "int_4").SetPublic(true);
+            Class20.Methods.First(m => m.Name == "method_2").SetPublic(true);
+            Class20.Methods.First(m => m.Name == "method_34").SetPublic(true);
+
+            Class58.Methods.First(m => m.Name == "smethod_10").SetPublic(true);
+
+            Class14.Methods.First(m => m.Name == "method_4").SetPublic(true);
+            Class14.Methods.First(m => m.Name == "method_6").SetPublic(true);
+            
+            ILProcessor ilProcessor = vmethod_2.Body.GetILProcessor();
+            ilProcessor.Body.Instructions.Clear();
+            ilProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
+            ilProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
+            ilProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
+            ilProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Callvirt, 
+                asm.MainModule.Import(AntiDDos)));
+            ilProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
+        }
+
         private void uLinkLateUpdateInTryCatch()
         {
             AssemblyDefinition ulink = AssemblyDefinition.ReadAssembly("uLink.dll");
@@ -158,6 +261,8 @@ namespace Fougerite.Patcher
             method_338.SetPublic(true);
             MethodDefinition method_235 = Class48.GetMethod("method_235");
             method_235.SetPublic(true);
+    
+            MethodDefinition vmethod2 = Class1.GetMethod("vmethod_2");
 
             method_273.SetPublic(true);
 
@@ -373,6 +478,7 @@ namespace Fougerite.Patcher
             {
                 method_124.Body.Instructions.Remove(x);
             }*/
+            this.PatchuLink2(ref ulink);
             ulink.Write("uLink.dll");
         }
 
@@ -1985,28 +2091,37 @@ namespace Fougerite.Patcher
             }
             
             InstantiateNGC.Body.Instructions.Clear();
+            InstantiateNGC.Body.ExceptionHandlers.Clear();
+            InstantiateNGC.Body.Variables.Clear();
             InstantiateNGC.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             InstantiateNGC.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             InstantiateNGC.Body.Instructions.Add(Instruction.Create(OpCodes.Call, this.rustAssembly.MainModule.Import(InstantiateNGCHook)));
             InstantiateNGC.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
             
             DestroyByView.Body.Instructions.Clear();
+            DestroyByView.Body.ExceptionHandlers.Clear();
+            DestroyByView.Body.Variables.Clear();
             DestroyByView.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             DestroyByView.Body.Instructions.Add(Instruction.Create(OpCodes.Call, this.rustAssembly.MainModule.Import(DestroyByViewHook)));
             DestroyByView.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
             
             DestroyByNetworkId.Body.Instructions.Clear();
+            DestroyByNetworkId.Body.ExceptionHandlers.Clear();
+            DestroyByNetworkId.Body.Variables.Clear();
             DestroyByNetworkId.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             DestroyByNetworkId.Body.Instructions.Add(Instruction.Create(OpCodes.Call, this.rustAssembly.MainModule.Import(DestroyByNetworkIdHook)));
             DestroyByNetworkId.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
             
             DestroyByGameObject.Body.Instructions.Clear();
+            DestroyByGameObject.Body.ExceptionHandlers.Clear();
+            DestroyByGameObject.Body.Variables.Clear();
             DestroyByGameObject.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             DestroyByGameObject.Body.Instructions.Add(Instruction.Create(OpCodes.Call, this.rustAssembly.MainModule.Import(DestroyByGameObjectHook)));
             DestroyByGameObject.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
             
             Instantiated.Body.Instructions.Clear();
             Instantiated.Body.ExceptionHandlers.Clear();
+            Instantiated.Body.Variables.Clear();
             Instantiated.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             Instantiated.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             Instantiated.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
