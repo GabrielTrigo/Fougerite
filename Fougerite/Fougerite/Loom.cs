@@ -95,6 +95,14 @@ namespace Fougerite
         {
             try
             {
+                var utils = Util.GetUtil();
+                // If we are already on the main thread, just execute the action.
+                if (utils.MainThreadID == utils.CurrentWorkingThreadID)
+                {
+                    action();
+                    return;
+                }
+                
                 if (time != 0)
                 {
                     lock (Current._delayed)

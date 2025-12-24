@@ -4,6 +4,7 @@ using System.Timers;
 
 namespace Fougerite.Events
 {
+    [Obsolete("Do not use", false)]
     public class ExtendedTimedEvent
     {
         private Dictionary<string, object> _args;

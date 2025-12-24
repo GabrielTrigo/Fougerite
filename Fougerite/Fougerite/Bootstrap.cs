@@ -17,7 +17,7 @@ namespace Fougerite
         /// <summary>
         /// Returns the Current Fougerite Version
         /// </summary>
-        public const string Version = "1.8.4";
+        public const string Version = "1.8.5";
         /// <summary>
         /// This value decides whether we should remove the player classes from the cache upon disconnect.
         /// </summary>
@@ -300,7 +300,9 @@ namespace Fougerite
             _timergo = new GameObject();
             _timergo.AddComponent<CTimerHandler>();
             DontDestroyOnLoad(_timergo);
+#pragma warning disable CS0618 // Type or member is obsolete
             CTimer.StartWatching();
+#pragma warning restore CS0618 // Type or member is obsolete
             
             // Initialize sqlite
             SQLiteConnector.GetInstance.Setup();

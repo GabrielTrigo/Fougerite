@@ -26,7 +26,7 @@ namespace Fougerite.PluginLoaders
         public string Version;
 
         /// <summary>
-        /// Makes pluginloader ignore this plugin at 'pluton.reload'.
+        /// Makes pluginloader ignore this plugin at 'fougerite.reload'.
         /// </summary>
         public bool DontReload = false;
 
@@ -94,7 +94,6 @@ namespace Fougerite.PluginLoaders
         /// Initializes a new instance of the <see cref="BasePlugin"/> class.
         /// </summary>
         /// <param name="name">Name.</param>
-        /// <param name="code">Code.</param>
         /// <param name="rootdir">RootDir.</param>
         public BasePlugin(string name, DirectoryInfo rootdir)
         {
@@ -446,8 +445,17 @@ namespace Fougerite.PluginLoaders
             TimedEvent timedEvent = GetTimer(name);
             if (timedEvent == null)
             {
-                timedEvent = new TimedEvent(name, timeoutDelay, autoReset);
+                GameObject go = new GameObject($"TimedEvent_{name}_{UnityEngine.Random.Range(1, 999999)}");
+                UnityEngine.Object.DontDestroyOnLoad(go);
+                timedEvent = go.AddComponent<TimedEvent>();
+        
+                timedEvent.Name = name;
+                timedEvent.PluginName = Name;
+                timedEvent.Interval = timeoutDelay;
+                timedEvent.AutoReset = autoReset;
                 timedEvent.OnFire += OnTimerCB;
+                timedEvent.OnKilled += (cbName) => Timers.Remove(name);
+        
                 Timers.Add(name, timedEvent);
             }
 
@@ -467,13 +475,23 @@ namespace Fougerite.PluginLoaders
             TimedEvent timedEvent = GetTimer(name);
             if (timedEvent == null)
             {
-                timedEvent = new TimedEvent(name, timeoutDelay, autoReset);
+                GameObject go = new GameObject($"TimedEvent_{name}_{UnityEngine.Random.Range(1, 999999)}");
+                UnityEngine.Object.DontDestroyOnLoad(go);
+                timedEvent = go.AddComponent<TimedEvent>();
+        
+                timedEvent.Name = name;
+                timedEvent.PluginName = Name;
+                timedEvent.Interval = timeoutDelay;
+                timedEvent.AutoReset = autoReset;
                 timedEvent.OnFire += new TimedEvent.TimedEventFireDelegate(callback);
+                timedEvent.OnKilled += (cbName) => Timers.Remove(cbName);
+        
                 Timers.Add(name, timedEvent);
             }
 
             return timedEvent;
         }
+
 
         /// <summary>
         /// Creates a timer.
@@ -488,14 +506,23 @@ namespace Fougerite.PluginLoaders
             TimedEvent timedEvent = GetTimer(name);
             if (timedEvent == null)
             {
-                timedEvent = new TimedEvent(name, timeoutDelay, autoReset);
+                GameObject go = new GameObject($"TimedEvent_{name}_{UnityEngine.Random.Range(1, 999999)}");
+                UnityEngine.Object.DontDestroyOnLoad(go);
+                timedEvent = go.AddComponent<TimedEvent>();
+
+                timedEvent.Name = name;
+                timedEvent.PluginName = Name;
+                timedEvent.Interval = timeoutDelay;
                 timedEvent.Args = args;
+                timedEvent.AutoReset = autoReset;
                 timedEvent.OnFire += OnTimerCB;
+                timedEvent.OnKilled += (cbName) => Timers.Remove(cbName);
                 Timers.Add(name, timedEvent);
             }
 
             return timedEvent;
         }
+
 
         /// <summary>
         /// Creates a timer.
@@ -512,9 +539,17 @@ namespace Fougerite.PluginLoaders
             TimedEvent timedEvent = GetTimer(name);
             if (timedEvent == null)
             {
-                timedEvent = new TimedEvent(name, timeoutDelay, autoReset);
+                GameObject go = new GameObject($"TimedEvent_{name}_{UnityEngine.Random.Range(1, 999999)}");
+                UnityEngine.Object.DontDestroyOnLoad(go);
+                timedEvent = go.AddComponent<TimedEvent>();
+
+                timedEvent.Name = name;
+                timedEvent.PluginName = Name;
+                timedEvent.Interval = timeoutDelay;
                 timedEvent.Args = args;
+                timedEvent.AutoReset = autoReset;
                 timedEvent.OnFire += new TimedEvent.TimedEventFireDelegate(callback);
+                timedEvent.OnKilled += (cbName) => Timers.Remove(cbName);
                 Timers.Add(name, timedEvent);
             }
 
@@ -575,9 +610,18 @@ namespace Fougerite.PluginLoaders
         /// <param name="autoReset">True if the timer should raise the elapsed event each time it elapses, false if only once.</param>
         public TimedEvent CreateParallelTimer(string name, int timeoutDelay, Dictionary<string, object> args, bool autoReset = false)
         {
-            TimedEvent timedEvent = new TimedEvent(name, timeoutDelay, autoReset);
+            GameObject go = new GameObject($"ParallelTimedEvent_{name}_{UnityEngine.Random.Range(1, 999999)}");
+            UnityEngine.Object.DontDestroyOnLoad(go);
+            TimedEvent timedEvent = go.AddComponent<TimedEvent>();
+
+            timedEvent.Name = name;
+            timedEvent.PluginName = Name;
+            timedEvent.Interval = timeoutDelay;
             timedEvent.Args = args;
+            timedEvent.AutoReset = autoReset;
             timedEvent.OnFire += OnTimerCB;
+            timedEvent.OnKilled += (cbName) => Timers.Remove(cbName);
+    
             ParallelTimers.Add(timedEvent);
             return timedEvent;
         }
@@ -594,9 +638,18 @@ namespace Fougerite.PluginLoaders
         public TimedEvent CreateParallelTimer(string name, int timeoutDelay, Dictionary<string, object> args,
             Action<TimedEvent> callback, bool autoReset = false)
         {
-            TimedEvent timedEvent = new TimedEvent(name, timeoutDelay, autoReset);
+            GameObject go = new GameObject($"ParallelTimedEvent_{name}_{UnityEngine.Random.Range(1, 999999)}");
+            UnityEngine.Object.DontDestroyOnLoad(go);
+            TimedEvent timedEvent = go.AddComponent<TimedEvent>();
+
+            timedEvent.Name = name;
+            timedEvent.PluginName = Name;
+            timedEvent.Interval = timeoutDelay;
             timedEvent.Args = args;
+            timedEvent.AutoReset = autoReset;
             timedEvent.OnFire += new TimedEvent.TimedEventFireDelegate(callback);
+            timedEvent.OnKilled += (cbName) => Timers.Remove(cbName);
+    
             ParallelTimers.Add(timedEvent);
             return timedEvent;
         }

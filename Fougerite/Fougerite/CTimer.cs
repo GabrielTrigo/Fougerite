@@ -9,7 +9,9 @@ namespace Fougerite
     {
         private void FixedUpdate()
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             CTimer.OnUpdate();
+#pragma warning restore CS0618 // Type or member is obsolete
         }
     }
     
@@ -44,6 +46,7 @@ namespace Fougerite
     /// <summary>
     /// Sorted list of timers.
     /// </summary>
+    [Obsolete("Use BasePlugin/Module Timer functions", false)]
     public class CTimer
     {
         private static readonly List<CTimer> timer = new List<CTimer>();
