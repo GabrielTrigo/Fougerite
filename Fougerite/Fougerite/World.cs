@@ -137,7 +137,6 @@ namespace Fougerite
                 }
                 target.y = original.y + rand.Next(-5, 20) * 20;
                 SupplyDropZone.CallAirDropAt(target);
-                Hooks.Airdrop(target);
                 Jitter(ref target);
             }
         }

@@ -1409,26 +1409,25 @@ namespace Fougerite.Patcher
         private void AirdropPatch()
         {
             TypeDefinition SupplyDropZone = rustAssembly.MainModule.GetType("SupplyDropZone");
-            MethodDefinition GetRandomTargetPos = SupplyDropZone.GetMethod("GetRandomTargetPos");
-            this.CloneMethod(GetRandomTargetPos);
-
-            int Position = GetRandomTargetPos.Body.Instructions.Count - 1;
-
-            MethodDefinition method = hooksClass.GetMethod("Airdrop2");
-            ILProcessor iLProcessor = GetRandomTargetPos.Body.GetILProcessor();
-            iLProcessor.InsertBefore(GetRandomTargetPos.Body.Instructions[Position],
-                Instruction.Create(OpCodes.Callvirt, this.rustAssembly.MainModule.Import(method)));
-            iLProcessor.InsertBefore(GetRandomTargetPos.Body.Instructions[Position], Instruction.Create(OpCodes.Ldloc_0));
-
+            MethodDefinition CallAirDropAt = SupplyDropZone.GetMethod("CallAirDropAt");
+            MethodDefinition Airdrop = hooksClass.GetMethod("Airdrop");
+            
+            ILProcessor iLProcessorCallAirDropAt = CallAirDropAt.Body.GetILProcessor();
+            iLProcessorCallAirDropAt.Body.Instructions.Clear();
+            iLProcessorCallAirDropAt.Body.Variables.Clear();
+            iLProcessorCallAirDropAt.Body.ExceptionHandlers.Clear();
+            iLProcessorCallAirDropAt.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
+            iLProcessorCallAirDropAt.Body.Instructions.Add(Instruction.Create(OpCodes.Callvirt, this.rustAssembly.MainModule.Import(Airdrop)));
+            iLProcessorCallAirDropAt.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
 
             TypeDefinition SupplyDropPlane = rustAssembly.MainModule.GetType("SupplyDropPlane");
             MethodDefinition DropCrate = SupplyDropPlane.GetMethod("DropCrate");
-            method = hooksClass.GetMethod("AirdropCrateDropped");
+            MethodDefinition AirdropCrateDropped = hooksClass.GetMethod("AirdropCrateDropped");
             
-            iLProcessor = DropCrate.Body.GetILProcessor();
+            ILProcessor iLProcessor = DropCrate.Body.GetILProcessor();
             iLProcessor.Body.Instructions.Clear();
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
-            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Callvirt, this.rustAssembly.MainModule.Import(method)));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Callvirt, this.rustAssembly.MainModule.Import(AirdropCrateDropped)));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
             
             MethodDefinition SupplyDropPlaneConstructor = null;
@@ -1441,12 +1440,12 @@ namespace Fougerite.Patcher
                 }
             }
             
-            Position = SupplyDropPlaneConstructor.Body.Instructions.Count - 1;
+            int Position = SupplyDropPlaneConstructor.Body.Instructions.Count - 1;
 
-            method = hooksClass.GetMethod("SupplyDropPlaneCreated");
+            MethodDefinition SupplyDropPlaneCreated = hooksClass.GetMethod("SupplyDropPlaneCreated");
             iLProcessor = SupplyDropPlaneConstructor.Body.GetILProcessor();
             iLProcessor.InsertBefore(SupplyDropPlaneConstructor.Body.Instructions[Position],
-                Instruction.Create(OpCodes.Callvirt, this.rustAssembly.MainModule.Import(method)));
+                Instruction.Create(OpCodes.Callvirt, this.rustAssembly.MainModule.Import(SupplyDropPlaneCreated)));
             iLProcessor.InsertBefore(SupplyDropPlaneConstructor.Body.Instructions[Position], Instruction.Create(OpCodes.Ldarg_0));
         }
 

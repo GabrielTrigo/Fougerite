@@ -104,7 +104,7 @@ namespace Fougerite.PluginLoaders
                 Engine.SetValue("PluginCollector", GlobalPluginCollector.GetPluginCollector());
 #pragma warning restore 618
                 Engine.SetValue("Loom", Loom.Current);
-                Engine.SetValue("JSON", JsonAPI.GetInstance);
+                Engine.SetValue("JSONAPI", JsonAPI.GetInstance);
                 Engine.SetValue("MySQL", MySQLConnector.GetInstance);
                 Engine.SetValue("SQLite", SQLiteConnector.GetInstance);
                 Engine.SetValue("PermissionSystem", PermissionSystem.GetPermissionSystem());

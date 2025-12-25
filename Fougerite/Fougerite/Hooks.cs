@@ -1847,22 +1847,15 @@ namespace Fougerite
             {
                 try
                 {
+                    Vector3 vector3_1 = v;
+                    float num = 20f * NetCull.LoadPrefab("C130").GetComponent<SupplyDropPlane>().maxSpeed;
+                    Vector3 vector3_2 = vector3_1 + SupplyDropZone.RandomDirectionXZ() * num;
+                    Vector3 pos = vector3_1 + new Vector3(0.0f, 300f, 0.0f);
+                    Vector3 position = vector3_2 + new Vector3(0.0f, 400f, 0.0f);
+                    Quaternion rotation = Quaternion.LookRotation((pos - position).normalized);
+                    NetCull.InstantiateClassic("C130", position, rotation, 0).GetComponent<SupplyDropPlane>().SetDropTarget(pos);
+                    
                     ExecuteSubscribers(OnAirdropCalled, "AirdropEvent", v);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError($"AirdropEvent Error: {ex}");
-                }
-            }
-        }
-
-        public static void Airdrop2(SupplyDropZone srz)
-        {
-            using (new Stopper(nameof(Hooks), nameof(Airdrop2)))
-            {
-                try
-                {
-                    ExecuteSubscribers(OnAirdropCalled, "AirdropEvent", srz.GetSupplyTargetPosition());
                 }
                 catch (Exception ex)
                 {
