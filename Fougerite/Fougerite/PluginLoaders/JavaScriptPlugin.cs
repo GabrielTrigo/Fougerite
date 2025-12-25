@@ -41,7 +41,7 @@ namespace Fougerite.PluginLoaders
                 ICallable callable;
                 if (State == PluginState.Loaded && CallableGlobals.TryGetValue(func, out callable))
                 {
-                    using (new Stopper(string.Format("{0} {1}", Type, Name), func))
+                    using (new Stopper($"{Type} {Name}", func))
                     {
                         var jsArgs = args != null
                             ? args.Select(x => JsValue.FromObject(Engine, x)).ToArray()
