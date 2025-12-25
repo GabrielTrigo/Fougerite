@@ -47,5 +47,28 @@ namespace Fougerite.Tools
             component = tComponent;
             return true;
         }
+        
+        /// <summary>
+        /// Checks if a string is null or consists only of white-space characters.
+        /// </summary>
+        /// <param name="value">Input.</param>
+        /// <returns></returns>
+        public static bool IsNullOrWhiteSpace(this string value)
+        {
+            if (value == null)
+            {
+                return true;
+            }
+
+            for (int i = 0; i < value.Length; i++)
+            {
+                if (!char.IsWhiteSpace(value[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }

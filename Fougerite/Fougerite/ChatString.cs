@@ -1,4 +1,5 @@
 ﻿using System;
+using Fougerite.Tools;
 
 namespace Fougerite
 {
@@ -43,7 +44,7 @@ namespace Fougerite
                     return;
                 }
                 // Rust doesn't like empty strings on chat
-                if (string.IsNullOrEmpty(value))
+                if (value == null || string.IsNullOrEmpty(value) || value.IsNullOrWhiteSpace())
                 {
                     _cancelled = true;
                     _ntext = "          ";
