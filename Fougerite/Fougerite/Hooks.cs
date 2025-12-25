@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Text.RegularExpressions;
+using Fougerite.Tools;
 using Debug = UnityEngine.Debug;
 
 namespace Fougerite
@@ -173,7 +174,7 @@ namespace Fougerite
                     }
 
                     // Check for empty text
-                    if (string.IsNullOrEmpty(chatstr.NewText))
+                    if (string.IsNullOrEmpty(chatstr.NewText) || chatstr.NewText.IsNullOrWhiteSpace())
                     {
                         return;
                     }
@@ -183,7 +184,7 @@ namespace Fougerite
                         .Replace("\\\"", "\"");
 
                     // Check for empty text again
-                    if (string.IsNullOrEmpty(newchat))
+                    if (string.IsNullOrEmpty(newchat) || newchat.IsNullOrWhiteSpace())
                     {
                         return;
                     }

@@ -127,7 +127,7 @@
     <Reference Include="IronPython.Modules, Version=2.7.7.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1">
       <HintPath>References\FougeriteExtraReferences\IronPython.Modules.dll</HintPath>
     </Reference>
-    <Reference Include="Jint, Version=0.9.3.0, Culture=neutral, PublicKeyToken=973cde3f1cafed03">
+    <Reference Include="Jint">
       <HintPath>References\FougeriteExtraReferences\Jint.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Dynamic, Version=1.1.2.22, Culture=neutral, PublicKeyToken=7f709c5b713576e1">
