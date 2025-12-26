@@ -201,17 +201,21 @@ namespace Fougerite.Caches
                 {
                     cookie = _lock.UpgradeToWriterLock(Timeout.Infinite);
                     
-                    // Try to safely create the entity (This should never throw errors though, but just in case)
-                    try
+                    // Double check after upgrading the lock
+                    if (!_allEntities.TryGetValue(instanceId, out entity))
                     {
-                        entity = new Entity(component);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError($"[{nameof(EntityCache)}] Failed to allocate entity. Error: {ex}");
+                        // Try to safely create the entity (This should never throw errors though, but just in case)
+                        try
+                        {
+                            entity = new Entity(component);
+                            _allEntities[instanceId] = entity;
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogError($"[{nameof(EntityCache)}] Failed to allocate entity. Error: {ex}");
+                        }
                     }
 
-                    _allEntities[instanceId] = entity;
                     _lock.DowngradeFromWriterLock(ref cookie);
                 }
             }
@@ -219,8 +223,16 @@ namespace Fougerite.Caches
             {
                 // Sanity check, thread id should never be negative.
                 // If this is a negative number, we had an upgrade to the lock which we need to downgrade.
-                if (cookie.ThreadId != int.MinValue)
-                    _lock.DowngradeFromWriterLock(ref cookie);
+                try
+                {
+                    if (cookie.ThreadId != int.MinValue)
+                        _lock.DowngradeFromWriterLock(ref cookie);
+                }
+                catch (Exception)
+                {
+                    // Ignore... Should NEVER happen.
+                }
+
                 Logger.LogError($"[{nameof(EntityCache)}] Failed to get the entity from list. Error: {ex}");
             }
             finally
