@@ -73,7 +73,6 @@ namespace Fougerite.Events
         /// <summary>
         /// Returns the last user who set the FireBarrel on or off.
         /// May be null.
-        /// May be different from CurrentUser.
         /// </summary>
         public Player LastUser
         {
