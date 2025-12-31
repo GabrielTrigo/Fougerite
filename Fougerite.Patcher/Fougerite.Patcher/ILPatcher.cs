@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace Fougerite.Patcher
 {
@@ -72,12 +73,16 @@ namespace Fougerite.Patcher
             
             ILProcessor iLProcessor = AddWildlifeInstance.Body.GetILProcessor();
             iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(AddWildlifeInstanceHook)));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
             
             ILProcessor iLProcessor2 = RemoveWildlifeInstance.Body.GetILProcessor();
             iLProcessor2.Body.Instructions.Clear();
+            iLProcessor2.Body.ExceptionHandlers.Clear();
+            iLProcessor2.Body.Variables.Clear();
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(RemoveWildlifeInstanceHook)));
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
@@ -94,6 +99,8 @@ namespace Fougerite.Patcher
             
             ILProcessor ilProcessor = ActivateImmediatelyUnchecked.Body.GetILProcessor();
             ilProcessor.Body.Instructions.Clear();
+            ilProcessor.Body.ExceptionHandlers.Clear();
+            ilProcessor.Body.Variables.Clear();
             ilProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             ilProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Callvirt, 
                 FacepunchMeshBatch.MainModule.Import(ActivateImmediatelyUncheckedHook)));
@@ -204,6 +211,8 @@ namespace Fougerite.Patcher
             
             ILProcessor ilProcessor = vmethod_2.Body.GetILProcessor();
             ilProcessor.Body.Instructions.Clear();
+            ilProcessor.Body.ExceptionHandlers.Clear();
+            ilProcessor.Body.Variables.Clear();
             ilProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             ilProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             ilProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -356,6 +365,8 @@ namespace Fougerite.Patcher
             MethodDefinition uLinkAuthorizationCheck = hooksClass.GetMethod("uLinkAuthorizationCheck");
             ILProcessor iLProcessor273 = method_273.Body.GetILProcessor();
             iLProcessor273.Body.Instructions.Clear();
+            iLProcessor273.Body.ExceptionHandlers.Clear();
+            iLProcessor273.Body.Variables.Clear();
             iLProcessor273.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor273.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor273.Body.Instructions.Add(Instruction.Create(OpCodes.Callvirt, ulink.MainModule.Import(uLinkAuthorizationCheck)));
@@ -436,12 +447,16 @@ namespace Fougerite.Patcher
             MethodDefinition method2 = hooksClass.GetMethod("RPCFix");
             ILProcessor iLProcessor = method_435.Body.GetILProcessor();
             iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Callvirt, ulink.MainModule.Import(method)));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
 
             method_275.Body.Instructions.Clear();
+            method_275.Body.ExceptionHandlers.Clear();
+            method_275.Body.Variables.Clear();
             method_275.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             method_275.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             method_275.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -478,6 +493,7 @@ namespace Fougerite.Patcher
             {
                 method_124.Body.Instructions.Remove(x);
             }*/
+            this.PatchuLink(ref ulink);
             this.PatchuLink2(ref ulink);
             ulink.Write("uLink.dll");
         }
@@ -599,6 +615,8 @@ namespace Fougerite.Patcher
             MethodDefinition method = hooksClass.GetMethod("SetLooter");
             ILProcessor iLProcessor = SetLooter.Body.GetILProcessor();
             iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Callvirt, this.rustAssembly.MainModule.Import(method)));
@@ -621,6 +639,8 @@ namespace Fougerite.Patcher
             MethodDefinition method2 = hooksClass.GetMethod("OnUseEnter");
             ILProcessor iLProcessor2 = OnUseEnter.Body.GetILProcessor();
             iLProcessor2.Body.Instructions.Clear();
+            iLProcessor2.Body.ExceptionHandlers.Clear();
+            iLProcessor2.Body.Variables.Clear();
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Callvirt, this.rustAssembly.MainModule.Import(method2)));
@@ -651,6 +671,8 @@ namespace Fougerite.Patcher
 
             ILProcessor iLProcessor = TryCombine.Body.GetILProcessor();
             iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, this.rustAssembly.MainModule.Import(method)));
@@ -704,6 +726,8 @@ namespace Fougerite.Patcher
             {
                 MethodDefinition method = hooksClass.GetMethod("FGSlotOperation");
                 SlotOperation.Body.Instructions.Clear();
+                SlotOperation.Body.ExceptionHandlers.Clear();
+                SlotOperation.Body.Variables.Clear();
                 SlotOperation.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
                 SlotOperation.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
                 SlotOperation.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -733,6 +757,8 @@ namespace Fougerite.Patcher
             MethodDefinition CRFSHook = hooksClass.GetMethod("CRFSHook");
             
             CRFS.Body.Instructions.Clear();
+            CRFS.Body.ExceptionHandlers.Clear();
+            CRFS.Body.Variables.Clear();
             CRFS.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             CRFS.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             CRFS.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -741,6 +767,8 @@ namespace Fougerite.Patcher
             CRFS.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
             
             SVUC.Body.Instructions.Clear();
+            SVUC.Body.ExceptionHandlers.Clear();
+            SVUC.Body.Variables.Clear();
             SVUC.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             SVUC.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             SVUC.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -748,6 +776,8 @@ namespace Fougerite.Patcher
             SVUC.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
             
             ITSM.Body.Instructions.Clear();
+            ITSM.Body.ExceptionHandlers.Clear();
+            ITSM.Body.Variables.Clear();
             ITSM.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             ITSM.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             ITSM.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -757,6 +787,8 @@ namespace Fougerite.Patcher
             ITSM.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
             
             ITMV.Body.Instructions.Clear();
+            ITMV.Body.ExceptionHandlers.Clear();
+            ITMV.Body.Variables.Clear();
             ITMV.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             ITMV.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             ITMV.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -766,6 +798,8 @@ namespace Fougerite.Patcher
             ITMV.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
             
             ITMG.Body.Instructions.Clear();
+            ITMG.Body.ExceptionHandlers.Clear();
+            ITMG.Body.Variables.Clear();
             ITMG.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             ITMG.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             ITMG.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -776,6 +810,8 @@ namespace Fougerite.Patcher
             ITMG.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
             
             ISMV.Body.Instructions.Clear();
+            ISMV.Body.ExceptionHandlers.Clear();
+            ISMV.Body.Variables.Clear();
             ISMV.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             ISMV.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             ISMV.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -784,6 +820,8 @@ namespace Fougerite.Patcher
             ISMV.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
             
             ITSP.Body.Instructions.Clear();
+            ITSP.Body.ExceptionHandlers.Clear();
+            ITSP.Body.Variables.Clear();
             ITSP.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             ITSP.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             ITSP.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -791,6 +829,8 @@ namespace Fougerite.Patcher
             ITSP.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
             
             IACT.Body.Instructions.Clear();
+            IACT.Body.ExceptionHandlers.Clear();
+            IACT.Body.Variables.Clear();
             IACT.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             IACT.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             IACT.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -799,6 +839,8 @@ namespace Fougerite.Patcher
             IACT.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
             
             IAST.Body.Instructions.Clear();
+            IAST.Body.ExceptionHandlers.Clear();
+            IAST.Body.Variables.Clear();
             IAST.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             IAST.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             IAST.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -814,6 +856,8 @@ namespace Fougerite.Patcher
             MethodDefinition CompleteRepair = type.GetMethod("CompleteRepair");
             MethodDefinition method = hooksClass.GetMethod("FGCompleteRepair");
             CompleteRepair.Body.Instructions.Clear();
+            CompleteRepair.Body.ExceptionHandlers.Clear();
+            CompleteRepair.Body.Variables.Clear();
             CompleteRepair.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             CompleteRepair.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             CompleteRepair.Body.Instructions.Add(Instruction.Create(OpCodes.Call, this.rustAssembly.MainModule.Import(method)));
@@ -1132,6 +1176,8 @@ namespace Fougerite.Patcher
             this.CloneMethod(RecieveNetwork);
             Array a = RecieveNetwork.Parameters.ToArray();
             RecieveNetwork.Body.Instructions.Clear();
+            RecieveNetwork.Body.ExceptionHandlers.Clear();
+            RecieveNetwork.Body.Variables.Clear();
             RecieveNetwork.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             foreach (ParameterDefinition p in a)
             {
@@ -1156,6 +1202,8 @@ namespace Fougerite.Patcher
             
             ILProcessor iLProcessor = PlayerUse.Body.GetILProcessor();
             iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(method)));
@@ -1183,11 +1231,140 @@ namespace Fougerite.Patcher
             MethodDefinition flo = FallDamage.GetMethod("fIo");
             ILProcessor iLProcessor2 = flo.Body.GetILProcessor();
             iLProcessor2.Body.Instructions.Clear();
+            iLProcessor2.Body.ExceptionHandlers.Clear();
+            iLProcessor2.Body.Variables.Clear();
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(FallDamageCheck)));
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
 
+        }
+
+        private void FurnacePatch()
+        {
+            TypeDefinition FireBarrel = rustAssembly.MainModule.GetType("FireBarrel");
+            MethodDefinition SetOn = FireBarrel.GetMethod("SetOn");
+            MethodDefinition UpdateNetState = FireBarrel.GetMethod("UpdateNetState");
+            MethodDefinition GetCookDuration = FireBarrel.GetMethod("GetCookDuration");
+            MethodDefinition FireBarrelSetOn = hooksClass.GetMethod("FireBarrelSetOn");
+            MethodDefinition PlayerUse = FireBarrel.GetMethod("PlayerUse");
+
+            FireBarrel.GetField("_deployable").SetPublic(true);
+            FireBarrel.GetField("_lightFlickerTarget").SetPublic(true);
+            FireBarrel.GetField("_lightIntensityInitial").SetPublic(true);
+            UpdateNetState.SetPublic(true);
+            GetCookDuration.SetPublic(true);
+            
+            // Add a new field to store the last controllable user
+            FieldDefinition lastUserField = new FieldDefinition("lastControllableUser", 
+                FieldAttributes.Public, 
+                rustAssembly.MainModule.GetType("Controllable"));
+            FireBarrel.Fields.Add(lastUserField);
+            
+            ILProcessor playerUseIL = PlayerUse.Body.GetILProcessor();
+    
+            // Insert at beginning: this._lastControllableUser = looter;
+            Instruction firstInstr = playerUseIL.Body.Instructions[0];
+            playerUseIL.InsertBefore(firstInstr, Instruction.Create(OpCodes.Ldarg_0));
+            playerUseIL.InsertBefore(firstInstr, Instruction.Create(OpCodes.Ldarg_1));
+            playerUseIL.InsertBefore(firstInstr, Instruction.Create(OpCodes.Stfld, lastUserField));
+            
+            ILProcessor iLProcessor = SetOn.Body.GetILProcessor();
+            iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(FireBarrelSetOn)));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
+        }
+
+        private void PatchFireBarrelActTrigger()
+        {
+            TypeDefinition fireBarrelType = rustAssembly.MainModule.GetType("FireBarrel");
+            TypeDefinition characterType = rustAssembly.MainModule.GetType("Character");
+            
+            PropertyDefinition controllableProperty =
+                characterType.Properties.First(p => p.Name == "controllable");
+
+            MethodReference getterRef = rustAssembly.MainModule.Import(controllableProperty.GetMethod);
+            
+            MethodDefinition actTrigger = fireBarrelType.Methods.First(m =>
+                m.Name == "ActTrigger" && m.Parameters.Count == 3);
+
+            ILProcessor processor = actTrigger.Body.GetILProcessor();
+            var instructions = actTrigger.Body.Instructions;
+            
+            var targetIndices = new List<int>();
+            for (int i = 0; i < instructions.Count; i++)
+            {
+                if (instructions[i].OpCode == OpCodes.Call && instructions[i].Operand.ToString().Contains("PlayerUse"))
+                {
+                    if (i > 0 && instructions[i - 1].OpCode == OpCodes.Ldnull)
+                    {
+                        targetIndices.Add(i);
+                    }
+                }
+            }
+            
+            foreach (int callIdx in targetIndices.OrderByDescending(x => x))
+            {
+                Instruction callInstr = instructions[callIdx];
+                Instruction oldLdNull = instructions[callIdx - 1];
+                
+                Instruction loadForCheck = processor.Create(OpCodes.Ldarg_1);
+                Instruction loadForGetter = processor.Create(OpCodes.Ldarg_1);
+                Instruction callGetter = processor.Create(OpCodes.Callvirt, getterRef);
+                Instruction pushNull = processor.Create(OpCodes.Ldnull);
+                
+                Instruction jumpToGetter = processor.Create(OpCodes.Brtrue_S, loadForGetter);
+                Instruction jumpToCall = processor.Create(OpCodes.Br_S, callInstr);
+                
+                processor.Replace(oldLdNull, loadForCheck);
+                
+                processor.InsertAfter(loadForCheck, jumpToGetter);
+                processor.InsertAfter(jumpToGetter, pushNull);
+                processor.InsertAfter(pushNull, jumpToCall);
+                processor.InsertAfter(jumpToCall, loadForGetter);
+                processor.InsertAfter(loadForGetter, callGetter);
+            }
+        }
+
+        private void PatchFireBarrelContextRespond()
+        {
+            TypeDefinition fireBarrelType = rustAssembly.MainModule.GetType("FireBarrel");
+
+            FieldReference lastUserField = fireBarrelType.Fields.First(f => f.Name == "lastControllableUser");
+
+            MethodDefinition contextMethod = fireBarrelType.Methods.First(m =>
+                m.Name == "ContextRespond_SetFireBarrelOn");
+
+            ILProcessor processor = contextMethod.Body.GetILProcessor();
+            var instructions = contextMethod.Body.Instructions;
+
+            for (int i = 0; i < instructions.Count; i++)
+            {
+                if (instructions[i].OpCode == OpCodes.Callvirt &&
+                    instructions[i].Operand.ToString().Contains("TrySetOn"))
+                {
+                    Instruction targetInstr = instructions[i - 4];
+
+                    if (targetInstr.OpCode == OpCodes.Ldarg_0)
+                    {
+                        Instruction ldThis = processor.Create(OpCodes.Ldarg_0);
+                        Instruction ldControllable = processor.Create(OpCodes.Ldarg_1);
+
+                        Instruction assignInstr = processor.Create(OpCodes.Stfld,
+                            rustAssembly.MainModule.Import(lastUserField));
+
+                        processor.InsertBefore(targetInstr, ldThis);
+                        processor.InsertBefore(targetInstr, ldControllable);
+                        processor.InsertBefore(targetInstr, assignInstr);
+
+                        break; // We only need to patch this once
+                    }
+                }
+            }
         }
 
         private void HumanControllerPatch()
@@ -1377,6 +1554,8 @@ namespace Fougerite.Patcher
             MethodDefinition AssignItem = Payload.GetMethod("AssignItem");
             ILProcessor iLProcessorASS = AssignItem.Body.GetILProcessor();
             iLProcessorASS.Body.Instructions.Clear();
+            iLProcessorASS.Body.ExceptionHandlers.Clear();
+            iLProcessorASS.Body.Variables.Clear();
             iLProcessorASS.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessorASS.Body.Instructions.Add(Instruction.Create(OpCodes.Callvirt, this.rustAssembly.MainModule.Import(ADDHOOK)));
             iLProcessorASS.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
@@ -1398,6 +1577,8 @@ namespace Fougerite.Patcher
             
             ILProcessor iLProcessorREM = RemoveItem.Body.GetILProcessor();
             iLProcessorREM.Body.Instructions.Clear();
+            iLProcessorREM.Body.ExceptionHandlers.Clear();
+            iLProcessorREM.Body.Variables.Clear();
             iLProcessorREM.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessorREM.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessorREM.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -1426,6 +1607,8 @@ namespace Fougerite.Patcher
             
             ILProcessor iLProcessor = DropCrate.Body.GetILProcessor();
             iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Callvirt, this.rustAssembly.MainModule.Import(AirdropCrateDropped)));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
@@ -1457,6 +1640,8 @@ namespace Fougerite.Patcher
             this.CloneMethod(DenyAccess);
             MethodDefinition method = hooksClass.GetMethod("SteamDeny");
             iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -1473,6 +1658,8 @@ namespace Fougerite.Patcher
             this.CloneMethod(uLink_OnPlayerApproval);
             MethodDefinition method = hooksClass.GetMethod("PlayerApproval");
             iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Callvirt, this.rustAssembly.MainModule.Import(method)));
@@ -1613,6 +1800,8 @@ namespace Fougerite.Patcher
             MethodDefinition CheckPlacement = type.GetMethod("CheckPlacement");
             ILProcessor iLProcessor2 = CheckPlacement.Body.GetILProcessor();
             iLProcessor2.Body.Instructions.Clear();
+            iLProcessor2.Body.ExceptionHandlers.Clear();
+            iLProcessor2.Body.Variables.Clear();
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -1642,6 +1831,8 @@ namespace Fougerite.Patcher
 
             this.CloneMethod(orig);
             orig.Body.Instructions.Clear();
+            orig.Body.ExceptionHandlers.Clear();
+            orig.Body.Variables.Clear();
             orig.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             orig.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             orig.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(method)));
@@ -1656,6 +1847,8 @@ namespace Fougerite.Patcher
 
             this.CloneMethod(orig);
             orig.Body.Instructions.Clear();
+            orig.Body.ExceptionHandlers.Clear();
+            orig.Body.Variables.Clear();
             orig.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             orig.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(method)));
             orig.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
@@ -1710,6 +1903,8 @@ namespace Fougerite.Patcher
             MethodDefinition method = hooksClass.GetMethod("CheckOwner");
 
             definition2.Body.Instructions.Clear();
+            definition2.Body.ExceptionHandlers.Clear();
+            definition2.Body.Variables.Clear();
             definition2.Body.Instructions.Add(Instruction.Create(OpCodes.Nop));
             definition2.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             definition2.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
@@ -1726,6 +1921,8 @@ namespace Fougerite.Patcher
             MethodDefinition EntityHurt2 = hooksClass.GetMethod("EntityHurt2");
             MethodDefinition ProcessDamageEvent = type.GetMethod("ProcessDamageEvent");
             ProcessDamageEvent.Body.Instructions.Clear();
+            ProcessDamageEvent.Body.ExceptionHandlers.Clear();
+            ProcessDamageEvent.Body.Variables.Clear();
             ProcessDamageEvent.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             ProcessDamageEvent.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             ProcessDamageEvent.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(EntityHurt2)));
@@ -1786,6 +1983,8 @@ namespace Fougerite.Patcher
             this.CloneMethod(definition5);
             ILProcessor iLProcessor = orig.Body.GetILProcessor();
             iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
             //ConnectHandler
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(method)));
@@ -1828,6 +2027,9 @@ namespace Fougerite.Patcher
             TypeDefinition global = rustAssembly.MainModule.GetType("global");
             ILProcessor iLProcessor2 = global.GetMethod("quit").Body.GetILProcessor();
             iLProcessor2.Body.Instructions.Clear();
+            iLProcessor2.Body.ExceptionHandlers.Clear();
+            iLProcessor2.Body.Variables.Clear();
+            
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Callvirt, this.rustAssembly.MainModule.Import(GlobalQuit)));
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
             
@@ -1841,18 +2043,24 @@ namespace Fougerite.Patcher
             
             ILProcessor iLProcessor3 = Instances.GetMethod("Register").Body.GetILProcessor();
             iLProcessor3.Body.Instructions.Clear();
+            iLProcessor3.Body.ExceptionHandlers.Clear();
+            iLProcessor3.Body.Variables.Clear();
             iLProcessor3.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor3.Body.Instructions.Add(Instruction.Create(OpCodes.Callvirt, this.rustAssembly.MainModule.Import(RegisterHook)));
             iLProcessor3.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
             
             ILProcessor iLProcessor4 = Instances.GetMethod("Unregister").Body.GetILProcessor();
             iLProcessor4.Body.Instructions.Clear();
+            iLProcessor4.Body.ExceptionHandlers.Clear();
+            iLProcessor4.Body.Variables.Clear();
             iLProcessor4.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor4.Body.Instructions.Add(Instruction.Create(OpCodes.Callvirt, this.rustAssembly.MainModule.Import(UnRegisterHook)));
             iLProcessor4.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
             
             ILProcessor iLProcessor5 = type.GetMethod("Save").Body.GetILProcessor();
             iLProcessor5.Body.Instructions.Clear();
+            iLProcessor5.Body.ExceptionHandlers.Clear();
+            iLProcessor5.Body.Variables.Clear();
             iLProcessor5.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
             
             TypeDefinition ServerSave = rustAssembly.MainModule.GetType("ServerSave");
@@ -1880,30 +2088,61 @@ namespace Fougerite.Patcher
             orig.Body.Instructions[0x11] = Instruction.Create(OpCodes.Brfalse, orig.Body.Instructions[0x16]);
         }
 
-        private void PatchuLink()
+        private void PatchuLink(ref AssemblyDefinition ulink)
         {
-            AssemblyDefinition ulink = AssemblyDefinition.ReadAssembly("uLink.dll");
             TypeDefinition Class0 = ulink.MainModule.GetType("Class0");
-            MethodDefinition method = hooksClass.GetMethod("uLinkCatch");
+            TypeDefinition Class8 = ulink.MainModule.GetType("Class8");
+            TypeDefinition Class33 = ulink.MainModule.GetType("Class33");
+            TypeDefinition Class35 = ulink.MainModule.GetType("Class35");
+            TypeDefinition Class55 = ulink.MainModule.GetType("Class55");
+            TypeDefinition Class71 = ulink.MainModule.GetType("Class71");
+            TypeDefinition Enum13 = ulink.MainModule.GetType("Enum13");
+            TypeDefinition Exception0 = ulink.MainModule.GetType("Exception0");
+            MethodDefinition uLinkCatch17 = hooksClass.GetMethod("uLinkCatch17");
+            MethodDefinition uLinkCatch41 = hooksClass.GetMethod("uLinkCatch41");
+            
+            Enum13.IsPublic = true;
+            Exception0.IsPublic = true;
+            Class71.IsPublic = true;
+            Class55.IsPublic = true;
+            Class8.IsPublic = true;
+
+            Class0.GetField("class18_0").SetPublic(true);
+            Class0.GetField("class8_0").SetPublic(true);
+            Class0.GetField("socket_0").SetPublic(true);
+            Class0.GetMethod("vmethod_2").SetPublic(true);
 
             Class0.IsPublic = true;
             Class0.GetField("endPoint_0").SetPublic(true);
 
+            Class8.GetMethod("method_11").SetPublic(true);
+            
+            Class33.GetField("enum8_0").SetPublic(true);
+            Class35.GetMethod("method_0").SetPublic(true);
+            
+            Class55.GetMethod("method_25").SetPublic(true);
+            Class55.GetMethod("method_26").SetPublic(true);
+
             MethodDefinition method_17 = Class0.GetMethod("method_17");
-            int Position = method_17.Body.Instructions.Count - 34; // second was 30
 
             ILProcessor iLProcessor = method_17.Body.GetILProcessor();
-            iLProcessor.InsertBefore(method_17.Body.Instructions[Position], Instruction.Create(OpCodes.Callvirt, ulink.MainModule.Import(method)));
-            iLProcessor.InsertBefore(method_17.Body.Instructions[Position], Instruction.Create(OpCodes.Ldarg_0));
+            iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Callvirt, ulink.MainModule.Import(uLinkCatch17)));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
 
             MethodDefinition method_41 = Class0.GetMethod("method_41");
-            int Position2 = method_41.Body.Instructions.Count - 34; // second was 30
 
             ILProcessor iLProcessor2 = method_41.Body.GetILProcessor();
-            iLProcessor2.InsertBefore(method_41.Body.Instructions[Position2], Instruction.Create(OpCodes.Callvirt, ulink.MainModule.Import(method)));
-            iLProcessor2.InsertBefore(method_41.Body.Instructions[Position2], Instruction.Create(OpCodes.Ldarg_0));
-
-            ulink.Write("uLink.dll");
+            iLProcessor2.Body.Instructions.Clear();
+            iLProcessor2.Body.ExceptionHandlers.Clear();
+            iLProcessor2.Body.Variables.Clear();
+            iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
+            iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Callvirt, ulink.MainModule.Import(uLinkCatch41)));
+            iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
         }
 
         private void TalkerNotifications()
@@ -1989,6 +2228,8 @@ namespace Fougerite.Patcher
             MethodDefinition CLDHook = hooksClass.GetMethod("CLDHook");
             
             CLD.Body.Instructions.Clear();
+            CLD.Body.ExceptionHandlers.Clear();
+            CLD.Body.Variables.Clear();
             CLD.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             CLD.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             CLD.Body.Instructions.Add(Instruction.Create(OpCodes.Call, this.rustAssembly.MainModule.Import(CLDHook)));
@@ -1996,12 +2237,16 @@ namespace Fougerite.Patcher
             
             
             CLR.Body.Instructions.Clear();
+            CLR.Body.ExceptionHandlers.Clear();
+            CLR.Body.Variables.Clear();
             CLR.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             CLR.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             CLR.Body.Instructions.Add(Instruction.Create(OpCodes.Call, this.rustAssembly.MainModule.Import(CLRHook)));
             CLR.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
             
             OC1.Body.Instructions.Clear();
+            OC1.Body.ExceptionHandlers.Clear();
+            OC1.Body.Variables.Clear();
             OC1.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             OC1.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             OC1.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -2009,6 +2254,8 @@ namespace Fougerite.Patcher
             OC1.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
             
             OC2.Body.Instructions.Clear();
+            OC2.Body.ExceptionHandlers.Clear();
+            OC2.Body.Variables.Clear();
             OC2.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             OC2.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             OC2.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -2172,6 +2419,8 @@ namespace Fougerite.Patcher
 
             ILProcessor iLProcessor = DoAction1.Body.GetILProcessor();
             iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -2190,6 +2439,8 @@ namespace Fougerite.Patcher
             MethodDefinition md = Consts.ToArray()[0];
             md.SetPublic(true);
             md.Body.Instructions.Clear();
+            md.Body.ExceptionHandlers.Clear();
+            md.Body.Variables.Clear();
             md.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
         }
 
@@ -2202,6 +2453,8 @@ namespace Fougerite.Patcher
 
             ILProcessor iLProcessor = DoAction1.Body.GetILProcessor();
             iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -2233,6 +2486,8 @@ namespace Fougerite.Patcher
 
             ILProcessor iLProcessor = LoadLevel.Body.GetILProcessor();
             iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(method)));
@@ -2249,6 +2504,8 @@ namespace Fougerite.Patcher
 
             ILProcessor iLProcessor = DoBeltUse.Body.GetILProcessor();
             iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(method)));
@@ -2264,6 +2521,8 @@ namespace Fougerite.Patcher
 
             ILProcessor iLProcessor = TOSS.Body.GetILProcessor();
             iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -2282,6 +2541,8 @@ namespace Fougerite.Patcher
 
             ILProcessor iLProcessor = OnDone.Body.GetILProcessor();
             iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(method)));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
@@ -2303,6 +2564,8 @@ namespace Fougerite.Patcher
             
             ILProcessor iLProcessor = Action1.Body.GetILProcessor();
             iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -2311,6 +2574,8 @@ namespace Fougerite.Patcher
             
             ILProcessor iLProcessor2 = Action1B.Body.GetILProcessor();
             iLProcessor2.Body.Instructions.Clear();
+            iLProcessor2.Body.ExceptionHandlers.Clear();
+            iLProcessor2.Body.Variables.Clear();
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -2355,6 +2620,8 @@ namespace Fougerite.Patcher
             
             ILProcessor iLProcessor2 = BulletWeaponDataBlockDoAction1.Body.GetILProcessor();
             iLProcessor2.Body.Instructions.Clear();
+            iLProcessor2.Body.ExceptionHandlers.Clear();
+            iLProcessor2.Body.Variables.Clear();
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -2364,6 +2631,8 @@ namespace Fougerite.Patcher
             
             ILProcessor iLProcessor3 = ShotgunDataBlockDoAction1.Body.GetILProcessor();
             iLProcessor3.Body.Instructions.Clear();
+            iLProcessor3.Body.ExceptionHandlers.Clear();
+            iLProcessor3.Body.Variables.Clear();
             iLProcessor3.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor3.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor3.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -2373,6 +2642,8 @@ namespace Fougerite.Patcher
             
             ILProcessor iLProcessor4 = HandGrenadeDataBlockDoAction1.Body.GetILProcessor();
             iLProcessor4.Body.Instructions.Clear();
+            iLProcessor4.Body.ExceptionHandlers.Clear();
+            iLProcessor4.Body.Variables.Clear();
             iLProcessor4.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor4.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor4.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -2382,6 +2653,8 @@ namespace Fougerite.Patcher
             
             ILProcessor iLProcessor5 = StructureComponentDataBlockDoAction1.Body.GetILProcessor();
             iLProcessor5.Body.Instructions.Clear();
+            iLProcessor5.Body.ExceptionHandlers.Clear();
+            iLProcessor5.Body.Variables.Clear();
             iLProcessor5.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor5.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor5.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -2391,6 +2664,8 @@ namespace Fougerite.Patcher
             
             ILProcessor iLProcessor6 = TorchItemDataBlockDoAction1.Body.GetILProcessor();
             iLProcessor6.Body.Instructions.Clear();
+            iLProcessor6.Body.ExceptionHandlers.Clear();
+            iLProcessor6.Body.Variables.Clear();
             iLProcessor6.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor6.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor6.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -2429,6 +2704,8 @@ namespace Fougerite.Patcher
             
             ILProcessor iLProcessor6 = C.Body.GetILProcessor();
             iLProcessor6.Body.Instructions.Clear();
+            iLProcessor6.Body.ExceptionHandlers.Clear();
+            iLProcessor6.Body.Variables.Clear();
             iLProcessor6.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor6.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
             iLProcessor6.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
@@ -2445,6 +2722,8 @@ namespace Fougerite.Patcher
             
             ILProcessor iLProcessor = TimedExplosiveAwake.Body.GetILProcessor();
             iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(TimedExplosiveSpawnHook)));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
@@ -2467,12 +2746,16 @@ namespace Fougerite.Patcher
             
             ILProcessor iLProcessor = Register.Body.GetILProcessor();
             iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(RegisterHook)));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
             
             ILProcessor iLProcessor2 = UnRegister.Body.GetILProcessor();
             iLProcessor2.Body.Instructions.Clear();
+            iLProcessor2.Body.ExceptionHandlers.Clear();
+            iLProcessor2.Body.Variables.Clear();
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(UnRegisterHook)));
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
@@ -2520,6 +2803,8 @@ namespace Fougerite.Patcher
                     flag = false;
                     Logger.Log(ex);
                 }
+                
+                WaitForPendingFinalizers();
                 return flag;
             }
             catch (Exception ex)
@@ -2533,8 +2818,10 @@ namespace Fougerite.Patcher
         {
             Logger.Log("Prepraching LatePost method...");
             this.LatePostInTryCatch();
+            WaitForPendingFinalizers();
             Logger.Log("Prepatching UpdateDelegate");
             this.UpdateDelegatePatch();
+            WaitForPendingFinalizers();
             Logger.Log("Success! Patching other methods...");
             try
             {
@@ -2558,6 +2845,7 @@ namespace Fougerite.Patcher
                 {
                     this.WrapWildlifeUpdateInTryCatch();
                     this.uLinkLateUpdateInTryCatch();
+                    WaitForPendingFinalizers();
 
                     this.BootstrapAttachPatch();
                     this.EntityDecayPatch_StructureMaster();
@@ -2595,13 +2883,15 @@ namespace Fougerite.Patcher
                     this.PatchFacePunch();
                     this.ItemPickupHook();
                     this.FallDamageHook();
+                    this.PatchFireBarrelActTrigger();
+                    this.FurnacePatch();
+                    this.PatchFireBarrelContextRespond();
                     this.LooterPatch();
                     this.UseablePatch();
                     //this.ShootPatch();
                     this.BowShootPatch();
                     //this.ShotgunShootPatch();
                     this.GrenadePatch();
-                    this.PatchuLink();
                     this.SlotOperationPatch();
                     this.RepairBenchEvent();
                     this.DecayStopPatch();
@@ -2638,6 +2928,8 @@ namespace Fougerite.Patcher
                     flag = false;
                     Logger.Log(ex);
                 }
+                
+                WaitForPendingFinalizers();
                 return flag;
             }
             catch (Exception ex)
@@ -2645,6 +2937,12 @@ namespace Fougerite.Patcher
                 Logger.Log(ex);
                 return false;
             }
+        }
+
+        private void WaitForPendingFinalizers()
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
         }
 
         private void WrapMethod(MethodDefinition md, MethodDefinition origMethod, AssemblyDefinition asm, bool logEx = false)

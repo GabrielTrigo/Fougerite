@@ -138,7 +138,7 @@ namespace Fougerite
         /// </summary>
         /// <param name="name"></param>
         /// <param name="amount"></param>
-        public void RemoveItem (string name, int amount = 1)
+        public void RemoveItem(string name, int amount = 1)
         {
             foreach (EntityItem item in Items)
             {
@@ -168,7 +168,7 @@ namespace Fougerite
         /// </summary>
         /// <param name="slot"></param>
         /// <param name="amount"></param>
-        public void RemoveItem (int slot, int amount = 1)
+        public void RemoveItem(int slot, int amount = 1)
         {
             EntityItem item = Items [slot];
             if (item == null)

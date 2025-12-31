@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using Fougerite.Events;
 using uLink;
 using Debug = UnityEngine.Debug;
@@ -968,10 +970,329 @@ namespace Fougerite
             }
         }
 
-        public static void uLinkCatch(Class0 instance)
+        public static void uLinkCatch17(Class0 instance, double double_1)
         {
-            string ip = ((IPEndPoint)(instance.endPoint_0)).Address.ToString();
-            Logger.Log($"[uLink Ignore] Ignored Socket from: {ip}");
+            string handledIp = string.Empty;
+            if (instance.endPoint_0 is IPEndPoint ipEndPoint)
+            {
+                handledIp = ipEndPoint.Address.ToString();
+            }
+            
+            int num = 0;
+            int num2 = 0;
+            try
+            {
+                for (;;)
+                {
+                    try
+                    {
+                        if (instance.socket_0 != null && instance.socket_0.Available >= 1)
+                        {
+                            instance.class18_0.method_93();
+                            int num3 = instance.socket_0.ReceiveFrom(instance.class18_0.byte_0, 0, instance.class18_0.byte_0.Length,
+                                SocketFlags.None, ref instance.endPoint_0);
+                            if (num3 <= 0)
+                            {
+                                continue;
+                            }
+
+                            instance.class8_0.method_11(num3);
+                            instance.class18_0.method_86(num3 * 8);
+                            IPEndPoint ipendPoint = (IPEndPoint)instance.endPoint_0;
+                            Class56 @class = instance.vmethod_1(ipendPoint);
+                            if (@class != null)
+                            {
+                                @class.class55_0.method_25(num3, double_1);
+                                @class.double_6 = double_1;
+                            }
+
+                            try
+                            {
+                                while (instance.class18_0.method_87() < instance.class18_0.method_85())
+                                {
+                                    int num4 = instance.class18_0.method_87();
+                                    Class35 class2 = instance.method_10();
+                                    class2.class56_0 = @class;
+                                    if (!class2.method_0(instance.class18_0, ipendPoint))
+                                    {
+                                        break;
+                                    }
+
+                                    if (@class != null)
+                                    {
+                                        @class.class55_0.method_26(class2.enum3_0, class2.enum8_0,
+                                            (instance.class18_0.method_87() - num4) / 8, double_1);
+                                    }
+
+                                    instance.vmethod_2(class2, ipendPoint);
+                                }
+                            }
+                            catch (Exception)
+                            {
+                            }
+
+                            continue;
+                        }
+                    }
+                    catch (SocketException ex)
+                    {
+                        if (ex.ErrorCode != 10052)
+                        {
+                            if (ex.SocketErrorCode != SocketError.NetworkReset)
+                            {
+                                if (ex.ErrorCode != 10054)
+                                {
+                                    if (ex.SocketErrorCode != SocketError.ConnectionReset)
+                                    {
+                                        throw;
+                                    }
+                                }
+
+                                num2++;
+                                if (num2 > 2000)
+                                {
+                                    break;
+                                }
+
+                                continue;
+                            }
+                        }
+
+                        num++;
+                        if (num > 2000)
+                        {
+                            break;
+                        }
+
+                        continue;
+                    }
+
+                    break;
+                }
+            }
+            catch (SocketException ex2)
+            {
+                if (ex2.ErrorCode != 10035)
+                {
+                    if (ex2.SocketErrorCode != SocketError.WouldBlock)
+                    {
+                        throw new Exception0(string.Concat(new object[]
+                        {
+                            Class23.smethod_1(),
+                            " (",
+                            DateTime.Now,
+                            "): Could not receive packet"
+                        }), ex2);
+                    }
+                }
+
+                Class71.smethod_2((Enum13)1U,
+                    new object[] { "Receive Buffer is empty, ignore error: ", ex2.Message });
+            }
+            catch (Exception ex3)
+            {
+                throw new Exception0(string.Concat(new object[]
+                {
+                    Class23.smethod_1(),
+                    " (",
+                    DateTime.Now,
+                    "): Could not receive packet"
+                }), ex3);
+            }
+            finally
+            {
+                if (num > 0)
+                {
+                    Player[] players = Server.GetServer().Players.Where(x => x.IP == handledIp).ToArray();
+                    if (players.Length > 0)
+                    {
+                        Class71.smethod_2((Enum13)1U, new object[]
+                        {
+                            Class23.smethod_1(),
+                            " (",
+                            DateTime.Now,
+                            "): Ignored number of socket network reset errors: ",
+                            num,
+                            "From IP: ",
+                            handledIp
+                        });
+                    }
+                    
+                    foreach (var x in players)
+                    {
+                        x.Message("Your connection seems unstable, you have been disconnected.");
+                        x.Disconnect(true, NetError.CreateSocketOrThreadFailure);
+                    }
+                }
+
+                if (num2 > 0)
+                {
+                    Player[] players = Server.GetServer().Players.Where(x => x.IP == handledIp).ToArray();
+                    if (players.Length > 0)
+                    {
+                        Class71.smethod_2((Enum13)1U, new object[]
+                        {
+                            Class23.smethod_1(),
+                            " (",
+                            DateTime.Now,
+                            "): Ignored number of socket connection reset errors: ",
+                            num2,
+                            "From IP: ",
+                            handledIp
+                        });
+                    }
+                    
+                    foreach (var x in players)
+                    {
+                        x.Message("Your connection seems unstable, you have been disconnected.");
+                        x.Disconnect(true, NetError.CreateSocketOrThreadFailure);
+                    }
+                }
+            }
+        }
+
+        public static void uLinkCatch41(Class0 instance)
+        {
+            string handledIp = string.Empty;
+            if (instance.endPoint_0 is IPEndPoint ipEndPoint)
+            {
+                handledIp = ipEndPoint.Address.ToString();
+            }
+            
+            int num = 0;
+            int num2 = 0;
+            instance.class18_0.method_93();
+            try
+            {
+                for (;;)
+                {
+                    try
+                    {
+                        if (instance.socket_0 != null && instance.socket_0.Available >= 1)
+                        {
+                            int num3 = instance.socket_0.ReceiveFrom(instance.class18_0.byte_0, 0, instance.class18_0.byte_0.Length,
+                                SocketFlags.None, ref instance.endPoint_0);
+                            if (num3 >= 1)
+                            {
+                                continue;
+                            }
+                        }
+                    }
+                    catch (SocketException ex)
+                    {
+                        if (ex.ErrorCode != 10052)
+                        {
+                            if (ex.SocketErrorCode != SocketError.NetworkReset)
+                            {
+                                if (ex.ErrorCode != 10054)
+                                {
+                                    if (ex.SocketErrorCode != SocketError.ConnectionReset)
+                                    {
+                                        throw;
+                                    }
+                                }
+
+                                num2++;
+                                if (num2 > 2000)
+                                {
+                                    break;
+                                }
+
+                                continue;
+                            }
+                        }
+
+                        num++;
+                        if (num > 2000)
+                        {
+                            break;
+                        }
+
+                        continue;
+                    }
+
+                    break;
+                }
+            }
+            catch (SocketException ex2)
+            {
+                if (ex2.ErrorCode != 10035)
+                {
+                    if (ex2.SocketErrorCode != SocketError.WouldBlock)
+                    {
+                        throw new Exception0(string.Concat(new object[]
+                        {
+                            Class23.smethod_1(),
+                            " (",
+                            DateTime.Now,
+                            "): Could not receive packet"
+                        }), ex2);
+                    }
+                }
+
+                Class71.smethod_2((Enum13)1U,
+                    new object[] { "Receive Buffer is empty, ignore error: ", ex2.Message });
+            }
+            catch (Exception ex3)
+            {
+                throw new Exception0(string.Concat(new object[]
+                {
+                    Class23.smethod_1(),
+                    " (",
+                    DateTime.Now,
+                    "): Could not receive packet"
+                }), ex3);
+            }
+            finally
+            {
+                if (num > 0)
+                {
+                    Player[] players = Server.GetServer().Players.Where(x => x.IP == handledIp).ToArray();
+                    if (players.Length > 0)
+                    {
+                        Class71.smethod_2((Enum13)1U, new object[]
+                        {
+                            Class23.smethod_1(),
+                            " (",
+                            DateTime.Now,
+                            "): Ignored number of socket network reset errors: ",
+                            num,
+                            "From IP: ",
+                            handledIp
+                        });
+                    }
+                    
+                    foreach (var x in players)
+                    {
+                        x.Message("Your connection seems unstable, you have been disconnected.");
+                        x.Disconnect(true, NetError.CreateSocketOrThreadFailure);
+                    }
+                }
+
+                if (num2 > 0)
+                {
+                    Player[] players = Server.GetServer().Players.Where(x => x.IP == handledIp).ToArray();
+                    if (players.Length > 0)
+                    {
+                        Class71.smethod_2((Enum13)1U, new object[]
+                        {
+                            Class23.smethod_1(),
+                            " (",
+                            DateTime.Now,
+                            "): Ignored number of socket connection reset errors: ",
+                            num2,
+                            "From IP: ",
+                            handledIp
+                        });
+                    }
+                    
+                    foreach (var x in players)
+                    {
+                        x.Message("Your connection seems unstable, you have been disconnected.");
+                        x.Disconnect(true, NetError.CreateSocketOrThreadFailure);
+                    }
+                }
+            }
         }
         
         public static void Action1BHook(ItemRepresentation itr, byte[] data, uLink.NetworkMessageInfo info)

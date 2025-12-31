@@ -331,6 +331,11 @@ namespace Fougerite
         /// This delegate runs when a command is restricted on unrestricted.
         /// </summary>
         public static event CommandRestrictionEventDelegate OnCommandRestriction;
+        
+        /// <summary>
+        /// This delegate runs when a firebarrel is toggled.
+        /// </summary>
+        public static event FireBarrelToggleEventDelegate OnFireBarrelToggle;
 
         /// <summary>
         /// This value returns if the server is shutting down.
@@ -405,6 +410,7 @@ namespace Fougerite
             OnTimedExplosiveSpawned = delegate {  };
             OnSleeperSpawned = delegate {  };
             OnCommandRestriction = delegate {  };
+            OnFireBarrelToggle = delegate {  };
         }
         
         public delegate void BlueprintUseHandlerDelegate(Player player, BPUseEvent ae);
@@ -528,6 +534,8 @@ namespace Fougerite
         public delegate void SleeperSpawnEventDelegate(Sleeper sleeper);
 
         public delegate void CommandRestrictionEventDelegate(CommandRestrictionEvent commandRestrictionEvent);
+        
+        public delegate void FireBarrelToggleEventDelegate(FireBarrelToggleEvent fbte);
         
         /// <summary>
         /// Flags for Method.Invoke

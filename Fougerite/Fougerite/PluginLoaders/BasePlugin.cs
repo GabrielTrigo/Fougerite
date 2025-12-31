@@ -1045,5 +1045,10 @@ namespace Fougerite.PluginLoaders
         {
             Invoke("On_CommandRestriction", ev);
         }
+
+        public void OnFireBarrelToggle(FireBarrelToggleEvent ev)
+        {
+            Invoke("On_FireBarrelToggle", ev);
+        }
     }
 }

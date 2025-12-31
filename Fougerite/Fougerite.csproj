@@ -62,6 +62,7 @@
     <Compile Include="Fougerite\Events\CommandRestrictionEvent.cs" />
     <Compile Include="Fougerite\Events\ConsoleEvent.cs" />
     <Compile Include="Fougerite\Events\ExtendedTimedEvent.cs" />
+    <Compile Include="Fougerite\Events\FireBarrelToggleEvent.cs" />
     <Compile Include="Fougerite\Events\GrenadeThrowEvent.cs" />
     <Compile Include="Fougerite\Events\ItemMoveEvent.cs" />
     <Compile Include="Fougerite\Events\LoggerEvent.cs" />

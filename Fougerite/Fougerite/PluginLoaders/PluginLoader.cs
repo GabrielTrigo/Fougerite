@@ -71,7 +71,8 @@
             "On_NPCSpawned",
             "On_TimedExplosiveSpawned",
             "On_SleeperSpawned",
-            "On_CommandRestriction"
+            "On_CommandRestriction",
+            "On_FireBarrelToggle"
         };
 
         public void Initialize()
@@ -352,6 +353,9 @@
                         case "On_CommandRestriction":
                             Hooks.OnCommandRestriction += plugin.OnCommandRestriction;
                             break;
+                        case "On_FireBarrelToggle":
+                            Hooks.OnFireBarrelToggle += plugin.OnFireBarrelToggle;
+                            break;
                     }
                 }
             }
@@ -540,6 +544,9 @@
                             break;
                         case "On_CommandRestriction":
                             Hooks.OnCommandRestriction -= plugin.OnCommandRestriction;
+                            break;
+                        case "On_FireBarrelToggle":
+                            Hooks.OnFireBarrelToggle -= plugin.OnFireBarrelToggle;
                             break;
                     }
                 }

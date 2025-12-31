@@ -1764,7 +1764,6 @@ namespace Fougerite
         {
             using (new Stopper(nameof(Hooks), nameof(ItemRemoved)))
             {
-
                 Collection<InventoryItem> collection = inv.collection;
                 InventoryItem inventoryItem;
                 if (mustMatch && (!collection.Get(slot, out inventoryItem) ||
@@ -1787,7 +1786,6 @@ namespace Fougerite
 
                 if (e != null && e.Cancelled)
                 {
-
                     return false;
                 }
 
@@ -3680,6 +3678,67 @@ namespace Fougerite
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// A hook of FireBarrel.SetOn function.
+        /// Gets called when you toggle a Campfire or Furnace.
+        /// </summary>
+        /// <param name="fireBarrel"></param>
+        /// <param name="on"></param>
+        public static void FireBarrelSetOn(FireBarrel fireBarrel, bool on)
+        {
+            var deployable = fireBarrel.GetComponent<DeployableObject>();
+            // Sanity check
+            if (deployable == null)
+                return;
+            
+            Entity e = EntityCache.GetInstance().GrabOrAllocate(deployable.GetInstanceID(), deployable);
+            float cookDuration = fireBarrel.GetCookDuration();
+            cookDuration = UnityEngine.Random.Range(cookDuration * 0.5f, cookDuration);
+            FireBarrelToggleEvent fireBarrelToggleEvent = new FireBarrelToggleEvent(fireBarrel, on, e, cookDuration);
+            
+            try
+            {
+                ExecuteSubscribers(OnFireBarrelToggle, "FireBarrelToggleEvent", fireBarrelToggleEvent);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"FireBarrelToggleEvent Error: {ex}");
+            }
+            
+            if (fireBarrelToggleEvent.Cancelled)
+            {
+                return;
+            }
+            
+            fireBarrel.isOn = fireBarrelToggleEvent.On;
+            if (fireBarrelToggleEvent.On)
+            {
+                if (fireBarrel._deployable)
+                {
+                    fireBarrel._deployable.SetDecayEnabled(false);
+                }
+                
+                fireBarrel.InvokeRepeating(nameof(FireBarrel.ConsumeFuel), fireBarrelToggleEvent.CookDuration, fireBarrelToggleEvent.CookDuration);
+                EnvDecay.RefreshRadialDecay(fireBarrel.transform.position, FireBarrel.decayResetRange);
+            }
+            else
+            {
+                fireBarrel.CancelInvoke(nameof(FireBarrel.ConsumeFuel));
+                if (fireBarrel._deployable)
+                {
+                    fireBarrel._deployable.SetDecayEnabled(true);
+                }
+            }
+
+            fireBarrel.DecayTouch();
+            if (fireBarrel._heatZone)
+            {
+                fireBarrel._heatZone.SetOn(fireBarrelToggleEvent.On);
+            }
+
+            fireBarrel.UpdateNetState();
         }
 
         /// <summary>
