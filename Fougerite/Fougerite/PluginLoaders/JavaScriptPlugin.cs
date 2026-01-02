@@ -55,10 +55,25 @@ namespace Fougerite.PluginLoaders
             }
             catch (Exception ex)
             {
-                string fileinfo = ("[Error] Failed to invoke: " + $"{Name}<{Type}>.{func}()" + Environment.NewLine);
+                string errorHeader = $"[Error] {Name}<{Type}>.{func}() failed:";
+                string errorMessage;
+                
+                switch (ex)
+                {
+                    case Jint.Runtime.JavaScriptException jintEx:
+                        errorMessage = $"Line: {jintEx.LineNumber} Col: {jintEx.Column} - {jintEx.Message}{Environment.NewLine}JS Stacktrace: {jintEx.StackTrace}";
+                        break;
+                    case Jint.Parser.ParserException parseEx:
+                        errorMessage = $"Line: {parseEx.LineNumber} Col: {parseEx.Column} - Syntax Error: {parseEx.Description}";
+                        break;
+                    default:
+                        errorMessage = FormatException(ex);
+                        break;
+                }
+
                 HasErrors = true;
-                LastError = FormatException(ex);
-                Logger.LogError(fileinfo + FormatException(ex));
+                LastError = errorMessage;
+                Logger.LogError($"{errorHeader}{Environment.NewLine}{errorMessage}");
             }
             return null;
         }
@@ -70,7 +85,7 @@ namespace Fougerite.PluginLoaders
                 Engine = new Engine(cfg =>
                 {
                     cfg.AllowClr(AppDomain.CurrentDomain.GetAssemblies().ToArray());
-                    cfg.LimitRecursion(1000);
+                    cfg.LimitRecursion(10000);
                 });
 
                 // Some compatibility memes
@@ -165,8 +180,9 @@ namespace Fougerite.PluginLoaders
         {
             var className = type.Split('.').Last();
             var resolvedType = Util.GetUtil().TryFindReturnType(type);
-            Engine.SetValue(className, resolvedType);
-            return Engine.GetValue(className);
+            var typeRef = Jint.Runtime.Interop.TypeReference.CreateTypeReference(Engine, resolvedType);
+            Engine.SetValue(className, typeRef);
+            return typeRef;
         }
     }
 }
