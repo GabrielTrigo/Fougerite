@@ -85,7 +85,7 @@ namespace Fougerite.PluginLoaders
                 Engine = new Engine(cfg =>
                 {
                     cfg.AllowClr(AppDomain.CurrentDomain.GetAssemblies().ToArray());
-                    cfg.LimitRecursion(10000);
+                    cfg.LimitRecursion(1000000);
                 });
 
                 // Some compatibility memes
