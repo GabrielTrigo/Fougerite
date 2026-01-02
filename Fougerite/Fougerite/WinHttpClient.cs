@@ -9,7 +9,7 @@ namespace Fougerite
     /// <summary>
     /// Since UnityEngine is running on Mono and updating the security dlls would take a lot of work
     /// we use WinHTTP via P/Invoke to make HTTP requests with modern TLS support so websites do not reject us
-    /// with TLS 1.2 enforcement.
+    /// with TLS 1.3 enforcement.
     /// It should work with Wine under Linux as well.
     /// </summary>
     public class WinHttpClient

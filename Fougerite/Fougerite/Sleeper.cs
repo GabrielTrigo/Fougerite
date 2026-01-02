@@ -43,6 +43,9 @@ namespace Fougerite
             }
         }
 
+        /// <summary>
+        /// Forces an update of the sleeper's health to the clients.
+        /// </summary>
         public void UpdateHealth()
         {
             _sleeper.UpdateClientHealth();
@@ -69,6 +72,9 @@ namespace Fougerite
             IsDestroyed = true;
         }
 
+        /// <summary>
+        /// Attempts to destroy the sleeper via NetCull.
+        /// </summary>
         private void TryNetCullDestroy()
         {
             try

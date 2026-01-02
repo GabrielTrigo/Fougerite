@@ -26,26 +26,41 @@ namespace Fougerite.Events
             get { return _belt; }
         }
 
+        /// <summary>
+        /// InventoryHolder that is using the belt.
+        /// </summary>
         public InventoryHolder InventoryHolder
         {
             get { return _holder; }
         }
 
+        /// <summary>
+        /// The Player who is using the belt.
+        /// </summary>
         public Player Player
         {
             get { return _player; }
         }
 
+        /// <summary>
+        /// Returns true if the cooldown check is bypassed for the belt use.
+        /// </summary>
         public bool Bypassed
         {
             get { return _bypass; }
         }
 
+        /// <summary>
+        /// Returns true if the event was cancelled.
+        /// </summary>
         public bool Cancelled
         {
             get { return _cancelled; }
         }
 
+        /// <summary>
+        /// Cancels the belt use action.
+        /// </summary>
         public void Cancel()
         {
             _cancelled = true;

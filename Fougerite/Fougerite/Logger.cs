@@ -146,9 +146,20 @@ namespace Fougerite
             Hooks.LoggerEvent(LoggerEventType.Log, Message);
         }
         
+        /// <summary>
+        /// This is called and used to trace all RPC calls (may produce a lot of logs)
+        /// coming from any client, useful to debug client-server communication
+        /// hacks, floods, etc. The call is manually patched in ULink.dll Class4
+        /// and is enabled with the "rpctracer" option in the config file.
+        /// </summary>
+        /// <param name="Message"></param>
         public static void LogRPC(string Message)
         {
-            if (!showRPC) { return;}
+            if (!showRPC)
+            {
+                return;
+            }
+            
             try
             {
                 if (RPCLogWriter.DateTime != DateTime.Now.ToString("dd_MM_yyyy"))
