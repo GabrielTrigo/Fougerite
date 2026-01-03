@@ -1050,5 +1050,25 @@ namespace Fougerite.PluginLoaders
         {
             Invoke("On_FireBarrelToggle", ev);
         }
+
+        public void OnDayCycleChange(DayCycleChangeEvent ev)
+        {
+            Invoke("On_DayCycleChanged", ev);
+        }
+
+        public void OnShoot(ShootEvent ev)
+        {
+            Invoke("On_Shoot", ev);
+        }
+
+        public void OnShotgunShoot(ShotgunShootEvent ev)
+        {
+            Invoke("On_ShotgunShoot", ev);
+        }
+
+        public void OnBowShoot(BowShootEvent ev)
+        {
+            Invoke("On_BowShoot", ev);
+        }
     }
 }

@@ -3778,6 +3778,78 @@ namespace Fougerite
         }
 
         /// <summary>
+        /// A hook of the EnvironmentControlCenter.DayCycleChange function.
+        /// Runs when the day cycle changes.
+        /// </summary>
+        /// <param name="ecc"></param>
+        public static void DayCycleChange(EnvironmentControlCenter ecc)
+        {
+            if (ecc.sky == null)
+            {
+                ecc.sky = (TOD_Sky) UnityEngine.Object.FindObjectOfType(typeof(TOD_Sky));
+                if (ecc.sky == null)
+                {
+                    return;
+                }
+            }
+            
+            float num = env.daylength * 60f;
+            if (ecc.IsNight())
+            {
+                num = env.nightlength * 60f;
+            }
+            float num2 = num / 24f;
+            float num3 = Time.deltaTime / num2;
+            float num4 = Time.deltaTime / (30f * num) * 2f;
+            ecc.sky.Cycle.Hour += num3;
+            ecc.sky.Cycle.MoonPhase += num4;
+            if (ecc.sky.Cycle.MoonPhase < -1f)
+            {
+                ecc.sky.Cycle.MoonPhase += 2f;
+            }
+            else if (ecc.sky.Cycle.MoonPhase > 1f)
+            {
+                ecc.sky.Cycle.MoonPhase -= 2f;
+            }
+            if (ecc.sky.Cycle.Hour >= 24f)
+            {
+                ecc.sky.Cycle.Hour = 0f;
+                int num5 = DateTime.DaysInMonth(ecc.sky.Cycle.Year, ecc.sky.Cycle.Month);
+                if (++ecc.sky.Cycle.Day > num5)
+                {
+                    ecc.sky.Cycle.Day = 1;
+                    if (++ecc.sky.Cycle.Month > 12)
+                    {
+                        ecc.sky.Cycle.Month = 1;
+                        ecc.sky.Cycle.Year++;
+                    }
+                }
+            }
+
+            bool callHook = false;
+            bool? previousCycleWasNight = null;
+            if (_isNight == null || _isNight != ecc.IsNight())
+            {
+                previousCycleWasNight = _isNight;
+                _isNight = ecc.IsNight();
+                callHook = true;
+            }
+            
+            if (callHook)
+            {
+                DayCycleChangeEvent ev = new DayCycleChangeEvent(ecc, previousCycleWasNight);
+                try
+                {
+                    ExecuteSubscribers(OnDayCycleChanged, "DayCycleChangeEvent", ev);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError($"DayCycleChangeEvent Error: {ex}");
+                }
+            }
+        }
+
+        /// <summary>
         /// Runs when a command or console command is being restricted / unrestricted.
         /// </summary>
         /// <param name="player"></param>

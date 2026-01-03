@@ -2760,6 +2760,23 @@ namespace Fougerite.Patcher
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(UnRegisterHook)));
             iLProcessor2.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
         }
+
+        private void PatchEnvironmentCycle()
+        {
+            TypeDefinition ecc = rustAssembly.MainModule.GetType("EnvironmentControlCenter");
+            MethodDefinition DayCycleChange = hooksClass.GetMethod("DayCycleChange");
+            ecc.GetField("sky").SetPublic(true);
+            
+            
+            MethodDefinition update = ecc.GetMethod("Update");
+            ILProcessor iLProcessor = update.Body.GetILProcessor();
+            iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(DayCycleChange)));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
+        }
         
         // uLink Class56.method_36 has been patched here: https://i.imgur.com/WIEQXhX.png
         // I modified using dynspy to avoid the struggle.
@@ -2905,6 +2922,7 @@ namespace Fougerite.Patcher
                     this.NGCPatch();
                     this.TimedExplosivePatch();
                     this.SleepingAvatarPatch();
+                    this.PatchEnvironmentCycle();
                 }
                 catch (Exception ex)
                 {

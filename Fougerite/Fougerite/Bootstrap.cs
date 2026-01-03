@@ -17,7 +17,7 @@ namespace Fougerite
         /// <summary>
         /// Returns the Current Fougerite Version
         /// </summary>
-        public const string Version = "1.8.6";
+        public const string Version = "1.8.7";
         /// <summary>
         /// This value decides whether we should remove the player classes from the cache upon disconnect.
         /// </summary>
@@ -58,6 +58,15 @@ namespace Fougerite
         /// Specify the client side's RPC method.
         /// </summary>
         public static string RPCChatMethod = "FougeriteChatSystem";
+        /// <summary>
+        /// Enable intensive events for script plugins (Py, Lua, JS)
+        /// This gives scripts access to events like OnPlayerMove, OnShoot, OnShotgunShoot, OnBowShoot.
+        /// Use this carefully, as these events are called very often and may cause performance issues.
+        /// It is recommended to use C# plugins for these events instead.
+        /// Script plugins are generally slower than C# plugins. Python is the fastest among script plugins.
+        /// Use at your own risk.
+        /// </summary>
+        public static bool EnableScriptPluginsIntensiveEvents;
         
         internal static readonly Thread CurrentThread = Thread.CurrentThread;
         private static readonly FileSystemWatcher IgnoredWatcher = new FileSystemWatcher(Path.Combine(Util.GetRootFolder(), "Save"), "IgnoredPlugins.txt");
@@ -126,9 +135,13 @@ namespace Fougerite
             {
                 RPCChat = Config.GetBoolValue("Fougerite", "RPCChat");
             }
-            if (Config.GetValue("Fougerite", "RPCChatMethod") != null)
+            if (Config.GetValue("Fougerite", "ClientFunction") != null)
             {
-                RPCChatMethod = Config.GetValue("Fougerite", "RPCChatMethod");
+                RPCChatMethod = Config.GetValue("Fougerite", "ClientFunction");
+            }
+            if (Config.GetValue("Fougerite", "EnableScriptPluginsIntensiveEvents") != null)
+            {
+                EnableScriptPluginsIntensiveEvents = Config.GetBoolValue("Fougerite", "EnableScriptPluginsIntensiveEvents");
             }
 
             if (!RustChat)

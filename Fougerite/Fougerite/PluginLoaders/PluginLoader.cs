@@ -72,7 +72,11 @@
             "On_TimedExplosiveSpawned",
             "On_SleeperSpawned",
             "On_CommandRestriction",
-            "On_FireBarrelToggle"
+            "On_FireBarrelToggle",
+            "On_DayCycleChanged",
+            "On_Shoot",
+            "On_ShotgunShoot",
+            "On_BowShoot"
         };
 
         public void Initialize()
@@ -324,7 +328,7 @@
                             Hooks.OnSupplySignalExpode += plugin.OnSupplySignalExploded;
                             break;
                         case "On_PlayerMove":
-                            if (plugin.Type == PluginType.CSharp || plugin.Type == PluginType.CSScript)
+                            if (IsIntensiveEventAllowed(plugin))
                             {
                                 Hooks.OnPlayerMove += plugin.OnPlayerMove;
                             }
@@ -355,6 +359,27 @@
                             break;
                         case "On_FireBarrelToggle":
                             Hooks.OnFireBarrelToggle += plugin.OnFireBarrelToggle;
+                            break;
+                        case "On_DayCycleChanged":
+                            Hooks.OnDayCycleChanged += plugin.OnDayCycleChange;
+                            break;
+                        case "On_Shoot":
+                            if (IsIntensiveEventAllowed(plugin))
+                            {
+                                Hooks.OnShoot += plugin.OnShoot;
+                            }
+                            break;
+                        case "On_ShotgunShoot":
+                            if (IsIntensiveEventAllowed(plugin))
+                            {
+                                Hooks.OnShotgunShoot += plugin.OnShotgunShoot;
+                            }
+                            break;
+                        case "On_BowShoot":
+                            if (IsIntensiveEventAllowed(plugin))
+                            {
+                                Hooks.OnBowShoot += plugin.OnBowShoot;
+                            }
                             break;
                     }
                 }
@@ -516,7 +541,7 @@
                             Hooks.OnSupplySignalExpode -= plugin.OnSupplySignalExploded;
                             break;
                         case "On_PlayerMove":
-                            if (plugin.Type == PluginType.CSharp || plugin.Type == PluginType.CSScript)
+                            if (IsIntensiveEventAllowed(plugin))
                             {
                                 Hooks.OnPlayerMove -= plugin.OnPlayerMove;
                             }
@@ -548,12 +573,39 @@
                         case "On_FireBarrelToggle":
                             Hooks.OnFireBarrelToggle -= plugin.OnFireBarrelToggle;
                             break;
+                        case "On_DayCycleChanged":
+                            Hooks.OnDayCycleChanged -= plugin.OnDayCycleChange;
+                            break;
+                        case "On_Shoot":
+                            if (IsIntensiveEventAllowed(plugin))
+                            {
+                                Hooks.OnShoot -= plugin.OnShoot;
+                            }
+                            break;
+                        case "On_ShotgunShoot":
+                            if (IsIntensiveEventAllowed(plugin))
+                            {
+                                Hooks.OnShotgunShoot -= plugin.OnShotgunShoot;
+                            }
+                            break;
+                        case "On_BowShoot":
+                            if (IsIntensiveEventAllowed(plugin))
+                            {
+                                Hooks.OnBowShoot -= plugin.OnBowShoot;
+                            }
+                            break;
                     }
                 }
 
                 if (plugin.Globals.Contains("On_PluginShutdown"))
                     plugin.OnPluginShutdown();
             }
+        }
+
+        private bool IsIntensiveEventAllowed(BasePlugin plugin)
+        {
+            return plugin.Type == PluginType.CSharp || plugin.Type == PluginType.CSScript ||
+                   Bootstrap.EnableScriptPluginsIntensiveEvents;
         }
     }
 }

@@ -19,6 +19,7 @@ namespace Fougerite
         public static readonly List<ulong> uLinkDCCache = new List<ulong>();
         internal static Dictionary<string, Flood> FloodChecks = new Dictionary<string, Flood>();
         internal static Dictionary<string, DateTime> FloodCooldown = new Dictionary<string, DateTime>();
+        private static bool? _isNight = null;
 
         /// <summary>
         /// This delegate runs when all plugins loaded. (First time)
@@ -336,6 +337,11 @@ namespace Fougerite
         /// This delegate runs when a firebarrel is toggled.
         /// </summary>
         public static event FireBarrelToggleEventDelegate OnFireBarrelToggle;
+        
+        /// <summary>
+        /// This delegate runs when the day cycle changes from day to night or night to day.
+        /// </summary>
+        public static event DayCycleChangeEventDelegate OnDayCycleChanged;
 
         /// <summary>
         /// This value returns if the server is shutting down.
@@ -411,6 +417,7 @@ namespace Fougerite
             OnSleeperSpawned = delegate {  };
             OnCommandRestriction = delegate {  };
             OnFireBarrelToggle = delegate {  };
+            OnDayCycleChanged = delegate {  };
         }
         
         public delegate void BlueprintUseHandlerDelegate(Player player, BPUseEvent ae);
@@ -536,6 +543,8 @@ namespace Fougerite
         public delegate void CommandRestrictionEventDelegate(CommandRestrictionEvent commandRestrictionEvent);
         
         public delegate void FireBarrelToggleEventDelegate(FireBarrelToggleEvent fbte);
+        
+        public delegate void DayCycleChangeEventDelegate(DayCycleChangeEvent dcche);
         
         /// <summary>
         /// Flags for Method.Invoke

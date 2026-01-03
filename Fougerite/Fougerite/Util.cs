@@ -19,7 +19,6 @@ using IronPython.Runtime.Types;
 using UnityEngine;
 using String = Facepunch.Utility.String;
 using Fougerite.Tools;
-using IronPython.Modules;
 
 namespace Fougerite
 {
@@ -305,7 +304,7 @@ namespace Fougerite
             Type type;
             if (TryFindType(className.Replace('.', '+'), out type))
             {
-                FieldInfo info = type.GetField(field, BindingFlags.Public | BindingFlags.Static);
+                FieldInfo info = type.GetField(field, BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
                 if (info != null)
                 {
                     return info.GetValue(null);
@@ -1274,10 +1273,10 @@ namespace Fougerite
         /// <summary>
         /// Gets the specified variable's value from the instance using reflection.
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="instance"></param>
-        /// <param name="fieldName"></param>
-        /// <returns></returns>
+        /// <param name="type">The <see cref="Type"/> of the class containing the field.</param>
+        /// <param name="instance">The object instance to read from. Pass <c>null</c> for static fields.</param>
+        /// <param name="fieldName">The case-sensitive name of the field to retrieve.</param>
+        /// <returns>The value of the field, or <c>null</c> if the field is not found or an error occurs.</returns>
         public object GetInstanceField(Type type, object instance, string fieldName)
         {
             BindingFlags bindFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
@@ -1301,10 +1300,10 @@ namespace Fougerite
         /// <summary>
         /// Sets the specified variable's value in the instance using reflection.
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="instance"></param>
-        /// <param name="fieldName"></param>
-        /// <param name="val"></param>
+        /// <param name="type">The <see cref="Type"/> of the class containing the field.</param>
+        /// <param name="instance">The object instance to modify. Pass <c>null</c> for static fields.</param>
+        /// <param name="fieldName">The case-sensitive name of the field to set.</param>
+        /// <param name="val">The new value to assign to the field.</param>
         public void SetInstanceField(Type type, object instance, string fieldName, object val)
         {
             BindingFlags bindFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
@@ -1319,7 +1318,63 @@ namespace Fougerite
                 Logger.LogError($"[Reflection] Failed to set value of {fieldName}! {ex}");
             }
         }
+        
+        /// <summary>
+        /// Gets the specified property's value from the instance using reflection.
+        /// </summary>
+        /// <param name="type">The <see cref="Type"/> of the class containing the property.</param>
+        /// <param name="instance">The object instance to read from. Pass <c>null</c> for static properties.</param>
+        /// <param name="propertyName">The case-sensitive name of the property to retrieve.</param>
+        /// <returns>The value returned by the property's get accessor, or <c>null</c>.</returns>
+        public object GetInstanceProperty(Type type, object instance, string propertyName)
+        {
+            BindingFlags bindFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+            try
+            {
+                PropertyInfo prop = type.GetProperty(propertyName, bindFlags);
+                if (prop != null)
+                {
+                    return prop.GetValue(instance, null);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"[Reflection] Failed to get property {propertyName}! {ex}");
+            }
+    
+            return null;
+        }
 
+        
+        /// <summary>
+        /// Sets the specified property's value in the instance using reflection.
+        /// </summary>
+        /// <param name="type">The <see cref="Type"/> of the class containing the property.</param>
+        /// <param name="instance">The object instance to modify. Pass <c>null</c> for static properties.</param>
+        /// <param name="propertyName">The case-sensitive name of the property to set.</param>
+        /// <param name="val">The new value to assign via the property's set accessor.</param>
+        public bool SetInstanceProperty(Type type, object instance, string propertyName, object val)
+        {
+            bool success = false;
+            BindingFlags bindFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+            try
+            {
+                PropertyInfo prop = type.GetProperty(propertyName, bindFlags);
+                if (prop != null)
+                {
+                    prop.SetValue(instance, val, null);
+                }
+                
+                success = true;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"[Reflection] Failed to set property {propertyName}! {ex}");
+            }
+            
+            return success;
+        }
+        
         /// <summary>
         /// Determines if any invalid XML 1.0 characters exist within the string,
         /// and if so it returns a new string with the invalid chars removed, else 
