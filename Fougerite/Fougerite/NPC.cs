@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Fougerite
 {
@@ -25,10 +26,11 @@ namespace Fougerite
         /// </summary>
         public void Kill()
         {
-            if (Character.alive)
+            if (IsAlive)
             {
-                Character.Signal_ServerCharacterDeath();
-                Character.SendMessage("OnKilled", new DamageEvent(), SendMessageOptions.DontRequireReceiver);
+                //Character.Signal_ServerCharacterDeath();
+                //Character.SendMessage("OnKilled", new DamageEvent(), SendMessageOptions.DontRequireReceiver);
+                TakeDamage.KillSelf(_char.GetComponent<IDBase>());
             }
         }
         
@@ -40,7 +42,7 @@ namespace Fougerite
         {
             if (IsAlive)
             {
-                TakeDamage.HurtSelf(_char, dmg);
+                TakeDamage.HurtSelf(_char.GetComponent<IDBase>(), dmg);
             }
         }
 
@@ -73,7 +75,7 @@ namespace Fougerite
         /// </summary>
         public bool IsAlive
         {
-            get { return Character.alive; }
+            get { return _char != null && _char.alive; }
         }
 
         /// <summary>
@@ -90,8 +92,16 @@ namespace Fougerite
         /// </summary>
         public float Health
         {
-            get { return _char.health; }
-            set { _char.takeDamage.health = value; }
+            get 
+            { 
+                if (_char == null) return 0f;
+                return _char.health; 
+            }
+            set 
+            { 
+                if (_char != null && _char.takeDamage != null)
+                    _char.takeDamage.health = value; 
+            }
         }
 
         /// <summary>
@@ -107,7 +117,11 @@ namespace Fougerite
         /// </summary>
         public Vector3 Location
         {
-            get { return _char.transform.position; }
+            get 
+            { 
+                if (_char == null) return Vector3.zero;
+                return _char.transform.position; 
+            }
         }
 
         /// <summary>
@@ -115,7 +129,11 @@ namespace Fougerite
         /// </summary>
         public float X
         {
-            get { return _char.transform.position.x; }
+            get
+            {
+                if (_char == null) return 0f;
+                return _char.transform.position.x;
+            }
         }
 
         /// <summary>
@@ -123,7 +141,11 @@ namespace Fougerite
         /// </summary>
         public float Y
         {
-            get { return _char.transform.position.y; }
+            get
+            {
+                if (_char == null) return 0f;
+                return _char.transform.position.y;
+            }
         }
 
         /// <summary>
@@ -131,7 +153,11 @@ namespace Fougerite
         /// </summary>
         public float Z
         {
-            get { return _char.transform.position.z; }
+            get
+            {
+                if (_char == null) return 0f;
+                return _char.transform.position.z;
+            }
         }
 
         /// <summary>

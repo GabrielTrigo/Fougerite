@@ -1613,20 +1613,42 @@ namespace Fougerite
         {
             using (new Stopper(nameof(Hooks), nameof(AnimalMovement)))
             {
-                var movement = m as NavMeshMovement;
+                // Get the NPC from the Character and find It's NPCCache entry
+                Character character = ai.GetComponent<Character>();
+                NPC npc = null;
+                if (character != null)
+                {
+                    npc = NPCCache.GetInstance().GetEntityByInstanceId(character.GetInstanceID());
+                }
+                
+                // AI movement should be NavMeshMovement
+                NavMeshMovement movement = m as NavMeshMovement;
                 if (movement == null || !movement)
                 {
                     return;
                 }
 
+                // We will kill the AI if It has an invalid path
                 if (movement._agent.pathStatus == NavMeshPathStatus.PathInvalid)
                 {
                     TakeDamage dmg = ai.GetComponent<TakeDamage>();
-                    bool IsAlive = dmg != null && ai.GetComponent<TakeDamage>().alive;
+                    bool IsAlive = dmg != null && dmg.alive;
                     if (IsAlive)
                     {
                         TakeDamage.KillSelf(ai.GetComponent<IDBase>());
                         Logger.LogWarning("[NavMesh] AI destroyed for having invalid path.");
+                    }
+                }
+                else
+                {
+                    AnimalMovementEvent ev = new AnimalMovementEvent(npc, movement, simMillis);
+                    try
+                    {
+                        ExecuteSubscribers(OnAnimalMovement, "AnimalMovementEvent", ev);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError($"AnimalMovementEvent Error: {ex}");
                     }
                 }
             }

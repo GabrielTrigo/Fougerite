@@ -342,6 +342,11 @@ namespace Fougerite
         /// This delegate runs when the day cycle changes from day to night or night to day.
         /// </summary>
         public static event DayCycleChangeEventDelegate OnDayCycleChanged;
+        
+        /// <summary>
+        /// This delegate runs when an animal moves.
+        /// </summary>
+        public static event AnimalMovementEventDelegate OnAnimalMovement;
 
         /// <summary>
         /// This value returns if the server is shutting down.
@@ -418,6 +423,7 @@ namespace Fougerite
             OnCommandRestriction = delegate {  };
             OnFireBarrelToggle = delegate {  };
             OnDayCycleChanged = delegate {  };
+            OnAnimalMovement = delegate {  };
         }
         
         public delegate void BlueprintUseHandlerDelegate(Player player, BPUseEvent ae);
@@ -545,6 +551,8 @@ namespace Fougerite
         public delegate void FireBarrelToggleEventDelegate(FireBarrelToggleEvent fbte);
         
         public delegate void DayCycleChangeEventDelegate(DayCycleChangeEvent dcche);
+        
+        public delegate void AnimalMovementEventDelegate(AnimalMovementEvent ame);
         
         /// <summary>
         /// Flags for Method.Invoke

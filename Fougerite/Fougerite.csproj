@@ -56,6 +56,7 @@
     <Compile Include="Fougerite\Concurrent\LockQueue.cs" />
     <Compile Include="Fougerite\Concurrent\ReadWriterLock.cs" />
     <Compile Include="Fougerite\CTimer.cs" />
+    <Compile Include="Fougerite\Events\AnimalMovementEvent.cs" />
     <Compile Include="Fougerite\Events\BanEvent.cs" />
     <Compile Include="Fougerite\Events\BeltUseEvent.cs" />
     <Compile Include="Fougerite\Events\BowShootEvent.cs" />

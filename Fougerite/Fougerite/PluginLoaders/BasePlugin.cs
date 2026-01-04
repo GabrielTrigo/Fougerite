@@ -1070,5 +1070,10 @@ namespace Fougerite.PluginLoaders
         {
             Invoke("On_BowShoot", ev);
         }
+
+        public void OnAnimalMovement(AnimalMovementEvent ev)
+        {
+            Invoke("On_AnimalMovement", ev);
+        }
     }
 }

@@ -76,7 +76,8 @@
             "On_DayCycleChanged",
             "On_Shoot",
             "On_ShotgunShoot",
-            "On_BowShoot"
+            "On_BowShoot",
+            "On_AnimalMovement"
         };
 
         public void Initialize()
@@ -381,6 +382,12 @@
                                 Hooks.OnBowShoot += plugin.OnBowShoot;
                             }
                             break;
+                        case "On_AnimalMovement":
+                            if (IsIntensiveEventAllowed(plugin))
+                            {
+                                Hooks.OnAnimalMovement += plugin.OnAnimalMovement;
+                            }
+                            break;
                     }
                 }
             }
@@ -592,6 +599,12 @@
                             if (IsIntensiveEventAllowed(plugin))
                             {
                                 Hooks.OnBowShoot -= plugin.OnBowShoot;
+                            }
+                            break;
+                        case "On_AnimalMovement":
+                            if (IsIntensiveEventAllowed(plugin))
+                            {
+                                Hooks.OnAnimalMovement -= plugin.OnAnimalMovement;
                             }
                             break;
                     }
