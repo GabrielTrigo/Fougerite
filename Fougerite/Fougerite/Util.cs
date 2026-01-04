@@ -1269,9 +1269,40 @@ namespace Fougerite
         {
             return MD5Hash(Encoding.UTF8.GetBytes(input));
         }
+        
+        /// <summary>
+        /// Calls a private or public method on an instance and returns the result.
+        /// Works for static methods as well (pass null as instance).
+        /// </summary>
+        /// <param name="type">The <see cref="Type"/> of the class containing the method.</param>
+        /// <param name="instance">The object instance to call the method on. Pass <c>null</c> for static methods.</param>
+        /// <param name="methodName">The case-sensitive name of the method.</param>
+        /// <param name="args">An array of arguments to pass to the method. Pass <c>null</c> if there are no parameters.</param>
+        /// <returns>The return value of the method, or <c>null</c> if the method returns void or an error occurs.</returns>
+        public object CallInstanceMethod(Type type, object instance, string methodName, object[] args)
+        {
+            BindingFlags bindFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+            try
+            {
+                MethodInfo method = type.GetMethod(methodName, bindFlags);
+                if (method != null)
+                {
+                    return method.Invoke(instance, args);
+                }
+
+                Logger.LogError($"[Reflection] Method {methodName} not found on type {type.Name}!");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"[Reflection] Failed to invoke method {methodName}! {ex}");
+            }
+            
+            return null;
+        }
 
         /// <summary>
         /// Gets the specified variable's value from the instance using reflection.
+        /// Works for static methods as well (pass null as instance).
         /// </summary>
         /// <param name="type">The <see cref="Type"/> of the class containing the field.</param>
         /// <param name="instance">The object instance to read from. Pass <c>null</c> for static fields.</param>
@@ -1299,6 +1330,7 @@ namespace Fougerite
 
         /// <summary>
         /// Sets the specified variable's value in the instance using reflection.
+        /// Works for static methods as well (pass null as instance).
         /// </summary>
         /// <param name="type">The <see cref="Type"/> of the class containing the field.</param>
         /// <param name="instance">The object instance to modify. Pass <c>null</c> for static fields.</param>
@@ -1321,6 +1353,7 @@ namespace Fougerite
         
         /// <summary>
         /// Gets the specified property's value from the instance using reflection.
+        /// Works for static methods as well (pass null as instance).
         /// </summary>
         /// <param name="type">The <see cref="Type"/> of the class containing the property.</param>
         /// <param name="instance">The object instance to read from. Pass <c>null</c> for static properties.</param>
@@ -1348,6 +1381,7 @@ namespace Fougerite
         
         /// <summary>
         /// Sets the specified property's value in the instance using reflection.
+        /// Works for static methods as well (pass null as instance).
         /// </summary>
         /// <param name="type">The <see cref="Type"/> of the class containing the property.</param>
         /// <param name="instance">The object instance to modify. Pass <c>null</c> for static properties.</param>
