@@ -100,6 +100,69 @@ namespace Fougerite.Caches
             return CachedPlayers.Values.FirstOrDefault(p => 
                 p.Aliases != null && p.Aliases.Any(a => a.Equals(alias, StringComparison.OrdinalIgnoreCase)));
         }
+        
+        /// <summary>
+        /// Returns all players currently using the specified name.
+        /// Match is case-insensitive.
+        /// </summary>
+        /// <param name="name">The name to search for.</param>
+        /// <returns>A list of CachedPlayer objects.</returns>
+        public List<CachedPlayer> GetPlayersByName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return new List<CachedPlayer>();
+            
+            return CachedPlayers.Values.Where(p => 
+                p.Name != null && p.Name.Equals(name, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+
+        /// <summary>
+        /// Returns all players who have used the specified alias in their history.
+        /// Match is case-insensitive.
+        /// </summary>
+        /// <param name="alias">The alias to search for.</param>
+        /// <returns>A list of CachedPlayer objects.</returns>
+        public List<CachedPlayer> GetPlayersByAlias(string alias)
+        {
+            if (string.IsNullOrEmpty(alias)) 
+                return new List<CachedPlayer>();
+            
+            return CachedPlayers.Values.Where(p => 
+                p.Aliases != null && p.Aliases.Any(a => a.Equals(alias, StringComparison.OrdinalIgnoreCase))).ToList();
+        }
+        
+        /// <summary>
+        /// Finds all players whose current name contains the specified search string.
+        /// Match is case-insensitive.
+        /// </summary>
+        /// <param name="namePart">The partial name to search for.</param>
+        /// <returns>A list of CachedPlayer objects containing the string.</returns>
+        public List<CachedPlayer> GetPlayersByNameContains(string namePart)
+        {
+            if (string.IsNullOrEmpty(namePart)) 
+                return new List<CachedPlayer>();
+            
+            return CachedPlayers.Values.Where(p => 
+                    p.Name != null && p.Name.IndexOf(namePart, StringComparison.OrdinalIgnoreCase) >= 0)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Finds all players who have at least one alias containing the specified search string.
+        /// Match is case-insensitive.
+        /// </summary>
+        /// <param name="aliasPart">The partial alias to search for.</param>
+        /// <returns>A list of CachedPlayer objects where at least one alias matches.</returns>
+        public List<CachedPlayer> GetPlayersByAliasContains(string aliasPart)
+        {
+            if (string.IsNullOrEmpty(aliasPart)) 
+                return new List<CachedPlayer>();
+
+            return CachedPlayers.Values.Where(p => 
+                    p.Aliases != null && p.Aliases.Any(a => 
+                        a != null && a.IndexOf(aliasPart, StringComparison.OrdinalIgnoreCase) >= 0))
+                .ToList();
+        }
 
         /// <summary>
         /// Returns a list of all players that have used a specific IP.
@@ -109,6 +172,9 @@ namespace Fougerite.Caches
         /// <returns>A list of CachedPlayer objects.</returns>
         public List<CachedPlayer> GetPlayersByIP(string ip)
         {
+            if (string.IsNullOrEmpty(ip)) 
+                return new List<CachedPlayer>();
+            
             return CachedPlayers.Values.Where(p => 
                 p.IPAddresses != null && p.IPAddresses.Contains(ip)).ToList();
         }
