@@ -968,6 +968,110 @@ namespace Fougerite
         }
 
         /// <summary>
+        /// Spawns the sleeper for the given SteamID if they are supposed to be sleeping.
+        /// Only works if they atleast connnected once to the server.
+        /// </summary>
+        /// <param name="steamID">SteamID of player.</param>
+        /// <returns>Returns true if successful.</returns>
+        public bool ManuallySpawnSleeper(ulong steamID)
+        {
+            // Load the player's saved data
+            RustProto.Avatar avatar = NetUser.LoadAvatar(steamID);
+
+            // Sanity Check
+            if (avatar == null) 
+                return false;
+
+            // Check if they are actually supposed to be sleeping
+            if (!avatar.HasAwayEvent || avatar.AwayEvent.Type != RustProto.AwayEvent.Types.AwayEventType.SLUMBER)
+            {
+                return false;
+            }
+
+            // Prepare Position and Rotation
+            Vector3 pos = new Vector3(avatar.Pos.X, avatar.Pos.Y, avatar.Pos.Z);
+            Quaternion rot = new Quaternion(avatar.Ang.X, avatar.Ang.Y, avatar.Ang.Z, avatar.Ang.W);
+
+            // Prefab of sleeper
+            const string sleeperPrefab = ";sleeper_male";
+            
+            // Instantiate the sleeper
+            GameObject sleeperGO = NetCull.InstantiateStatic(sleeperPrefab, pos, rot);
+            if (sleeperGO == null) 
+                return false;
+
+            // Sanity check
+            SleepingAvatar component = sleeperGO.GetComponent<SleepingAvatar>();
+            if (component == null) 
+                return false;
+
+            // Try to get cached player for name
+            var cachedPlayer = PlayerCache.GetPlayerCache().GetPlayerBySteamId(steamID);
+            
+            // This links the sleeper to the SteamID
+            component.creatorID = steamID;
+            component.ownerID = steamID;
+            if (cachedPlayer != null)
+                component.ownerName = cachedPlayer.Name;
+            
+            // Use reflection to set private fields
+            Util.GetUtil().SetInstanceField(typeof(SleepingAvatar), component, "timeStamp", avatar.AwayEvent.Timestamp);
+
+            // Load Armor from Avatar data
+            // We map the uniqueIDs from the proto back to the Datablocks
+            if (avatar.WearableCount > 0)
+            {
+                for (int i = 0; i < avatar.WearableList.Count; i++)
+                {
+                    var item = avatar.GetWearable(i);
+                    var db = DatablockDictionary.GetByUniqueID(item.Id) as ArmorDataBlock;
+                    if (db == null) continue;
+
+                    ArmorModelSlot slot;
+                    if (db.GetArmorModelSlot(out slot))
+                    {
+                        switch (slot)
+                        {
+                            case ArmorModelSlot.Feet:
+                                component.footArmor = db;
+                                break;
+                            case ArmorModelSlot.Legs:
+                                component.legArmor = db;
+                                break;
+                            case ArmorModelSlot.Torso:
+                                component.torsoArmor = db;
+                                break;
+                            case ArmorModelSlot.Head:
+                                component.headArmor = db;
+                                break;
+                        }
+                    }
+                }
+            }
+
+            // Load Vitals (Health)
+            var takeDamage = component.GetComponent<TakeDamage>();
+            if (takeDamage != null && avatar.HasVitals)
+            {
+                takeDamage.LoadVitals(avatar.Vitals);
+            }
+
+            // IMPORTANT: Register the sleeper in the global registry
+            // Without this, the server won't know to "Close" the sleeper when the player logs back in.
+            if (!SleepingAvatar.Registry.all.ContainsKey(steamID))
+            {
+                SleepingAvatar.Registry.all.Add(steamID, component);
+                component.registered = true;
+            }
+
+            // Update visuals for other players
+            // This triggers the RPC that makes the armor visible to everyone else
+            Util.GetUtil().CallInstanceMethod(typeof(SleepingAvatar), component, "UpdateBufferedArmor", null);
+            
+            return true;
+        }
+
+        /// <summary>
         /// Gets or Sets the NightLength
         /// </summary>
         public float NightLength
