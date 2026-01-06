@@ -318,7 +318,7 @@ namespace Fougerite
 #pragma warning restore CS0618 // Type or member is obsolete
             
             // Load DataStore
-            LoadDataStore();
+            DataStore.GetInstance().Load();
             
             // Update Banlist
             UpdateBanList();
@@ -349,21 +349,6 @@ namespace Fougerite
                 LuaPluginLoader.GetInstance();
                 Hooks.ServerStarted();
                 ShutdownCatcher.Hook();
-            }
-        }
-
-        /// <summary>
-        /// Loads the DataStore.
-        /// </summary>
-        private void LoadDataStore()
-        {
-            try
-            {
-                DataStore.GetInstance().Load();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"LoadDataStore failed: {ex}");
             }
         }
 
