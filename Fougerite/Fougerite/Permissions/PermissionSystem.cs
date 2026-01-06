@@ -1177,7 +1177,7 @@ namespace Fougerite.Permissions
             if (pattern.EndsWith(".*")) // hierarchical wildcard
             {
                 string prefix = pattern.Substring(0, pattern.Length - 2); // drop ".*"
-                return requested == prefix || requested.StartsWith(prefix + ".");
+                return requested == prefix || requested.StartsWith($"{prefix}.");
             }
 
             return pattern == requested; // exact match

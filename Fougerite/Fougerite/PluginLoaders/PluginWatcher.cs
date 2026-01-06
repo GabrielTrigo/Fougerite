@@ -80,64 +80,78 @@ namespace Fougerite.PluginLoaders
 
         private void OnPluginCreated(object sender, FileSystemEventArgs e)
         {
-            string filename = Path.GetFileNameWithoutExtension(e.Name);
-            string dir = Path.GetDirectoryName(e.FullPath).Split(Path.DirectorySeparatorChar).Last();
-
-            if (filename == dir && IsAPlugin(e.Name))
+            Loom.QueueOnMainThread(() =>
             {
-                if (!TryLoadPlugin(filename, Type))
+                try
                 {
-                    Logger.Log(string.Format("[PluginWatcher] Couldn't load: {0}{3}{1}.{2}", dir, filename,
-                        Type, Path.DirectorySeparatorChar));
+                    string filename = Path.GetFileNameWithoutExtension(e.Name);
+                    string dir = Path.GetDirectoryName(e.FullPath).Split(Path.DirectorySeparatorChar).Last();
+
+                    if (filename == dir && IsAPlugin(e.Name))
+                    {
+                        if (!TryLoadPlugin(filename, Type))
+                        {
+                            Logger.Log(string.Format("[PluginWatcher] Couldn't load: {0}{3}{1}.{2}", dir, filename,
+                                Type, Path.DirectorySeparatorChar));
+                        }
+                        else
+                        {
+                            Logger.Log($"[PluginWatcher] Detected new plugin {filename}");
+                        }
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    Loom.QueueOnMainThread(() => {
-                        Logger.Log($"[PluginWatcher] Detected new plugin {filename}");
-                    });
+                    Logger.LogError($"[PluginWatcher] OnPluginCreated error: {ex}");
                 }
-            }
+            });
         }
 
         private void OnPluginChanged(object sender, FileSystemEventArgs e)
         {
-            string filename = Path.GetFileNameWithoutExtension(e.Name);
-            string dir = Path.GetDirectoryName(e.FullPath).Split(Path.DirectorySeparatorChar).Last();
-
-            string assumedPluginPathFromDir =
-                Path.Combine(Path.Combine(Watcher.Path, dir), dir + Path.GetExtension(e.Name));
-
-            if (filename == dir && IsAPlugin(e.Name))
+            Loom.QueueOnMainThread(() =>
             {
-                if (File.Exists(e.FullPath))
+                try
                 {
-                    if (!TryLoadPlugin(filename, Type))
+                    string filename = Path.GetFileNameWithoutExtension(e.Name);
+                    string dir = Path.GetDirectoryName(e.FullPath).Split(Path.DirectorySeparatorChar).Last();
+
+                    string assumedPluginPathFromDir =
+                        Path.Combine(Path.Combine(Watcher.Path, dir), dir + Path.GetExtension(e.Name));
+
+                    if (filename == dir && IsAPlugin(e.Name))
                     {
-                        Logger.Log(string.Format("[PluginWatcher] Couldn't load: {0}{3}{1}.{2}", dir,
-                            filename, Type, Path.DirectorySeparatorChar));
+                        if (File.Exists(e.FullPath))
+                        {
+                            if (!TryLoadPlugin(filename, Type))
+                            {
+                                Logger.Log(string.Format("[PluginWatcher] Couldn't load: {0}{3}{1}.{2}", dir,
+                                    filename, Type, Path.DirectorySeparatorChar));
+                            }
+                            else
+                            {
+                                Logger.Log($"[PluginWatcher] Reloaded plugin {filename}");
+                            }
+                        }
                     }
-                    else
+                    else if (File.Exists(assumedPluginPathFromDir) && IsAPlugin(e.Name))
                     {
-                        Loom.QueueOnMainThread(() => {
+                        if (!TryLoadPlugin(dir, Type))
+                        {
+                            Logger.Log(string.Format("[PluginWatcher] Couldn't load: {0}{3}{1}.{2}", dir, filename,
+                                Type, Path.DirectorySeparatorChar));
+                        }
+                        else
+                        {
                             Logger.Log($"[PluginWatcher] Reloaded plugin {filename}");
-                        });
+                        }
                     }
                 }
-            }
-            else if (File.Exists(assumedPluginPathFromDir) && IsAPlugin(e.Name))
-            {
-                if (!TryLoadPlugin(dir, Type))
+                catch (Exception ex)
                 {
-                    Logger.Log(string.Format("[PluginWatcher] Couldn't load: {0}{3}{1}.{2}", dir, filename,
-                        Type, Path.DirectorySeparatorChar));
+                    Logger.LogError($"[PluginWatcher] OnPluginChanged error: {ex}");
                 }
-                else
-                {
-                    Loom.QueueOnMainThread(() => {
-                        Logger.Log($"[PluginWatcher] Reloaded plugin {filename}");
-                    });
-                }
-            }
+            });
         }
     }
 }

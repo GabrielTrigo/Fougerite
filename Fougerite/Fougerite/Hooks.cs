@@ -2038,12 +2038,12 @@ namespace Fougerite
 
                     if (clientConnection.Protocol != 1069)
                     {
-                        Debug.Log("Denying entry to client with invalid protocol version (" + ip + ")");
+                        Debug.Log($"Denying entry to client with invalid protocol version ({ip})");
                         approval.Deny(uLink.NetworkConnectionError.IncompatibleVersions);
                     }
                     else if (BanList.Contains(uid))
                     {
-                        Debug.Log("Rejecting client (" + uid + "in banlist)");
+                        Debug.Log($"Rejecting client ({uid}in banlist)");
                         approval.Deny(uLink.NetworkConnectionError.ConnectionBanned);
                     }
                     else if (srv.IsBannedID(uid.ToString()) || srv.IsBannedIP(ip))
@@ -3191,7 +3191,7 @@ namespace Fougerite
                 Facepunch.NetworkView view;
                 if (!NetCull.GetNetworkView(instance, out view))
                 {
-                    Debug.LogError("Could not get view, will not be dynamic group " + instance, instance);
+                    Debug.LogError($"Could not get view, will not be dynamic group {instance}", instance);
                 }
                 else
                 {
@@ -3282,7 +3282,7 @@ namespace Fougerite
             }
             if (!NGC.Prefab.Register.Find(args.prefabName, out prefab))
             {
-                Debug.LogError("No NGC Prefab with name:" + args.prefabName);
+                Debug.LogError($"No NGC Prefab with name:{args.prefabName}");
                 return null;
             }
             if (!NGC.Global.byGroup.TryGetValue((ushort) groupToUse, out component))

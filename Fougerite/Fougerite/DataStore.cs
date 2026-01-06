@@ -128,7 +128,7 @@ namespace Fougerite
             }
             catch (Exception ex)
             {
-                Logger.LogError("[DataStore] ToIni error: " + ex);
+                Logger.LogError($"[DataStore] ToIni error: {ex}");
             }
             finally
             {
@@ -181,7 +181,7 @@ namespace Fougerite
             }
             catch (Exception ex)
             {
-                Logger.LogError("[DataStore] FromIni error: " + ex);
+                Logger.LogError($"[DataStore] FromIni error: {ex}");
             }
             finally
             {
@@ -253,7 +253,7 @@ namespace Fougerite
             }
             catch (Exception ex)
             {
-                Logger.LogError("[DataStore] ContainsKey error: " + ex);
+                Logger.LogError($"[DataStore] ContainsKey error: {ex}");
             }
             finally
             {
@@ -281,7 +281,7 @@ namespace Fougerite
             }
             catch (Exception ex)
             {
-                Logger.LogError("[DataStore] ContainsValue error: " + ex);
+                Logger.LogError($"[DataStore] ContainsValue error: {ex}");
             }
             finally
             {
@@ -310,7 +310,7 @@ namespace Fougerite
             }
             catch (Exception ex)
             {
-                Logger.LogError("[DataStore] Count error: " + ex);
+                Logger.LogError($"[DataStore] Count error: {ex}");
             }
             finally
             {
@@ -336,7 +336,7 @@ namespace Fougerite
             }
             catch (Exception ex)
             {
-                Logger.LogError("[DataStore] Flush error: " + ex);
+                Logger.LogError($"[DataStore] Flush error: {ex}");
             }
             finally
             {
@@ -365,7 +365,7 @@ namespace Fougerite
             }
             catch (Exception ex)
             {
-                Logger.LogError("[DataStore] Get error: " + ex);
+                Logger.LogError($"[DataStore] Get error: {ex}");
             }
             finally
             {
@@ -398,7 +398,7 @@ namespace Fougerite
             }
             catch (Exception ex)
             {
-                Logger.LogError("[DataStore] GetTable error: " + ex);
+                Logger.LogError($"[DataStore] GetTable error: {ex}");
             }
             finally
             {
@@ -427,7 +427,7 @@ namespace Fougerite
             }
             catch (Exception ex)
             {
-                Logger.LogError("[DataStore] Keys error: " + ex);
+                Logger.LogError($"[DataStore] Keys error: {ex}");
             }
             finally
             {
@@ -470,7 +470,7 @@ namespace Fougerite
             }
             catch (Exception ex)
             {
-                Logger.LogError("[DataStore] Load error: " + ex);
+                Logger.LogError($"[DataStore] Load error: {ex}");
                 // Fallback to legacy binary just in case
                 _datastore = Util.HashtableFromFile(PATH) ?? new Hashtable();
             }
@@ -500,7 +500,7 @@ namespace Fougerite
             }
             catch (Exception ex)
             {
-                Logger.LogError("[DataStore] Remove error: " + ex);
+                Logger.LogError($"[DataStore] Remove error: {ex}");
             }
             finally
             {
@@ -526,7 +526,7 @@ namespace Fougerite
             }
             catch (Exception ex)
             {
-                Logger.LogError("[DataStore] Save error: " + ex);
+                Logger.LogError($"[DataStore] Save error: {ex}");
             }
             finally
             {
@@ -553,7 +553,7 @@ namespace Fougerite
             }
             catch (Exception ex)
             {
-                Logger.LogError("[DataStore] Values error: " + ex);
+                Logger.LogError($"[DataStore] Values error: {ex}");
             }
             finally
             {
@@ -579,7 +579,7 @@ namespace Fougerite
             }
             catch (Exception ex)
             {
-                Logger.LogError("[DataStore] Failed to get table names: " + ex);
+                Logger.LogError($"[DataStore] Failed to get table names: {ex}");
                 return new string[0];
             }
             finally

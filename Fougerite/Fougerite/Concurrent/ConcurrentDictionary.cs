@@ -44,6 +44,22 @@ namespace Fougerite.Concurrent
                 }
             }
         }
+        
+        public IEnumerator GetEnumerator()
+        {
+            lock (_padlock)
+            {
+                return ((IEnumerable)_dictionary.ToList()).GetEnumerator();
+            }
+        }
+        
+        public TValue GetItem(TKey key)
+        {
+            lock (_padlock)
+            {
+                return _dictionary.ContainsKey(key) ? _dictionary[key] : default(TValue);
+            }
+        }
 
         public Dictionary<TKey, TValue> GetShallowCopy()
         {
@@ -112,6 +128,17 @@ namespace Fougerite.Concurrent
         {
             lock (_padlock)
                 return _dictionary.OrderBy(func).ToList();
+        }
+        
+        public int Count
+        {
+            get 
+            {
+                lock (_padlock) 
+                {
+                    return _dictionary.Count;
+                }
+            }
         }
         
         public List<TValue> ValuesCopy

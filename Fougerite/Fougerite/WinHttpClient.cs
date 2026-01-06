@@ -221,7 +221,7 @@ namespace Fougerite
                 }
                 catch (Exception ex)
                 {
-                    callback(0, "BadUrl" + ex.Message);
+                    callback(0, $"BadUrl{ex.Message}");
                     return;
                 }
 
@@ -383,8 +383,8 @@ namespace Fougerite
             }
             catch (Exception ex)
             {
-                Logger.LogError("[WinHttp] EXCEPTION: " + ex);
-                callback(0, "Exception: " + ex.Message);
+                Logger.LogError($"[WinHttp] EXCEPTION: {ex}");
+                callback(0, $"Exception: {ex.Message}");
             }
             finally
             {
@@ -428,13 +428,13 @@ namespace Fougerite
                 }, "GET", null, null, "text/plain", timeout);
 
                 if (result.WaitOne((int)(timeout * 1000) + 5000, false))
-                    return responseCode >= 200 && responseCode < 300 ? responseBody : "HTTP " + responseCode;
+                    return responseCode >= 200 && responseCode < 300 ? responseBody : $"HTTP {responseCode}";
                 return "Timeout";
             }
             catch (Exception ex)
             {
-                Logger.LogError("[GetBlocking] " + ex);
-                return "Error " + ex.Message;
+                Logger.LogError($"[GetBlocking] {ex}");
+                return $"Error {ex.Message}";
             }
         }
 
@@ -476,13 +476,13 @@ namespace Fougerite
                 }, "POST", inputBody, null, contentType, timeout);
 
                 if (result.WaitOne((int)(timeout * 1000) + 5000, false))
-                    return responseCode >= 200 && responseCode < 300 ? responseBody : "HTTP " + responseCode;
+                    return responseCode >= 200 && responseCode < 300 ? responseBody : $"HTTP {responseCode}";
                 return "Timeout";
             }
             catch (Exception ex)
             {
-                Logger.LogError("[PostBlocking] " + ex);
-                return "Error " + ex.Message;
+                Logger.LogError($"[PostBlocking] {ex}");
+                return $"Error {ex.Message}";
             }
         }
     }

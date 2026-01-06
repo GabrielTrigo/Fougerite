@@ -1637,8 +1637,7 @@ namespace Fougerite
                     if ((instance.enum4_0 & (Enum4)256) == (Enum4)256)
                     {
                         instance.method_37((Enum4)256,
-                            "Rejecting non-system message from unconnected source: " +
-                            ((class35_0 != null) ? class35_0.ToString() : null), null, class35_0.ipendPoint_0);
+                            $"Rejecting non-system message from unconnected source: {((class35_0 != null) ? class35_0.ToString() : null)}", null, class35_0.ipendPoint_0);
                     }
 
                     return;
@@ -1691,8 +1690,7 @@ namespace Fougerite
                             if ((instance.enum4_0 & (Enum4)256) == (Enum4)256)
                             {
                                 instance.method_37((Enum4)256,
-                                    "Malformed Connect message received from " +
-                                    ((ipendPoint_0 != null) ? ipendPoint_0.ToString() : null), null, ipendPoint_0);
+                                    $"Malformed Connect message received from {((ipendPoint_0 != null) ? ipendPoint_0.ToString() : null)}", null, ipendPoint_0);
                             }
 
                             return;
@@ -1769,8 +1767,7 @@ namespace Fougerite
                         if ((instance.enum4_0 & (Enum4)256) == (Enum4)256)
                         {
                             instance.method_37((Enum4)256,
-                                "Connection established received from non-connection! " +
-                                ((ipendPoint_0 != null) ? ipendPoint_0.ToString() : null), null, ipendPoint_0);
+                                $"Connection established received from non-connection! {((ipendPoint_0 != null) ? ipendPoint_0.ToString() : null)}", null, ipendPoint_0);
                         }
 
                         return;
@@ -1889,7 +1886,7 @@ namespace Fougerite
                             if ((instance.enum4_0 & (Enum4)256) == (Enum4)256)
                             {
                                 instance.method_37((Enum4)256,
-                                    "Undefined behaviour for server and system type " + enum3.ToString(), null,
+                                    $"Undefined behaviour for server and system type {enum3}", null,
                                     ipendPoint_0);
                                 return;
                             }
@@ -1917,7 +1914,7 @@ namespace Fougerite
 
                 if ((instance.enum4_0 & (Enum4)256) == (Enum4)256)
                 {
-                    instance.method_37((Enum4)256, "Undefined behaviour for server and system type " + enum3.ToString(),
+                    instance.method_37((Enum4)256, $"Undefined behaviour for server and system type {enum3}",
                         null, ipendPoint_0);
                 }
 

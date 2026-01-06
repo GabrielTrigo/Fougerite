@@ -670,7 +670,7 @@ namespace Fougerite
 
                     if (TeleportTo(terrain + bump * 2, callhook))
                     {
-                        var timer = Util.GetUtil().CreateTimer(nameof(Player) + "." + nameof(SafeTeleportTo) + "." + Name, ms, (timerObj) =>
+                        var timer = Util.GetUtil().CreateTimer($"{nameof(Player)}.{nameof(SafeTeleportTo)}.{Name}", ms, (timerObj) =>
                         {
                             TeleportTo(target, callhook);
                         }, false, nameof(Fougerite));
