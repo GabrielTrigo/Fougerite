@@ -3149,16 +3149,6 @@ namespace Fougerite
             {
                 try
                 {
-                    DataStore.GetInstance().Load();
-                    Server.GetServer().UpdateBanlist();
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError($"ServerInitEvent Critical Error: {ex}");
-                }
-
-                try
-                {
                     ExecuteSubscribers(OnServerInit, "ServerInitEvent");
                 }
                 catch (Exception ex)

@@ -17,7 +17,7 @@ namespace Fougerite
         /// <summary>
         /// Returns the Current Fougerite Version
         /// </summary>
-        public const string Version = "1.8.7";
+        public const string Version = "1.8.8";
         /// <summary>
         /// This value decides whether we should remove the player classes from the cache upon disconnect.
         /// </summary>
@@ -317,6 +317,12 @@ namespace Fougerite
             CTimer.StartWatching();
 #pragma warning restore CS0618 // Type or member is obsolete
             
+            // Load DataStore
+            LoadDataStore();
+            
+            // Update Banlist
+            UpdateBanList();
+            
             // Initialize sqlite
             SQLiteConnector.GetInstance.Setup();
             
@@ -343,6 +349,37 @@ namespace Fougerite
                 LuaPluginLoader.GetInstance();
                 Hooks.ServerStarted();
                 ShutdownCatcher.Hook();
+            }
+        }
+
+        /// <summary>
+        /// Loads the DataStore.
+        /// </summary>
+        private void LoadDataStore()
+        {
+            try
+            {
+                DataStore.GetInstance().Load();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"LoadDataStore failed: {ex}");
+            }
+        }
+
+        /// <summary>
+        /// Updates the banlist from the Banlist.txt file (Old compatibility).
+        /// </summary>
+        private void UpdateBanList()
+        {
+            // Load Banlist
+            try
+            {
+                Server.GetServer().UpdateBanlist();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"UpdateBanlist failed: {ex}");
             }
         }
 
