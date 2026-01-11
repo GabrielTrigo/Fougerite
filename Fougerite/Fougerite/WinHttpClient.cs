@@ -403,8 +403,8 @@ namespace Fougerite
         /// </summary>
         /// <param name="url">Full URL to request (https://example.com/api).</param>
         /// <param name="timeout">
-        /// Request timeout in seconds. Defaults to 10 seconds.
-        /// Actual wait time is timeout + 5 seconds to allow for cleanup.
+        /// Request timeout in seconds. Defaults to 5 seconds.
+        /// Actual wait time is timeout + 1 second to allow for cleanup.
         /// </param>
         /// <returns>
         /// Response body string if status code is 2xx (success).
@@ -412,7 +412,7 @@ namespace Fougerite
         /// "Timeout" if request exceeded timeout duration.
         /// "Error {exception}" if request failed with an exception.
         /// </returns>
-        public string GetBlocking(string url, float timeout = 10f)
+        public string GetBlocking(string url, float timeout = 5f)
         {
             try
             {
@@ -427,7 +427,7 @@ namespace Fougerite
                     result.Set();
                 }, "GET", null, null, "text/plain", timeout);
 
-                if (result.WaitOne((int)(timeout * 1000) + 5000, false))
+                if (result.WaitOne((int)(timeout * 1000) + 1000, false))
                     return responseCode >= 200 && responseCode < 300 ? responseBody : $"HTTP {responseCode}";
                 return "Timeout";
             }
@@ -450,8 +450,8 @@ namespace Fougerite
         /// Defaults to 'application/x-www-form-urlencoded'.
         /// </param>
         /// <param name="timeout">
-        /// Request timeout in seconds. Defaults to 10 seconds.
-        /// Actual wait time is timeout + 5 seconds to allow for cleanup.
+        /// Request timeout in seconds. Defaults to 5 seconds.
+        /// Actual wait time is timeout + 1 second to allow for cleanup.
         /// </param>
         /// <returns>
         /// Response body string if status code is 2xx (success).
@@ -460,7 +460,7 @@ namespace Fougerite
         /// "Error {exception}" if request failed with an exception.
         /// </returns>
         public string PostBlocking(string url, string inputBody,
-            string contentType = "application/x-www-form-urlencoded", float timeout = 10f)
+            string contentType = "application/x-www-form-urlencoded", float timeout = 5f)
         {
             try
             {
@@ -475,7 +475,7 @@ namespace Fougerite
                     result.Set();
                 }, "POST", inputBody, null, contentType, timeout);
 
-                if (result.WaitOne((int)(timeout * 1000) + 5000, false))
+                if (result.WaitOne((int)(timeout * 1000) + 1000, false))
                     return responseCode >= 200 && responseCode < 300 ? responseBody : $"HTTP {responseCode}";
                 return "Timeout";
             }
