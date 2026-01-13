@@ -1060,8 +1060,7 @@ namespace Fougerite
             // Without this, the server won't know to "Close" the sleeper when the player logs back in.
             if (!SleepingAvatar.Registry.all.ContainsKey(steamID))
             {
-                SleepingAvatar.Registry.all.Add(steamID, component);
-                component.registered = true;
+                Util.GetUtil().CallInstanceMethod(typeof(SleepingAvatar), component, "Register", null);
             }
 
             // Update visuals for other players
