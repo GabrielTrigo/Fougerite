@@ -18,7 +18,7 @@ namespace Fougerite
     public class World
     {
         private static World _world;
-        public Dictionary<string, Zone3D> zones;
+        public readonly Dictionary<string, Zone3D> zones;
         public readonly Dictionary<string, double> cache = new Dictionary<string, double>();
         private List<Entity> _deployables = new List<Entity>();
         private List<Entity> _doors = new List<Entity>();
@@ -291,7 +291,61 @@ namespace Fougerite
         /// <returns></returns>
         public Zone3D CreateZone(string name)
         {
-            return new Zone3D(name);
+            var zone = new Zone3D(name);
+            zones.Add(name, zone);
+            return zone;
+        }
+        
+        /// <summary>
+        /// Retrieves a zone by its registered name.
+        /// </summary>
+        /// <param name="name">The name of the zone.</param>
+        /// <returns>The <see cref="Zone3D"/> object if found,otherwise, null.</returns>
+        public Zone3D Get(string name)
+        {
+            if (GetWorld().zones.ContainsKey(name))
+                return GetWorld().zones[name];
+            return null;
+        }
+
+        /// <summary>
+        /// Searches all registered zones to find if any contain the specified <see cref="Entity"/>.
+        /// </summary>
+        /// <param name="e">The entity to check.</param>
+        /// <returns>The first zone containing the entity, or null if none found.</returns>
+        public Zone3D GlobalContains(Entity e)
+        {
+            if (e == null) 
+                return null;
+            
+            foreach (var zone in GetWorld().zones.Values)
+            {
+                Zone3D z3d = zone;
+                if (z3d != null && z3d.Contains(e))
+                    return z3d;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Searches all registered zones to find if any contain the specified <see cref="Player"/>.
+        /// </summary>
+        /// <param name="p">The player to check.</param>
+        /// <returns>The first zone containing the player, or null if none found.</returns>
+        public Zone3D GlobalContains(Player p)
+        {
+            if (p == null)
+                return null;
+            
+            foreach (var zone in GetWorld().zones.Values)
+            {
+                Zone3D z3d = zone;
+                if (z3d != null && z3d.Contains(p)) 
+                    return z3d;
+            }
+
+            return null;
         }
 
         /// <summary>

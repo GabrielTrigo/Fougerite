@@ -16,14 +16,14 @@
     /// </summary>
     public class BanEvent
     {
-        private BanType _type;
-        private Player _player;
-        private Player _sender;
-        private string _ip;
-        private string _id;
-        private string _name;
-        private string _reason;
-        private string _banner;
+        private readonly BanType _type;
+        private readonly Player _player;
+        private readonly Player _sender;
+        private readonly string _ip;
+        private readonly string _id;
+        private readonly string _name;
+        private readonly string _reason;
+        private readonly string _banner;
         private bool _cancel = false;
 
         public BanEvent(Player player, string Banner, string reason, Player Sender)
