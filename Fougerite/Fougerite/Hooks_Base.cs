@@ -347,6 +347,117 @@ namespace Fougerite
         /// This delegate runs when an animal moves.
         /// </summary>
         public static event AnimalMovementEventDelegate OnAnimalMovement;
+        
+        /// <summary>
+        /// This delegate runs when an item is consumed.
+        /// </summary>
+        public static event ConsumableUseEventDelegate OnConsumableUse;
+        
+        /// <summary>
+        /// This delegate runs when a player uses a medical kit or bandage.
+        /// </summary>
+        public static event MedikitUseEventDelegate OnMedikitUse;
+        
+        /// <summary>
+        /// A central registry used to manage the lifecycle of generic item modification events.
+        /// Since OnItemMod<T> creates a unique static class for every weapon type, this helper
+        /// allows the framework to clear all weapon-specific events simultaneously during a hook reset.
+        /// </summary>
+        internal static class OnItemModInstallHelper
+        {
+            /// <summary>
+            /// A collection of delegates used to reset the OnItemModInstall events.
+            /// </summary>
+            private static readonly List<Action> ClearActions = new List<Action>();
+
+            /// <summary>
+            /// Registers a cleanup delegate for a specific weapon type. 
+            /// This is typically called automatically by the static constructor of OnItemMod<T>.
+            /// </summary>
+            /// <param name="clearAction">The delegate that sets the generic event to null/empty.</param>
+            internal static void Register(Action clearAction)
+            {
+                ClearActions.Add(clearAction);
+            }
+
+            /// <summary>
+            /// Iterates through all registered weapon types and clears their event subscriptions.
+            /// This prevents memory leaks and "ghost" events when plugins are reloaded.
+            /// </summary>
+            internal static void Clear()
+            {
+                foreach (var action in ClearActions)
+                {
+                    action();
+                }
+            }
+        }
+
+        /// <summary>
+        /// A type-safe container for item modification events. 
+        /// Because this class is generic, the C# compiler creates a unique instance of 
+        /// <see cref="OnItemModInstall"/> for every subclass of <see cref="HeldItemDataBlock"/>.
+        /// </summary>
+        /// <typeparam name="T">The specific data block type of the item (like BulletWeaponDataBlock).</typeparam>
+        public static class OnItemMod<T> where T : HeldItemDataBlock
+        {
+            /// <summary>
+            /// Triggered when an attachment (mod) is being installed on a weapon of type T.
+            /// Use BulletWeaponDataBlock for guns.
+            /// </summary>
+            public static event ItemModInstalledEventDelegate<T> OnItemModInstall;
+
+            /// <summary>
+            /// Static constructor. Registers this specific generic type with the 
+            /// <see cref="OnItemModInstallHelper"/> the first time it is accessed.
+            /// </summary>
+            static OnItemMod()
+            {
+                OnItemModInstallHelper.Register(() => OnItemModInstall = delegate { });
+            }
+
+            /// <summary>
+            /// Raises the modification event and notifies all subscribers via the standard 
+            /// Fougerite <see cref="Hooks.ExecuteSubscribers"/> logic.
+            /// </summary>
+            /// <param name="e">The event arguments containing the weapon instance and the mod data.</param>
+            internal static void Raise(ItemModInstallEvent<T> e)
+            {
+                ExecuteSubscribers(OnItemModInstall, "OnItemModInstall", e);
+            }
+        }
+        
+        /// <summary>
+        /// This delegate runs when a player uses a Blood Draw Kit.
+        /// </summary>
+        public static event BloodDrawUseEventDelegate OnBloodDraw;
+        
+        /// <summary>
+        /// This delegate runs when armor is equipped.
+        /// </summary>
+        public static event ArmorEquippedEventDelegate OnArmorEquip;
+
+        /// <summary>
+        /// This delegate runs when armor is unequipped.
+        /// </summary>
+        public static event ArmorEquippedEventDelegate OnArmorUnEquip;
+        
+        /// <summary>
+        /// This delegate runs when a player throws a flare.
+        /// </summary>
+        public static event FlareThrowEventDelegate OnFlareThrow;
+        
+        /// <summary>
+        /// This delegate runs when a player ignites a flare.
+        /// If you need de-selection handling then use OnBeltUse, and write yourself the logic.
+        /// </summary>
+        public static event FlareIgniteEventDelegate OnFlareIgnite;
+        
+        /// <summary>
+        /// This delegate runs when a player ignites a basic torch.
+        /// If you need de-selection handling then use OnBeltUse, and write yourself the logic.
+        /// </summary>
+        public static event BasicTorchIgniteHandlerDelegate OnBasicTorchIgnite;
 
         /// <summary>
         /// This value returns if the server is shutting down.
@@ -424,6 +535,15 @@ namespace Fougerite
             OnFireBarrelToggle = delegate {  };
             OnDayCycleChanged = delegate {  };
             OnAnimalMovement = delegate {  };
+            OnConsumableUse = delegate {  };
+            OnMedikitUse = delegate {  };
+            OnItemModInstallHelper.Clear();
+            OnBloodDraw = delegate {  };
+            OnArmorEquip = delegate {  };
+            OnArmorUnEquip = delegate {  };
+            OnFlareThrow = delegate {  };
+            OnFlareIgnite = delegate {  };
+            OnBasicTorchIgnite = delegate {  };
         }
         
         public delegate void BlueprintUseHandlerDelegate(Player player, BPUseEvent ae);
@@ -553,6 +673,22 @@ namespace Fougerite
         public delegate void DayCycleChangeEventDelegate(DayCycleChangeEvent dcche);
         
         public delegate void AnimalMovementEventDelegate(AnimalMovementEvent ame);
+        
+        public delegate void ConsumableUseEventDelegate(ConsumableUseEvent e);
+        
+        public delegate void MedikitUseEventDelegate(MedikitUseEvent e);
+        
+        public delegate void ItemModInstalledEventDelegate<T>(ItemModInstallEvent<T> e) where T : HeldItemDataBlock;
+        
+        public delegate void BloodDrawUseEventDelegate(BloodDrawEvent be);
+        
+        public delegate void ArmorEquippedEventDelegate(ArmorEquipEvent ae);
+        
+        public delegate void FlareThrowEventDelegate(FlareThrowEvent fe);
+        
+        public delegate void FlareIgniteEventDelegate(FlareIgniteEvent tie);
+        
+        public delegate void BasicTorchIgniteHandlerDelegate(BasicTorchIgniteEvent btie);
         
         /// <summary>
         /// Flags for Method.Invoke

@@ -2376,22 +2376,6 @@ namespace Fougerite.Patcher
             Instantiated.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
         }
 
-        private void ShootPatch()
-        {
-            TypeDefinition BulletWeaponDataBlock = rustAssembly.MainModule.GetType("BulletWeaponDataBlock");
-            MethodDefinition DoAction1 = BulletWeaponDataBlock.GetMethod("DoAction1");
-
-            MethodDefinition method = hooksClass.GetMethod("ShootEvent");
-            int i = DoAction1.Body.Instructions.Count - 60;
-            ILProcessor iLProcessor = DoAction1.Body.GetILProcessor();
-            iLProcessor.InsertBefore(DoAction1.Body.Instructions[i], Instruction.Create(OpCodes.Call, this.rustAssembly.MainModule.Import(method)));
-            iLProcessor.InsertBefore(DoAction1.Body.Instructions[i], Instruction.Create(OpCodes.Ldloc_S, DoAction1.Body.Variables[10]));
-            iLProcessor.InsertBefore(DoAction1.Body.Instructions[i], Instruction.Create(OpCodes.Ldarg_3));
-            iLProcessor.InsertBefore(DoAction1.Body.Instructions[i], Instruction.Create(OpCodes.Ldarg_2));
-            iLProcessor.InsertBefore(DoAction1.Body.Instructions[i], Instruction.Create(OpCodes.Ldloc_0));
-            iLProcessor.InsertBefore(DoAction1.Body.Instructions[i], Instruction.Create(OpCodes.Ldarg_0));
-        }
-
         private void BowShootPatch()
         {
             TypeDefinition BowWeaponDataBlock = rustAssembly.MainModule.GetType("BowWeaponDataBlock");
@@ -2408,27 +2392,6 @@ namespace Fougerite.Patcher
             iLProcessor.InsertBefore(DoAction1.Body.Instructions[i], Instruction.Create(OpCodes.Ldarg_0));
         }
 
-        private void ShotgunShootPatch()
-        {
-            TypeDefinition ShotgunDataBlock = rustAssembly.MainModule.GetType("ShotgunDataBlock");
-            MethodDefinition DoAction1 = ShotgunDataBlock.GetMethod("DoAction1");
-            rustAssembly.MainModule.GetType("BulletWeaponDataBlock").GetMethod("ReadHitInfo").SetPublic(true);
-            rustAssembly.MainModule.GetType("BulletWeaponDataBlock").GetMethod("ApplyDamage").SetPublic(true);
-
-            MethodDefinition method = hooksClass.GetMethod("ShotgunShootEvent");
-
-            ILProcessor iLProcessor = DoAction1.Body.GetILProcessor();
-            iLProcessor.Body.Instructions.Clear();
-            iLProcessor.Body.ExceptionHandlers.Clear();
-            iLProcessor.Body.Variables.Clear();
-            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
-            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
-            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
-            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_3));
-            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(method)));
-            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
-        }
-
         private void DecayStopPatch()
         {
             TypeDefinition EnvDecay = rustAssembly.MainModule.GetType("EnvDecay");
@@ -2442,25 +2405,6 @@ namespace Fougerite.Patcher
             md.Body.ExceptionHandlers.Clear();
             md.Body.Variables.Clear();
             md.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
-        }
-
-        private void GrenadePatch()
-        {
-            TypeDefinition HandGrenadeDataBlock = rustAssembly.MainModule.GetType("HandGrenadeDataBlock");
-            MethodDefinition DoAction1 = HandGrenadeDataBlock.GetMethod("DoAction1");
-
-            MethodDefinition method = hooksClass.GetMethod("GrenadeEvent");
-
-            ILProcessor iLProcessor = DoAction1.Body.GetILProcessor();
-            iLProcessor.Body.Instructions.Clear();
-            iLProcessor.Body.ExceptionHandlers.Clear();
-            iLProcessor.Body.Variables.Clear();
-            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
-            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
-            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
-            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_3));
-            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(method)));
-            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
         }
 
         private void GenericSpawnerPatch()
@@ -2777,6 +2721,196 @@ namespace Fougerite.Patcher
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(DayCycleChange)));
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
         }
+
+        private void PatchConsumableAction()
+        {
+            TypeDefinition ConsumableDataBlock = rustAssembly.MainModule.GetType("ConsumableDataBlock");
+            MethodDefinition ConsumableUseItem = hooksClass.GetMethod("ConsumableUseItem");
+            
+            MethodDefinition UseItem = ConsumableDataBlock.GetMethod("UseItem");
+            ILProcessor iLProcessor = UseItem.Body.GetILProcessor();
+            iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(ConsumableUseItem)));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
+        }
+
+        private void PatchBasicMedkitUse()
+        {
+            TypeDefinition BasicHealthKitDataBlock = rustAssembly.MainModule.GetType("BasicHealthKitDataBlock");
+            MethodDefinition BasicHealthKitUse = hooksClass.GetMethod("BasicHealthKitUse");
+            
+            MethodDefinition UseItem = BasicHealthKitDataBlock.GetMethod("UseItem");
+            ILProcessor iLProcessor = UseItem.Body.GetILProcessor();
+            iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(BasicHealthKitUse)));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
+        }
+        
+        private void PatchModInstall()
+        {
+            TypeDefinition ItemRepresentation = rustAssembly.MainModule.GetType("ItemRepresentation");
+            TypeDefinition ItemModDataBlock = rustAssembly.MainModule.GetType("ItemModDataBlock");
+            TypeDefinition ItemModRepresentation = rustAssembly.MainModule.GetType("ItemModRepresentation");
+            MethodDefinition ItemAddMod = hooksClass.GetMethod("ItemAddMod");
+            TypeDefinition HeldItem = rustAssembly.MainModule.GetType("HeldItem`1");
+            MethodDefinition AddMod = HeldItem.GetMethod("AddMod");
+            
+            foreach (FieldDefinition field in HeldItem.Fields)
+            {
+                if (field.Name == "_itemMods") 
+                    field.SetPublic(true);
+            }
+            foreach (MethodDefinition method in HeldItem.Methods)
+            {
+                if (method.Name == "RecalculateMods" || method.Name == "OnModAdded")
+                    method.SetPublic(true);
+            }
+            
+            foreach (MethodDefinition method in ItemModRepresentation.Methods)
+            {
+                if (method.Name == "Initialize")
+                {
+                    method.IsPublic = true;
+                }
+            }
+            
+            foreach (TypeDefinition nested in ItemRepresentation.NestedTypes)
+            {
+                if (nested.Name == "ItemModPair" || nested.Name == "BindState" || nested.Name == "ItemModPairArray")
+                {
+                    nested.IsNestedPublic = true;
+                }
+            }
+
+            foreach (MethodDefinition method in ItemRepresentation.Methods)
+            {
+                if (method.Name == "KillModRep")
+                {
+                    method.SetPublic(true);
+                }
+            }
+
+            foreach (FieldDefinition field in ItemRepresentation.Fields)
+            {
+                if (field.Name == "_itemMods")
+                {
+                    field.SetPublic(true);
+                }
+            }
+
+            foreach (MethodDefinition method in ItemModDataBlock.Methods)
+            {
+                if (method.Name == "AddModRepresentationComponent")
+                {
+                    method.SetPublic(true);
+                }
+            }
+            
+            var genericAddMod = new GenericInstanceMethod(rustAssembly.MainModule.Import(ItemAddMod));
+            genericAddMod.GenericArguments.Add(HeldItem.GenericParameters[0]);
+            
+            ILProcessor iLProcessor = AddMod.Body.GetILProcessor();
+            iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, genericAddMod));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
+        }
+        
+        private void PatchBloodDrawUse()
+        {
+            TypeDefinition BloodDrawDatablock = rustAssembly.MainModule.GetType("BloodDrawDatablock");
+            MethodDefinition BloodDrawUse = hooksClass.GetMethod("BloodDrawUse");
+            TypeDefinition LateLoaded = BloodDrawDatablock.NestedTypes.First(n => n.Name == "LateLoaded");
+            LateLoaded.IsNestedPublic = true;
+            
+            MethodDefinition UseItem = BloodDrawDatablock.GetMethod("UseItem");
+            ILProcessor iLProcessor = UseItem.Body.GetILProcessor();
+            iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(BloodDrawUse)));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
+        }
+        
+        private void PatchArmorEquip()
+        {
+            TypeDefinition ArmorDataBlock = rustAssembly.MainModule.GetType("ArmorDataBlock");
+            MethodDefinition ArmorEquipped = hooksClass.GetMethod("ArmorEquipped");
+            MethodDefinition ArmorUnEquipped = hooksClass.GetMethod("ArmorUnEquipped");
+
+            MethodDefinition OnEquipped = ArmorDataBlock.GetMethod("OnEquipped");
+            ILProcessor equipProcessor = OnEquipped.Body.GetILProcessor();
+            equipProcessor.Body.Instructions.Clear();
+            equipProcessor.Body.ExceptionHandlers.Clear();
+            equipProcessor.Body.Variables.Clear();
+            equipProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0)); // this (ArmorDataBlock)
+            equipProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1)); // item (IEquipmentItem)
+            equipProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(ArmorEquipped)));
+            equipProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
+            
+            MethodDefinition OnUnEquipped = ArmorDataBlock.GetMethod("OnUnEquipped");
+            ILProcessor unEquipProcessor = OnUnEquipped.Body.GetILProcessor();
+            unEquipProcessor.Body.Instructions.Clear();
+            unEquipProcessor.Body.ExceptionHandlers.Clear();
+            unEquipProcessor.Body.Variables.Clear();
+            unEquipProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0)); // this (ArmorDataBlock)
+            unEquipProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1)); // item (IEquipmentItem)
+            unEquipProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(ArmorUnEquipped)));
+            unEquipProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
+        }
+        
+        private void PatchTorchIgnite()
+        {
+            TypeDefinition TorchItemDataBlock = rustAssembly.MainModule.GetType("TorchItemDataBlock");
+            MethodDefinition TorchDoAction2 = hooksClass.GetMethod("TorchDoAction2");
+            MethodDefinition DoAction2 = TorchItemDataBlock.GetMethod("DoAction2");
+
+            ILProcessor iLProcessor = DoAction2.Body.GetILProcessor();
+            iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
+
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_3));
+    
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(TorchDoAction2)));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
+        }
+        
+        private void PatchBasicTorchIgnite()
+        {
+            TypeDefinition BasicTorchItemDataBlock = rustAssembly.MainModule.GetType("BasicTorchItemDataBlock");
+            MethodDefinition BasicTorchDoAction2Hook = hooksClass.GetMethod("BasicTorchDoAction2");
+            MethodDefinition DoAction2 = BasicTorchItemDataBlock.GetMethod("DoAction2");
+
+            ILProcessor iLProcessor = DoAction2.Body.GetILProcessor();
+            iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
+            
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_2));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_3));
+    
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(BasicTorchDoAction2Hook)));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
+        }
         
         // uLink Class56.method_36 has been patched here: https://i.imgur.com/WIEQXhX.png
         // I modified using dynspy to avoid the struggle.
@@ -2905,10 +3039,7 @@ namespace Fougerite.Patcher
                     this.PatchFireBarrelContextRespond();
                     this.LooterPatch();
                     this.UseablePatch();
-                    //this.ShootPatch();
                     this.BowShootPatch();
-                    //this.ShotgunShootPatch();
-                    this.GrenadePatch();
                     this.SlotOperationPatch();
                     this.RepairBenchEvent();
                     this.DecayStopPatch();
@@ -2923,6 +3054,13 @@ namespace Fougerite.Patcher
                     this.TimedExplosivePatch();
                     this.SleepingAvatarPatch();
                     this.PatchEnvironmentCycle();
+                    this.PatchConsumableAction();
+                    this.PatchBasicMedkitUse();
+                    this.PatchModInstall();
+                    this.PatchBloodDrawUse();
+                    this.PatchArmorEquip();
+                    this.PatchTorchIgnite();
+                    this.PatchBasicTorchIgnite();
                 }
                 catch (Exception ex)
                 {

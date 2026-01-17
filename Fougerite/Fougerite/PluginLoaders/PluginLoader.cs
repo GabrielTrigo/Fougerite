@@ -77,7 +77,16 @@
             "On_Shoot",
             "On_ShotgunShoot",
             "On_BowShoot",
-            "On_AnimalMovement"
+            "On_AnimalMovement",
+            "On_ConsumableUse",
+            "On_MedikitUse",
+            "On_ItemModInstall",
+            "On_BloodDraw",
+            "On_ArmorEquip",
+            "On_ArmorUnEquip",
+            "On_FlareThrow",
+            "On_FlareIgnite",
+            "On_TorchIgnite"
         };
 
         public void Initialize()
@@ -388,6 +397,33 @@
                                 Hooks.OnAnimalMovement += plugin.OnAnimalMovement;
                             }
                             break;
+                        case "On_ConsumableUse":
+                            Hooks.OnConsumableUse += plugin.OnConsumableUse;
+                            break;
+                        case "On_MedikitUse":
+                            Hooks.OnMedikitUse += plugin.OnMedikitUse;
+                            break;
+                        case "On_ItemModInstall":
+                            Hooks.OnItemMod<BulletWeaponDataBlock>.OnItemModInstall += plugin.OnItemModInstall;
+                            break;
+                        case "On_BloodDraw":
+                            Hooks.OnBloodDraw += plugin.OnBloodDraw;
+                            break;
+                        case "On_ArmorEquip":
+                            Hooks.OnArmorEquip += plugin.OnArmorEquip;
+                            break;
+                        case "On_ArmorUnEquip":
+                            Hooks.OnArmorUnEquip += plugin.OnArmorUnEquip;
+                            break;
+                        case "On_FlareThrow":
+                            Hooks.OnFlareThrow += plugin.OnFlareThrow;
+                            break;
+                        case "On_FlareIgnite":
+                            Hooks.OnFlareIgnite += plugin.FlareIgnite;
+                            break;
+                        case "On_TorchIgnite":
+                            Hooks.OnBasicTorchIgnite += plugin.OnTorchIgnite;
+                            break;
                     }
                 }
             }
@@ -606,6 +642,33 @@
                             {
                                 Hooks.OnAnimalMovement -= plugin.OnAnimalMovement;
                             }
+                            break;
+                        case "On_ConsumableUse":
+                            Hooks.OnConsumableUse -= plugin.OnConsumableUse;
+                            break;
+                        case "On_MedikitUse":
+                            Hooks.OnMedikitUse -= plugin.OnMedikitUse;
+                            break;
+                        case "On_ItemModInstall":
+                            Hooks.OnItemMod<BulletWeaponDataBlock>.OnItemModInstall -= plugin.OnItemModInstall;
+                            break;
+                        case "On_BloodDraw":
+                            Hooks.OnBloodDraw -= plugin.OnBloodDraw;
+                            break;
+                        case "On_ArmorEquip":
+                            Hooks.OnArmorEquip -= plugin.OnArmorEquip;
+                            break;
+                        case "On_ArmorUnEquip":
+                            Hooks.OnArmorUnEquip -= plugin.OnArmorUnEquip;
+                            break;
+                        case "On_FlareThrow":
+                            Hooks.OnFlareThrow -= plugin.OnFlareThrow;
+                            break;
+                        case "On_FlareIgnite":
+                            Hooks.OnFlareIgnite -= plugin.FlareIgnite;
+                            break;
+                        case "On_TorchIgnite":
+                            Hooks.OnBasicTorchIgnite -= plugin.OnTorchIgnite;
                             break;
                     }
                 }

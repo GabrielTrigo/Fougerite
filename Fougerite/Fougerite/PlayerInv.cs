@@ -24,7 +24,7 @@ namespace Fougerite
         {
             get
             {
-                return new PlayerItem(ref _inv, InternalInventory.activeItem.slot);
+                return new PlayerItem(ref _inv, InternalInventory.activeItem.slot, this);
             }
         }
 
@@ -258,15 +258,15 @@ namespace Fougerite
             {
                 if (i < 30)
                 {
-                    Items[i] = new PlayerItem(ref _inv, i);
+                    Items[i] = new PlayerItem(ref _inv, i, this);
                 }
                 else if (i < 0x24)
                 {
-                    BarItems[i - 30] = new PlayerItem(ref _inv, i);
+                    BarItems[i - 30] = new PlayerItem(ref _inv, i, this);
                 }
                 else if (i < 40)
                 {
-                    ArmorItems[i - 0x24] = new PlayerItem(ref _inv, i);
+                    ArmorItems[i - 0x24] = new PlayerItem(ref _inv, i, this);
                 }
             }
         }

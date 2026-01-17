@@ -1570,45 +1570,6 @@ namespace Fougerite
             }
         }
 
-        public static void TorchDoAction1(TorchItemDataBlock instance, uLink.BitStream stream, ItemRepresentation rep,
-            ref uLink.NetworkMessageInfo info)
-        {
-            ITorchItem item;
-            NetCull.VerifyRPC(ref info, false);
-            if (rep.Item<ITorchItem>(out item) && item.ValidatePrimaryMessageTime(info.timestamp))
-            {
-                if (item.isLit)
-                {
-                    item.Extinguish();
-                }
-
-                rep.ActionStream(1, uLink.RPCMode.AllExceptOwner, stream);
-                Vector3 origin = stream.ReadVector3();
-                Vector3 forward = stream.ReadVector3();
-                if (float.IsNaN(origin.x) || float.IsInfinity(origin.x) || float.IsNaN(origin.y) ||
-                    float.IsInfinity(origin.y)
-                    || float.IsNaN(origin.z) || float.IsInfinity(origin.z))
-                {
-                    return;
-                }
-
-                if (float.IsNaN(forward.x) || float.IsInfinity(forward.x) || float.IsNaN(forward.y) ||
-                    float.IsInfinity(forward.y)
-                    || float.IsNaN(forward.z) || float.IsInfinity(forward.z))
-                {
-                    return;
-                }
-
-
-                instance.ThrowFlare(rep, origin, forward);
-                int count = 1;
-                if (item.Consume(ref count))
-                {
-                    item.inventory.RemoveItem(item.slot);
-                }
-            }
-        }
-
         public static void AntiDDos(Class1 instance, Class35 class35_0, IPEndPoint ipendPoint_0)
         {
             double num = Class23.smethod_1();

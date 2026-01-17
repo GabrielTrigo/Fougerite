@@ -19,7 +19,7 @@ namespace Fougerite.Events
         private readonly bool _isheadshot;
         private readonly BodyPart _bodypart;
         private readonly Vector3 _endpos;
-        private readonly Vector3 _offset;  
+        private readonly Vector3 _offset;
 
         public ShootEvent(BulletWeaponDataBlock bw, GameObject go, ItemRepresentation ir, 
             uLink.NetworkMessageInfo ui, IBulletWeaponItem ibw, 

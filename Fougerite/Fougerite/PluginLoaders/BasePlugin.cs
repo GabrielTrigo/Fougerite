@@ -1075,5 +1075,50 @@ namespace Fougerite.PluginLoaders
         {
             Invoke("On_AnimalMovement", ev);
         }
+
+        public void OnConsumableUse(ConsumableUseEvent ev)
+        {
+            Invoke("On_ConsumableUse", ev);
+        }
+
+        public void OnMedikitUse(MedikitUseEvent ev)
+        {
+            Invoke("On_MedikitUse", ev);
+        }
+
+        public void OnItemModInstall(ItemModInstallEvent<BulletWeaponDataBlock> ev)
+        {
+            Invoke("On_ItemModInstall", ev);
+        }
+
+        public void OnBloodDraw(BloodDrawEvent ev)
+        {
+            Invoke("On_BloodDraw", ev);
+        }
+        
+        public void OnArmorEquip(ArmorEquipEvent ev)
+        {
+            Invoke("On_ArmorEquip", ev);
+        }
+
+        public void OnArmorUnEquip(ArmorEquipEvent ev)
+        {
+            Invoke("On_ArmorUnEquip", ev);
+        }
+
+        public void OnFlareThrow(FlareThrowEvent ev)
+        {
+            Invoke("On_FlareThrow", ev);
+        }
+
+        public void FlareIgnite(FlareIgniteEvent ev)
+        {
+            Invoke("On_FlareIgnite", ev);
+        }
+
+        public void OnTorchIgnite(BasicTorchIgniteEvent ev)
+        {
+            Invoke("On_TorchIgnite", ev);
+        }
     }
 }

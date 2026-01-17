@@ -1686,69 +1686,6 @@ namespace Fougerite
             }
         }
 
-        
-        public static void GrenadeEvent(HandGrenadeDataBlock hgd, uLink.BitStream stream, ItemRepresentation rep,
-            ref uLink.NetworkMessageInfo info)
-        {
-            using (new Stopper(nameof(Hooks), nameof(GrenadeEvent)))
-            {
-                IHandGrenadeItem item;
-                bool proceed = true;
-                try
-                {
-                    NetCull.VerifyRPC(ref info);
-                }
-                catch (Exception)
-                {
-                    proceed = false;
-                }
-
-                if (proceed && rep.Item<IHandGrenadeItem>(out item) && item.ValidatePrimaryMessageTime(info.timestamp))
-                {
-                    rep.ActionStream(1, uLink.RPCMode.AllExceptOwner, stream);
-                    Vector3 origin = stream.ReadVector3();
-                    Vector3 forward = stream.ReadVector3();
-
-                    // Sanity checks.
-                    if (float.IsNaN(origin.x) || float.IsInfinity(origin.x) || float.IsNaN(origin.y)
-                        || float.IsInfinity(origin.y) || float.IsNaN(origin.z) || float.IsInfinity(origin.z))
-                    {
-                        return;
-                    }
-
-                    if (float.IsNaN(forward.x) || float.IsInfinity(forward.x) || float.IsNaN(forward.y)
-                        || float.IsInfinity(forward.y) || float.IsNaN(forward.z) || float.IsInfinity(forward.z))
-                    {
-                        return;
-                    }
-
-                    GameObject obj2 = hgd.ThrowItem(rep, origin, forward);
-                    if (obj2 != null)
-                    {
-                        obj2.rigidbody.AddTorque(new Vector3(
-                            UnityEngine.Random.Range(-1f, 1f),
-                            UnityEngine.Random.Range(-1f, 1f),
-                            UnityEngine.Random.Range(-1f, 1f)) * 10f);
-                        try
-                        {
-                            GrenadeThrowEvent se = new GrenadeThrowEvent(hgd, obj2, rep, info, item);
-                            ExecuteSubscribers(OnGrenadeThrow, "GrenadeThrowEvent", se);
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.LogError($"GrenadeThrowEvent Error: {ex}");
-                        }
-                    }
-
-                    int count = 1;
-                    if (item.Consume(ref count))
-                    {
-                        item.inventory.RemoveItem(item.slot);
-                    }
-                }
-            }
-        }
-
         public static void OnServerSaveEvent(int amount, double seconds)
         {
             using (new Stopper(nameof(Hooks), nameof(OnServerSaveEvent)))
@@ -2979,7 +2916,7 @@ namespace Fougerite
                 }
             }
         }
-
+        
         public static void HandGrenadeDoAction1(HandGrenadeDataBlock grenade, uLink.BitStream stream,
             ItemRepresentation rep, ref uLink.NetworkMessageInfo info)
         {
@@ -2989,7 +2926,6 @@ namespace Fougerite
                 NetCull.VerifyRPC(ref info, false);
                 if (rep.Item<IHandGrenadeItem>(out item) && item.ValidatePrimaryMessageTime(info.timestamp))
                 {
-                    rep.ActionStream(1, uLink.RPCMode.AllExceptOwner, stream);
                     Vector3 origin = stream.ReadVector3();
                     Vector3 forward = stream.ReadVector3();
                     if (float.IsNaN(origin.x) || float.IsInfinity(origin.x) || float.IsNaN(origin.y) ||
@@ -3006,6 +2942,7 @@ namespace Fougerite
                         return;
                     }
 
+                    rep.ActionStream(1, uLink.RPCMode.AllExceptOwner, stream);
                     GameObject obj2 = grenade.ThrowItem(rep, origin, forward);
                     if (obj2 != null)
                     {
@@ -3029,6 +2966,68 @@ namespace Fougerite
                     {
                         item.inventory.RemoveItem(item.slot);
                     }
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Runs when a player throws a Flare using a TorchItemDataBlock.
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <param name="stream"></param>
+        /// <param name="rep"></param>
+        /// <param name="info"></param>
+        public static void TorchDoAction1(TorchItemDataBlock instance, uLink.BitStream stream, ItemRepresentation rep,
+            ref uLink.NetworkMessageInfo info)
+        {
+            ITorchItem item;
+            NetCull.VerifyRPC(ref info, false);
+            if (rep.Item<ITorchItem>(out item) && item.ValidatePrimaryMessageTime(info.timestamp))
+            {
+                Vector3 origin = stream.ReadVector3();
+                Vector3 forward = stream.ReadVector3();
+                
+                if (float.IsNaN(origin.x) || float.IsInfinity(origin.x) || float.IsNaN(origin.y) ||
+                    float.IsInfinity(origin.y)
+                    || float.IsNaN(origin.z) || float.IsInfinity(origin.z))
+                {
+                    return;
+                }
+
+                if (float.IsNaN(forward.x) || float.IsInfinity(forward.x) || float.IsNaN(forward.y) ||
+                    float.IsInfinity(forward.y)
+                    || float.IsNaN(forward.z) || float.IsInfinity(forward.z))
+                {
+                    return;
+                }
+                
+                FlareThrowEvent fe = new FlareThrowEvent(instance, item, origin, forward);
+                try
+                {
+                    ExecuteSubscribers(OnFlareThrow, "FlareThrowEvent", fe);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("FlareThrowEvent Error: " + ex);
+                }
+
+                if (fe.Cancelled)
+                {
+                    return;
+                }
+
+                if (item.isLit)
+                {
+                    item.Extinguish();
+                }
+
+                rep.ActionStream(1, uLink.RPCMode.AllExceptOwner, stream);
+
+                instance.ThrowFlare(rep, origin, forward);
+                int count = 1;
+                if (item.Consume(ref count))
+                {
+                    item.inventory.RemoveItem(item.slot);
                 }
             }
         }
@@ -3756,6 +3755,325 @@ namespace Fougerite
             }
 
             fireBarrel.UpdateNetState();
+        }
+
+        /// <summary>
+        /// A hook of ConsumableDataBlock.UseItem function.
+        /// </summary>
+        /// <param name="consumableDataBlock"></param>
+        /// <param name="item"></param>
+        public static void ConsumableUseItem(ConsumableDataBlock consumableDataBlock, IConsumableItem item)
+        {
+            Inventory inventory = item.inventory;
+            Metabolism local = inventory.GetLocal<Metabolism>();
+            if (local == null)
+            {
+                return;
+            }
+            if (!local.CanConsumeYet())
+            {
+                return;
+            }
+            
+            ConsumableUseEvent consumeEvent = new ConsumableUseEvent(consumableDataBlock, item);
+    
+            try
+            {
+                ExecuteSubscribers(OnConsumableUse, "ConsumableUseEvent", consumeEvent);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("ConsumableUseEvent Callback Error: " + ex);
+            }
+            
+            if (consumeEvent.Cancelled)
+            {
+                return;
+            }
+            
+            local.MarkConsumptionTime();
+            float remainingSpace = Mathf.Min(local.GetRemainingCaloricSpace(), consumeEvent.Calories);
+            if (consumeEvent.Calories > 0f)
+            {
+                local.AddCalories(remainingSpace);
+            }
+            
+            if (consumeEvent.Water > 0f)
+            {
+                local.AddWater(consumeEvent.Water);
+            }
+            
+            if (consumeEvent.AntiRads > 0f)
+            {
+                local.AddAntiRad(consumeEvent.AntiRads);
+            }
+            
+            if (consumeEvent.HealthToHeal != 0f)
+            {
+                HumanBodyTakeDamage local2 = inventory.GetLocal<HumanBodyTakeDamage>();
+                if (local2 != null)
+                {
+                    if (consumableDataBlock.healthToHeal > 0f)
+                    {
+                        local2.HealOverTime(consumeEvent.HealthToHeal);
+                    }
+                    else
+                    {
+                        TakeDamage.HurtSelf(inventory.idMain, Mathf.Abs(consumeEvent.HealthToHeal), null);
+                    }
+                }
+            }
+            
+            if (consumeEvent.PoisonAmount > 0f)
+            {
+                local.AddPoison(consumeEvent.PoisonAmount);
+            }
+            
+            item.FireClientSideItemEvent(InventoryItem.ItemEvent.Used);
+            int amountToProcess = consumeEvent.AmountToConsume;
+            if (item.Consume(ref amountToProcess))
+            {
+                inventory.RemoveItem(item.slot);
+            }
+            else
+            {
+                inventory.MarkSlotDirty(item.slot);
+            }
+        }
+
+        /// <summary>
+        /// Runs when a BasicHealthKit is used.
+        /// </summary>
+        /// <param name="basicHealthKitDataBlock"></param>
+        /// <param name="hk"></param>
+        public static void BasicHealthKitUse(BasicHealthKitDataBlock basicHealthKitDataBlock, IBasicHealthKit hk)
+        {
+            if (Time.time < hk.lastUseTime + 5f)
+            {
+                return;
+            }
+            int slot = hk.slot;
+            Inventory inventory = hk.inventory;
+            HumanBodyTakeDamage local = inventory.GetLocal<HumanBodyTakeDamage>();
+            if (!local)
+            {
+                return;
+            }
+            Metabolism local2 = inventory.GetLocal<Metabolism>();
+            if (!local2)
+            {
+                return;
+            }
+            
+            if (local.healthLoss == 0f)
+            {
+                return;
+            }
+            
+            MedikitUseEvent medEvent = new MedikitUseEvent(basicHealthKitDataBlock, hk);
+
+            try
+            {
+                ExecuteSubscribers(OnMedikitUse, "MedikitUseEvent", medEvent);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("MedikitUseEvent Error: " + ex);
+            }
+            
+            if (medEvent.Cancelled)
+            {
+                return;
+            }
+            
+            if (medEvent.StopsBleeding)
+            {
+                local.Bandage(1000f);
+            }
+            float healAmount = UnityEngine.Random.Range(medEvent.HealthAddMin, medEvent.HealthAddMax);
+            if (healAmount > 0f)
+            {
+                local.HealOverTime(healAmount);
+            }
+            
+            hk.lastUseTime = Time.time;
+            int consumeAmount = medEvent.AmountToConsume;
+            bool itemDestroyed = hk.Consume(ref consumeAmount);
+            if (consumeAmount == 0)
+            {
+                inventory.MarkSlotDirty(slot);
+                hk.FireClientSideItemEvent(InventoryItem.ItemEvent.Used);
+            }
+            
+            if (itemDestroyed)
+            {
+                inventory.RemoveItem(slot);
+            }
+        }
+        
+        
+        /// <summary>
+        /// This runs when an Item Mod is being installed.
+        /// </summary>
+        public static void ItemAddMod<T>(HeldItem<T> held, ItemModDataBlock mod) where T : HeldItemDataBlock
+        {
+            try
+            {
+                ItemModInstallEvent<T> modEvent = new ItemModInstallEvent<T>(held, mod);
+                OnItemMod<T>.Raise(modEvent);
+
+                if (modEvent.Cancelled)
+                {
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OnItemMod Callback Error: " + ex);
+            }
+            
+            held.RecalculateMods();
+            int usedModSlots = held.usedModSlots;
+            held._itemMods[usedModSlots] = mod;
+            held.RecalculateMods();
+            held.OnModAdded(mod);
+            held.MarkDirty();
+        }
+
+        /// <summary>
+        /// This runs when a Blood Draw item is used.
+        /// </summary>
+        /// <param name="bloodDrawDatablock"></param>
+        /// <param name="item"></param>
+        public static void BloodDrawUse(BloodDrawDatablock bloodDrawDatablock, IBloodDrawItem item)
+        {
+            if (Time.time < item.lastUseTime + 2f)
+            {
+                return;
+            }
+            Inventory inventory = item.inventory;
+            HumanBodyTakeDamage local = inventory.GetLocal<HumanBodyTakeDamage>();
+            BloodDrawEvent be = new BloodDrawEvent(item, bloodDrawDatablock.bloodToTake);
+            try
+            {
+                ExecuteSubscribers(OnBloodDraw, "BloodDrawEvent", be);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"OnBloodDraw Error: {ex}");
+            }
+            
+            if (be.Cancelled)
+            {
+                return;
+            }
+            
+            if (local.health <= be.BloodToTake)
+            {
+                Notice.Popup(inventory.networkView.owner, "\uf161", "You're too weak to use this");
+                return;
+            }
+            
+            IDMain idMain = inventory.idMain;
+            TakeDamage.Hurt(idMain, idMain, be.BloodToTake, null);
+            inventory.AddItem(ref BloodDrawDatablock.LateLoaded.blood, Inventory.Slot.Preference.Define(Inventory.Slot.Kind.Default, true, Inventory.Slot.KindFlags.Belt), 1);
+            item.lastUseTime = Time.time;
+            item.FireClientSideItemEvent(InventoryItem.ItemEvent.Used);
+        }
+        
+        
+        /// <summary>
+        /// Hook called by ArmorDataBlock.OnEquipped.
+        /// </summary>
+        public static void ArmorEquipped(ArmorDataBlock block, IEquipmentItem item)
+        {
+            item.FireClientSideItemEvent(InventoryItem.ItemEvent.Equipped);
+            
+            // In this event patch there is no way to cancel the item equip, due to the code of facepunch.
+            // You can however drop the item right after equipping it in the event or whatever.
+            // Or catch it on itemmove or something.
+            ArmorEquipEvent ae = new ArmorEquipEvent(block, item, ArmorChangeType.Equipped);
+            try
+            {
+                ExecuteSubscribers(OnArmorEquip, "OnArmorEquip", ae);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OnArmorEquip Error: " + ex);
+            }
+        }
+
+        /// <summary>
+        /// Hook called by ArmorDataBlock.OnUnEquipped.
+        /// </summary>
+        public static void ArmorUnEquipped(ArmorDataBlock block, IEquipmentItem item)
+        {
+            item.FireClientSideItemEvent(InventoryItem.ItemEvent.UnEquipped);
+            
+            // In this event patch there is no way to cancel the item equip, due to the code of facepunch.
+            // You can however drop the item right after equipping it in the event or whatever.
+            // Or catch it on itemmove or something.
+            ArmorEquipEvent ae = new ArmorEquipEvent(block, item, ArmorChangeType.Unequipped);
+            try
+            {
+                ExecuteSubscribers(OnArmorUnEquip, "OnArmorUnEquip", ae);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("OnArmorUnEquip Error: " + ex);
+            }
+        }
+        
+        /// <summary>
+        /// Hook called by TorchItemDataBlock.DoAction2.
+        /// Handles the logic for igniting the flare.
+        /// </summary>
+        public static void TorchDoAction2(TorchItemDataBlock instance, uLink.BitStream stream, ItemRepresentation itemRep, ref uLink.NetworkMessageInfo info)
+        {
+            using (new Stopper(nameof(Hooks), nameof(TorchDoAction2)))
+            {
+                ITorchItem torchItem;
+                if (itemRep.Item<ITorchItem>(out torchItem))
+                {
+                    FlareIgniteEvent tie = new FlareIgniteEvent(instance, torchItem, stream, itemRep, info);
+                    try
+                    {
+                        ExecuteSubscribers(OnFlareIgnite, "FlareIgniteEvent", tie);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError("FlareIgniteEvent Error: " + ex);
+                    }
+
+                    torchItem.Ignite();
+                    itemRep.Action(2, uLink.RPCMode.OthersExceptOwnerBuffered);
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Hook called by BasicTorchItemDataBlock.DoAction2.
+        /// </summary>
+        public static void BasicTorchDoAction2(BasicTorchItemDataBlock instance, uLink.BitStream stream, ItemRepresentation itemRep, ref uLink.NetworkMessageInfo info)
+        {
+            using (new Stopper(nameof(Hooks), nameof(BasicTorchDoAction2)))
+            {
+                IBasicTorchItem torchItem;
+                if (itemRep.Item<IBasicTorchItem>(out torchItem))
+                {
+                    itemRep.Action(2, uLink.RPCMode.OthersExceptOwnerBuffered);
+                    
+                    BasicTorchIgniteEvent btie = new BasicTorchIgniteEvent(instance, torchItem, stream, itemRep, info);
+                    try
+                    {
+                        ExecuteSubscribers(OnBasicTorchIgnite, "BasicTorchIgniteEvent", btie);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError("BasicTorchIgniteEvent Error: " + ex);
+                    }
+                }
+            }
         }
 
         /// <summary>

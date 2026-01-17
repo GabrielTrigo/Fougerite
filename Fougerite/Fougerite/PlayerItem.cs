@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Fougerite
 {
@@ -6,6 +7,7 @@ namespace Fougerite
     {
         private readonly Inventory internalInv;
         private readonly int internalSlot;
+        private readonly PlayerInv _playerInv;
 
         public PlayerItem()
         {
@@ -15,6 +17,13 @@ namespace Fougerite
         {
             internalInv = inv;
             internalSlot = slot;
+        }
+        
+        public PlayerItem(ref Inventory inv, int slot, PlayerInv playerInv)
+        {
+            internalInv = inv;
+            internalSlot = slot;
+            _playerInv = playerInv;
         }
 
         /// <summary>
@@ -34,7 +43,10 @@ namespace Fougerite
         /// </summary>
         public void Drop()
         {
-            DropHelper.DropItem(internalInv, Slot);
+            if (!IsEmpty())
+            {
+                DropHelper.DropItem(internalInv, Slot);
+            }
         }
 
         /// <summary>
@@ -189,26 +201,174 @@ namespace Fougerite
                 RInventoryItem.SetUses(value);
             }
         }
-
-        /*public class Mods
+        
+        /// <summary>
+        /// A reference to the PlayerInv who owns this item.
+        /// </summary>
+        public PlayerInv PlayerInv
         {
-            public BulletWeaponDataBlock Weapon;
-            public bool _IsWeapon;
-            public Mods(IInventoryItem iitem)
+            get
             {
-                Weapon = iitem.datablock as BulletWeaponDataBlock;
-                if (Weapon == null)
+                return _playerInv;
+            }
+        }
+        
+        /// <summary>
+        /// Gets the total number of mod slots available on the weapon.
+        /// </summary>
+        public int TotalModSlots
+        {
+            get
+            {
+                if (IsEmpty())
+                    return 0;
+                
+                if (RInventoryItem is HeldItem<BulletWeaponDataBlock> bulletWeapon)
                 {
-                    _IsWeapon = false;
-                    return;
+                    return bulletWeapon.totalModSlots;
                 }
-                //Weapon.ConstructItem().;
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets the number of slots currently occupied by mods.
+        /// </summary>
+        public int UsedModSlots
+        {
+            get
+            {
+                if (IsEmpty()) 
+                    return 0;
+                
+                if (RInventoryItem is HeldItem<BulletWeaponDataBlock> bulletWeapon)
+                {
+                    return bulletWeapon.usedModSlots;
+                }
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets the number of empty mod slots available.
+        /// </summary>
+        public int FreeModSlots
+        {
+            get
+            {
+                if (IsEmpty()) 
+                    return 0;
+                
+                if (RInventoryItem is HeldItem<BulletWeaponDataBlock> bulletWeapon)
+                {
+                    return bulletWeapon.freeModSlots;
+                }
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Removes a weapon mod from a specific slot (0-4) and optionally gives it back.
+        /// </summary>
+        public bool RemoveMod(int slot, bool giveBack = true)
+        {
+            if (IsEmpty()) 
+                return false;
+            
+            if (RInventoryItem is HeldItem<BulletWeaponDataBlock> bulletWeapon)
+            {
+                ItemModDataBlock[] mods = bulletWeapon._itemMods;
+
+                if (slot < 0 || slot >= mods.Length || mods[slot] == null)
+                {
+                    return false;
+                }
+
+                string modName = mods[slot].name;
+                mods[slot] = null;
+                bulletWeapon.RecalculateMods();
+                
+                if (bulletWeapon.itemRepresentation != null)
+                {
+                    ItemRepresentation rep = bulletWeapon.itemRepresentation;
+                    if (slot < 5)
+                    {
+                        ItemRepresentation.ItemModPair pair = rep._itemMods[slot];
+                        rep.KillModRep(ref pair.representation, false);
+                        pair.dataBlock = null;
+                        pair.bindState = ItemRepresentation.BindState.Vacant;
+                        rep._itemMods[slot] = pair;
+                    }
+                }
+                
+                RInventoryItem.MarkDirty();
+
+                if (giveBack && _playerInv != null)
+                {
+                    _playerInv.AddItem(modName, 1);
+                }
+
+                return true;
             }
 
-            public bool IsWeapon
+            return false;
+        }
+
+        /// <summary>
+        /// Removes every mod from the firearm.
+        /// </summary>
+        public bool ClearMods(bool giveBack = true)
+        {
+            if (IsEmpty()) 
+                return false;
+
+            bool anyRemoved = false;
+            for (int i = 0; i < 5; i++)
             {
-                get { return _IsWeapon; }
+                if (RemoveMod(i, giveBack))
+                {
+                    anyRemoved = true;
+                }
             }
-        }*/
+
+            return anyRemoved;
+        }
+
+        /// <summary>
+        /// Returns a list of mod names currently attached to this item.
+        /// </summary>
+        public List<string> GetMods()
+        {
+            List<string> modNames = new List<string>(5);
+            if (IsEmpty())
+            {
+                return modNames;
+            }
+
+            IInventoryItem item = RInventoryItem;
+            
+            if (item is HeldItem<BulletWeaponDataBlock> bulletWeapon)
+            {
+                int totalSlots = bulletWeapon.totalModSlots;
+                ItemModDataBlock[] mods = bulletWeapon.itemMods;
+                if (mods != null)
+                {
+                    for (int i = 0; i < totalSlots; i++)
+                    {
+                        if (mods[i] != null)
+                        {
+                            modNames.Add(mods[i].name);
+                        }
+                        else
+                        {
+                            modNames.Add("Empty slot");
+                        }
+                    }
+                }
+
+            }
+
+            return modNames;
+        }
     }
 }
