@@ -11,7 +11,6 @@ namespace Fougerite.Events
         private readonly uLink.BitStream _stream;
         private readonly ItemRepresentation _itemRep;
         private readonly uLink.NetworkMessageInfo _info;
-        private bool _cancel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BasicTorchIgniteEvent"/> class.
@@ -28,7 +27,6 @@ namespace Fougerite.Events
             _stream = stream;
             _itemRep = itemRep;
             _info = info;
-            _cancel = false;
 
             if (item.inventory != null && item.inventory.networkView != null)
             {
