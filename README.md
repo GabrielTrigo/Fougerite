@@ -37,6 +37,8 @@ There is also a clean steam server available on this repository for you to downl
 Use Git Issues system to report bugs, please. 
 Please visit [our forum](http://fougerite.com/) for more information.
 
+[![Watch the video](https://img.youtube.com/vi/FHjaZjCdfLI/maxresdefault.jpg)](https://youtu.be/FHjaZjCdfLI)
+
 ***
 ###### Developed by EquiFox & xEnt (Rust++ and Magma)
 ###### Forked by Riketta (Zumwalt Project)
