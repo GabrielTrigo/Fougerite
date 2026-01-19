@@ -60,7 +60,8 @@ namespace Fougerite
         public static string RPCChatMethod = "FougeriteChatSystem";
         /// <summary>
         /// Enable intensive events for script plugins (Py, Lua, JS)
-        /// This gives scripts access to events like OnPlayerMove, OnShoot, OnShotgunShoot, OnBowShoot, OnAnimalMovement.
+        /// This gives scripts access to events like OnPlayerMove, OnShoot, OnShotgunShoot, OnBowShoot, OnAnimalMovement,
+        /// OnHeatZoneEnter, OnWorkZoneEnter.
         /// Use this carefully, as these events are called very often and may cause performance issues (server laggs).
         /// It is recommended to use C# plugins for these events instead.
         /// Script plugins are generally slower than C# plugins. Python is the fastest among script plugins.
