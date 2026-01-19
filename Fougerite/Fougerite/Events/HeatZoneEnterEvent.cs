@@ -1,3 +1,4 @@
+using Fougerite.Caches;
 using UnityEngine;
 
 namespace Fougerite.Events
@@ -12,6 +13,7 @@ namespace Fougerite.Events
         private readonly Collider _collider;
         private readonly Metabolism _metabolism;
         private readonly Player _player;
+        private readonly Entity _entity;
         private bool _cancel;
 
         /// <summary>
@@ -27,6 +29,7 @@ namespace Fougerite.Events
             _metabolism = metabolism;
             _cancel = false;
             
+            var deployableObject = instance.GetComponentInParent<DeployableObject>();
             if (metabolism != null)
             {
                 var playerClient = metabolism.playerClient;
@@ -35,6 +38,19 @@ namespace Fougerite.Events
                     _player = Server.GetServer().FindPlayer(playerClient.userID);
                 }
             }
+
+            if (deployableObject != null)
+            {
+                _entity = EntityCache.GetInstance().GrabOrAllocate(deployableObject.GetInstanceID(), deployableObject);
+            }
+        }
+
+        /// <summary>
+        /// Gets the Entity associated with the HeatZone.
+        /// </summary>
+        public Entity Entity
+        {
+            get { return _entity; }
         }
 
         /// <summary>

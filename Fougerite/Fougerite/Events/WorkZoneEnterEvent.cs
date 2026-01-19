@@ -1,3 +1,4 @@
+using Fougerite.Caches;
 using UnityEngine;
 
 namespace Fougerite.Events
@@ -12,6 +13,7 @@ namespace Fougerite.Events
         private readonly Collider _collider;
         private readonly CraftingInventory _craftingInventory;
         private readonly Player _player;
+        private readonly Entity _entity;
         private bool _cancel;
 
         /// <summary>
@@ -26,6 +28,7 @@ namespace Fougerite.Events
             _collider = collider;
             _craftingInventory = craftingInv;
             _cancel = false;
+            var deployableObject = instance.GetComponentInParent<DeployableObject>();
 
             var character = craftingInv.GetComponent<Character>();
             if (character != null)
@@ -33,6 +36,19 @@ namespace Fougerite.Events
                 var netUser = character.netUser;
                 _player = Server.GetServer().FindPlayer(netUser.userID);
             }
+            
+            if (deployableObject != null)
+            {
+                _entity = EntityCache.GetInstance().GrabOrAllocate(deployableObject.GetInstanceID(), deployableObject);
+            }
+        }
+        
+        /// <summary>
+        /// Gets the Entity associated with the HeatZone.
+        /// </summary>
+        public Entity Entity
+        {
+            get { return _entity; }
         }
 
         /// <summary>
