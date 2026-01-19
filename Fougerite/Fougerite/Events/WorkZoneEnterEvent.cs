@@ -44,7 +44,7 @@ namespace Fougerite.Events
         }
         
         /// <summary>
-        /// Gets the Entity associated with the HeatZone.
+        /// Gets the Entity associated with the WorkZone.
         /// </summary>
         public Entity Entity
         {
