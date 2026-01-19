@@ -86,7 +86,9 @@
             "On_ArmorUnEquip",
             "On_FlareThrow",
             "On_FlareIgnite",
-            "On_TorchIgnite"
+            "On_TorchIgnite",
+            "On_HeatZoneEnter",
+            "On_WorkZoneEnter"
         };
 
         public void Initialize()
@@ -424,6 +426,18 @@
                         case "On_TorchIgnite":
                             Hooks.OnBasicTorchIgnite += plugin.OnTorchIgnite;
                             break;
+                        case "On_HeatZoneEnter":
+                            if (IsIntensiveEventAllowed(plugin))
+                            {
+                                Hooks.OnHeatZoneEnter += plugin.OnHeatZoneEnter;
+                            }
+                            break;
+                        case "On_WorkZoneEnter":
+                            if (IsIntensiveEventAllowed(plugin))
+                            {
+                                Hooks.OnWorkZoneEnter += plugin.OnWorkZoneEnter;
+                            }
+                            break;
                     }
                 }
             }
@@ -669,6 +683,18 @@
                             break;
                         case "On_TorchIgnite":
                             Hooks.OnBasicTorchIgnite -= plugin.OnTorchIgnite;
+                            break;
+                        case "On_HeatZoneEnter":
+                            if (IsIntensiveEventAllowed(plugin))
+                            {
+                                Hooks.OnHeatZoneEnter -= plugin.OnHeatZoneEnter;
+                            }
+                            break;
+                        case "On_WorkZoneEnter":
+                            if (IsIntensiveEventAllowed(plugin))
+                            {
+                                Hooks.OnWorkZoneEnter -= plugin.OnWorkZoneEnter;
+                            }
                             break;
                     }
                 }

@@ -1389,6 +1389,38 @@ namespace Fougerite
                 }
             }
         }
+        
+        /// <summary>
+        /// Gets the rotation of the player-
+        /// </summary>
+        public Quaternion Rotation
+        {
+            get
+            {
+                if (IsOnline)
+                {
+                    return ourPlayer.transform.rotation;
+                }
+
+                return new Quaternion(0f, 0f, 0f, 0f);
+            }
+        }
+        
+        /// <summary>
+        /// Gets the local rotation of the player-
+        /// </summary>
+        public Quaternion LocalRotation
+        {
+            get
+            {
+                if (IsOnline)
+                {
+                    return ourPlayer.transform.localRotation;
+                }
+
+                return new Quaternion(0f, 0f, 0f, 0f);
+            }
+        }
 
         /// <summary>
         /// Gets / Sets the player's name

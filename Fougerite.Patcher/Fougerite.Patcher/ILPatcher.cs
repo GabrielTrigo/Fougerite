@@ -2912,6 +2912,37 @@ namespace Fougerite.Patcher
             iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
         }
         
+        private void PatchZones()
+        {
+            TypeDefinition heatZone = rustAssembly.MainModule.GetType("HeatZone");
+            heatZone.GetField("_isOn").SetPublic(true);
+            MethodDefinition heatOnTrigger = heatZone.GetMethod("OnTriggerStay");
+            MethodDefinition heatHook = hooksClass.GetMethod("HeatZoneOnTriggerStay");
+
+            heatOnTrigger.Body.Instructions.Clear();
+            heatOnTrigger.Body.ExceptionHandlers.Clear();
+            heatOnTrigger.Body.Variables.Clear();
+            ILProcessor heatProcessor = heatOnTrigger.Body.GetILProcessor();
+            heatProcessor.Append(Instruction.Create(OpCodes.Ldarg_0));
+            heatProcessor.Append(Instruction.Create(OpCodes.Ldarg_1));
+            heatProcessor.Append(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(heatHook)));
+            heatProcessor.Append(Instruction.Create(OpCodes.Ret));
+
+            TypeDefinition workZone = rustAssembly.MainModule.GetType("WorkZone");
+            workZone.GetField("_isOn").SetPublic(true);
+            MethodDefinition workOnTrigger = workZone.GetMethod("OnTriggerStay");
+            MethodDefinition workHook = hooksClass.GetMethod("WorkZoneOnTriggerStay");
+
+            workOnTrigger.Body.Instructions.Clear();
+            workOnTrigger.Body.ExceptionHandlers.Clear();
+            workOnTrigger.Body.Variables.Clear();
+            ILProcessor workProcessor = workOnTrigger.Body.GetILProcessor();
+            workProcessor.Append(Instruction.Create(OpCodes.Ldarg_0));
+            workProcessor.Append(Instruction.Create(OpCodes.Ldarg_1));
+            workProcessor.Append(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(workHook)));
+            workProcessor.Append(Instruction.Create(OpCodes.Ret));
+        }
+        
         // uLink Class56.method_36 has been patched here: https://i.imgur.com/WIEQXhX.png
         // I modified using dynspy to avoid the struggle.
 
@@ -3061,6 +3092,7 @@ namespace Fougerite.Patcher
                     this.PatchArmorEquip();
                     this.PatchTorchIgnite();
                     this.PatchBasicTorchIgnite();
+                    this.PatchZones();
                 }
                 catch (Exception ex)
                 {

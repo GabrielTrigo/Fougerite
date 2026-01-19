@@ -4188,6 +4188,74 @@ namespace Fougerite
                 }
             }
         }
+        
+        /// <summary>
+        /// Runs when a player enters a HeatZone.
+        /// It is called continually while the player remains in the zone.
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <param name="other"></param>
+        public static void HeatZoneOnTriggerStay(HeatZone instance, Collider other)
+        {
+            using (new Stopper(nameof(Hooks), nameof(HeatZoneOnTriggerStay)))
+            {
+                if (!instance._isOn) 
+                    return;
+                
+                Metabolism metabolism = instance.GetFromCollider(other);
+                if (metabolism == null) 
+                    return;
+
+                HeatZoneEnterEvent hze = new HeatZoneEnterEvent(instance, other, metabolism);
+                try
+                {
+                    ExecuteSubscribers(OnHeatZoneEnter, "HeatZoneEvent", hze);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("HeatZoneEvent Error: " + ex);
+                }
+
+                if (!hze.Cancelled)
+                {
+                    metabolism.MarkWarm();
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Runs when a player enters a WorkZone.
+        /// It is called continually while the player remains in the zone.
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <param name="other"></param>
+        public static void WorkZoneOnTriggerStay(WorkZone instance, Collider other)
+        {
+            using (new Stopper(nameof(Hooks), nameof(WorkZoneOnTriggerStay)))
+            {
+                if (!instance._isOn) 
+                    return;
+
+                CraftingInventory craftingInv = instance.GetFromCollider(other);
+                if (craftingInv == null)
+                    return;
+
+                WorkZoneEnterEvent wze = new WorkZoneEnterEvent(instance, other, craftingInv);
+                try
+                {
+                    ExecuteSubscribers(OnWorkZoneEnter, "WorkZoneEvent", wze);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("WorkZoneEvent Error: " + ex);
+                }
+
+                if (!wze.Cancelled)
+                {
+                    craftingInv.MarkWorkBench();
+                }
+            }
+        }
 
         /// <summary>
         /// Runs when a command or console command is being restricted / unrestricted.

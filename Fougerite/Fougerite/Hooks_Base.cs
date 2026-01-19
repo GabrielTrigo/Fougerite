@@ -457,7 +457,17 @@ namespace Fougerite
         /// This delegate runs when a player ignites a basic torch.
         /// If you need de-selection handling then use OnBeltUse, and write yourself the logic.
         /// </summary>
-        public static event BasicTorchIgniteHandlerDelegate OnBasicTorchIgnite;
+        public static event BasicTorchIgniteEventDelegate OnBasicTorchIgnite;
+        
+        /// <summary>
+        /// This delegate runs when a player is within the trigger of a HeatZone.
+        /// </summary>
+        public static event HeatZoneEnterEventDelegate OnHeatZoneEnter;
+        
+        /// <summary>
+        /// This delegate runs when a player is within the trigger of a WorkZone.
+        /// </summary>
+        public static event WorkZoneEnterEventDelegate OnWorkZoneEnter;
 
         /// <summary>
         /// This value returns if the server is shutting down.
@@ -688,7 +698,10 @@ namespace Fougerite
         
         public delegate void FlareIgniteEventDelegate(FlareIgniteEvent tie);
         
-        public delegate void BasicTorchIgniteHandlerDelegate(BasicTorchIgniteEvent btie);
+        public delegate void BasicTorchIgniteEventDelegate(BasicTorchIgniteEvent btie);
+        
+        public delegate void HeatZoneEnterEventDelegate(HeatZoneEnterEvent hze);
+        public delegate void WorkZoneEnterEventDelegate(WorkZoneEnterEvent wze);
         
         /// <summary>
         /// Flags for Method.Invoke

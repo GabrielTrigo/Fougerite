@@ -71,6 +71,7 @@
     <Compile Include="Fougerite\Events\FireBarrelToggleEvent.cs" />
     <Compile Include="Fougerite\Events\FlareThrowEvent.cs" />
     <Compile Include="Fougerite\Events\GrenadeThrowEvent.cs" />
+    <Compile Include="Fougerite\Events\HeatZoneEnterEvent.cs" />
     <Compile Include="Fougerite\Events\ItemModInstallEvent.cs" />
     <Compile Include="Fougerite\Events\ItemMoveEvent.cs" />
     <Compile Include="Fougerite\Events\LoggerEvent.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="Fougerite\Events\SupplySignalExplosionEvent.cs" />
     <Compile Include="Fougerite\Events\TimedExplosiveEvent.cs" />
     <Compile Include="Fougerite\Events\FlareIgniteEvent.cs" />
+    <Compile Include="Fougerite\Events\WorkZoneEnterEvent.cs" />
     <Compile Include="Fougerite\Flood.cs" />
     <Compile Include="Fougerite\Hooks_Base.cs" />
     <Compile Include="Fougerite\Hooks_RustFixes.cs" />

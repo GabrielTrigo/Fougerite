@@ -1126,5 +1126,15 @@ namespace Fougerite.PluginLoaders
         {
             Invoke("On_TorchIgnite", ev);
         }
+
+        public void OnHeatZoneEnter(HeatZoneEnterEvent ev)
+        {
+            Invoke("On_HeatZoneEnter", ev);
+        }
+
+        public void OnWorkZoneEnter(WorkZoneEnterEvent ev)
+        {
+            Invoke("On_WorkZoneEnter", ev);
+        }
     }
 }
