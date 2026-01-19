@@ -12,6 +12,20 @@ Fougerite provides C#, Python, Javascript, and Lua language support, and also an
 
 Fougerite a fully compatible with Magma server mod, featuring better performance with Python and C# plugins.
 
+## 12 years of Fougerite
+12 Years of Fougerite, A Definitive Legacy What started in 2013 as a conversion of Magma has evolved over the last 12 years into the most stable and comprehensive modding ecosystem for Rust Legacy. While the project was forked by Riketta and later renamed to Fougerite, its true soul was forged through a decade of reverse engineering a game that was originally left with a high volume of subpar code and obsolete technical debt.
+
+Fixing the Foundation The original Rust Legacy code quality left much to be desired, containing leftover obsolete systems that hindered performance and stability. Our mission was to understand the game from the inside out, not just on the server, but deep within the client side architecture. Through years of reverse engineering we did not just add features, we rebuilt the foundation, fixing bugs the original developers left behind and creating a platform that remains the most up to date and well supported in the history of the game.
+
+The Pinnacle of Modding Today, Fougerite stands as the most stable platform with the highest number of hooks and the most dense information community ever achieved for Rust. This journey reached its peak with RustBuster, representing our greatest achievement in client side modding. It allowed us to push the boundaries of what was possible in a game from 2013, providing a level of protection and feature rich development that finally brought out the best in Rust Legacy. You can see the extent of this client side modding in action via our community showcases at https://www.youtube.com/@JuliRust/videos.
+
+The Final Chapter 2025 to 2026 As we hit the 12 year mark in 2026, Fougerite is now considered a complete project, by me, the most active, and original author, DreTaX. Between 2025 and 2026, a final surge of updates was released to officially implement features or implement fixes for every remaining issue on my list. From my early days in 2014 writing simple JavaScript plugins to now, this project has been my primary vehicle for learning the deep arts of reverse engineering high level languages and games. I (we?) leave this project in a semi active state of completion, perfected, polished, and standing as a testament to what a dedicated community can achieve with a game that many thought was dead years ago. Rust Legacy may be a relic of 2013, but Fougerite ensures its best version is preserved forever.
+
+It is hard to believe that over a decade has passed since I first started messing with crappy javascript plugins for Magma back in 2014. This project has been more than just code for me, it was the fire that started my journey into reverse engineering and software development. I spent years refusing to let this game die because I believed the community deserved an open source platform that actually worked. I have spent countless nights staring at decompiled source code, learning how every single packet and function moved within Rust Legacy.
+
+I see Fougerite as complete now. It has everything it needs to stand on its own. While I am moving on to other challenges, my heart stays with the years we spent together in the wasteland. Thank you to everyone who stayed, everyone who tested, and everyone who challenged me to make this better. This is my final goodbye to the active development of Fougerite. I wish I knew then what I know now, but I am proud of the legacy we leave behind. Keep the servers running and keep the community alive. I'll be deploying Rustbuster 3.0 as my time allows for the final time, and then it's time to say farewell.
+Goodbye, and thank you for 12 incredible years.
+
 ## Compilation
 1. First you need to decide wheather you are going to modify the patcher or not. If you are only here to modify or compile
 the Fougerite project, or one of the engines skip to step 7.
