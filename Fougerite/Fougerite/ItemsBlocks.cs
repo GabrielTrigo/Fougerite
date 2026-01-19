@@ -1,10 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Fougerite
 {
-    public class ItemsBlocks : System.Collections.Generic.List<ItemDataBlock>
+    /// <summary>
+    /// A specialized collection for ItemDataBlock objects. 
+    /// This class provides a centralized way to store and search for item blueprints 
+    /// within the game's data dictionary.
+    /// </summary>
+    public class ItemsBlocks : List<ItemDataBlock>
     {
-        public ItemsBlocks(System.Collections.Generic.List<ItemDataBlock> items)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ItemsBlocks"/> class 
+        /// and populates it with a provided list of ItemDataBlocks.
+        /// </summary>
+        /// <param name="items">The initial list of item datablocks to add to the collection.</param>
+        public ItemsBlocks(List<ItemDataBlock> items)
         {
             foreach (ItemDataBlock block in items)
             {
@@ -13,10 +24,12 @@ namespace Fougerite
         }
 
         /// <summary>
-        /// Finds the DataBlock by name.
+        /// Searches for a specific <see cref="ItemDataBlock"/> by its name.
+        /// This search is case-insensitive and uses the invariant culture to ensure 
+        /// consistent results across different system locales.
         /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
+        /// <param name="str">The name of the item to find ("M4", "Large Medkit").</param>
+        /// <returns>The found <see cref="ItemDataBlock"/>, or null if no match is found.</returns>
         public ItemDataBlock Find(string str)
         {
             foreach (ItemDataBlock block in this)

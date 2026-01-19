@@ -78,8 +78,9 @@ namespace Fougerite
         /// <param name="timeoutDelay">Interval in milliseconds.</param>
         /// <param name="callback">The callback function to execute when timer fires.</param>
         /// <param name="autoReset">True if the timer should repeat, false for single execution.</param>
+        /// <param name="maxElapsedCount">Optional: Max fires before killing. 0 = infinite.</param>
         /// <returns>The created TimedEvent instance.</returns>
-        public TimedEvent CreateTimer(string name, int timeoutDelay, Action<TimedEvent> callback, bool autoReset = false)
+        public TimedEvent CreateTimer(string name, int timeoutDelay, Action<TimedEvent> callback, bool autoReset = false, int maxElapsedCount = 0)
         {
             TimedEvent timedEvent = GetTimer(name);
             if (timedEvent != null)
@@ -94,6 +95,7 @@ namespace Fougerite
             timedEvent.PluginName = Name;
             timedEvent.Interval = timeoutDelay;
             timedEvent.AutoReset = autoReset;
+            timedEvent.MaxElapsedCount = maxElapsedCount;
             timedEvent.OnFire += new TimedEvent.TimedEventFireDelegate(callback);
             timedEvent.OnKilled += (cbName) => Timers.TryRemove(cbName);
             Timers.Add(name, timedEvent);
@@ -109,8 +111,9 @@ namespace Fougerite
         /// <param name="args">Dictionary of custom arguments to pass to the timer.</param>
         /// <param name="callback">The callback function to execute when timer fires.</param>
         /// <param name="autoReset">True if the timer should repeat, false for single execution.</param>
+        /// <param name="maxElapsedCount = 0">Optional: Max fires before killing. 0 = infinite.</param>
         /// <returns>The created TimedEvent instance.</returns>
-        public TimedEvent CreateParallelTimer(string name, int timeoutDelay, Dictionary<string, object> args, Action<TimedEvent> callback, bool autoReset = false)
+        public TimedEvent CreateParallelTimer(string name, int timeoutDelay, Dictionary<string, object> args, Action<TimedEvent> callback, bool autoReset = false, int maxElapsedCount = 0)
         {
             UnityEngine.GameObject go = new UnityEngine.GameObject($"{Name}_Parallel_{name}_{UnityEngine.Random.Range(1, 999999)}");
             UnityEngine.Object.DontDestroyOnLoad(go);
@@ -120,6 +123,7 @@ namespace Fougerite
             timedEvent.Interval = timeoutDelay;
             timedEvent.Args = args;
             timedEvent.AutoReset = autoReset;
+            timedEvent.MaxElapsedCount = maxElapsedCount;
             timedEvent.OnFire += new TimedEvent.TimedEventFireDelegate(callback);
             timedEvent.OnKilled += (cbName) => ParallelTimers.Remove(timedEvent);
             ParallelTimers.Add(timedEvent);

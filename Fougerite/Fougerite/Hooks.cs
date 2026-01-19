@@ -1460,7 +1460,9 @@ namespace Fougerite
                         amount = Mathf.Min(amount, rg.AmountLeft());
                     }
 
-                    rg.ResourceItemName = ge.Item;
+                    ItemDataBlock item = Server.GetServer().Items.Find(ge.Item);
+                    if (item != null)
+                        rg.ResourceItemName = item.name;
                 }
                 catch (Exception ex)
                 {
@@ -1484,7 +1486,10 @@ namespace Fougerite
                 {
                     ExecuteSubscribers(OnPlayerGathering, "PlayerGatherWoodEvent", player, ge);
 
-                    db = Server.GetServer().Items.Find(ge.Item);
+                    ItemDataBlock item = Server.GetServer().Items.Find(ge.Item);
+                    if (item != null)
+                        db = item;
+                    
                     amount = ge.Quantity;
                     name = ge.Item;
                 }

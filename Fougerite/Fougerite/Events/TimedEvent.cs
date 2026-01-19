@@ -14,15 +14,21 @@ namespace Fougerite.Events
         private double _interval;
         private bool _autoReset;
         private int _elapsedCount;
+        private int _maxElapsedCount;
         private bool _running;
         private bool _killed;
         private string _pluginName;
+        
+        /// <summary>
+        /// This event is fired when the timer is killed/disposed.
+        /// </summary>
         public event Action<string> OnKilled;
         
         /// <summary>
         /// The delegate type of the timer.
         /// </summary>
         public delegate void TimedEventFireDelegate(TimedEvent te);
+        
         /// <summary>
         /// This event is fired when the timer elapses.
         /// </summary>
@@ -42,13 +48,15 @@ namespace Fougerite.Events
         /// <param name="name">The name of the timer.</param>
         /// <param name="interval">Interval in milliseconds.</param>
         /// <param name="autoreset">True if the timer should raise the elapsed event each time it elapses, false if only once.</param>
-        public TimedEvent(string name, double interval, bool autoreset = false)
+        /// <param name="maxElapsedCount">Optional: The maximum number of times the timer should fire before killing itself. 0 = infinite. Only considered if autoreset is true.</param>
+        public TimedEvent(string name, double interval, bool autoreset = false, int maxElapsedCount = 0)
         {
             _name = name;
             _elapsedCount = 0;
             _autoReset = autoreset;
             _interval = interval;
             _running = false;
+            _maxElapsedCount = maxElapsedCount;
         }
 
         /// <summary>
@@ -58,8 +66,9 @@ namespace Fougerite.Events
         /// <param name="interval">Interval in milliseconds.</param>
         /// <param name="autoreset">True if the timer should raise the elapsed event each time it elapses, false if only once.</param>
         /// <param name="args">The Dictionary that will hold additional data for you.</param>
-        public TimedEvent(string name, double interval, bool autoreset, Dictionary<string, object> args)
-            : this(name, interval, autoreset)
+        /// <param name="maxElapsedCount">Optional: The maximum number of times the timer should fire before killing itself. 0 = infinite. Only considered if autoreset is true.</param>
+        public TimedEvent(string name, double interval, bool autoreset, Dictionary<string, object> args, int maxElapsedCount = 0)
+            : this(name, interval, autoreset, maxElapsedCount)
         {
             _args = args;
         }
@@ -89,9 +98,12 @@ namespace Fougerite.Events
             _lastTick = DateTime.UtcNow.Ticks;
             _lastTickDate = DateTime.Now;
             _elapsedCount += 1;
+            
+            // Check if we hit the limit
+            bool hitLimit = _maxElapsedCount > 0 && _elapsedCount >= _maxElapsedCount;
 
             // Auto reset is false, we stop here
-            if (!_autoReset)
+            if (!_autoReset || hitLimit)
             {
                 // Dispose the timer
                 Kill();
@@ -174,6 +186,22 @@ namespace Fougerite.Events
                 _autoReset = value;
             }
         }
+        
+        /// <summary>
+        /// The maximum number of times the timer should fire before killing itself. 
+        /// 0 = infinite. Only considered if autoreset is true.
+        /// </summary>
+        public int MaxElapsedCount
+        {
+            get
+            {
+                return _maxElapsedCount;
+            }
+            set
+            {
+                _maxElapsedCount = value;
+            }
+        }
 
         /// <summary>
         /// The custom arguments to store in the timer
@@ -189,7 +217,6 @@ namespace Fougerite.Events
                 _args = value;
             }
         }
-
         
         /// <summary>
         /// The interval to run in milliseconds
@@ -245,7 +272,7 @@ namespace Fougerite.Events
         {
             get
             {
-                return Interval - ((DateTime.UtcNow.Ticks - _lastTick) / 0x2710L);
+                return Interval - (DateTime.UtcNow.Ticks - _lastTick) / 0x2710L;
             }
         }
         

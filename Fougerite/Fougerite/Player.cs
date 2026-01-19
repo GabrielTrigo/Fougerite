@@ -897,6 +897,42 @@ namespace Fougerite
                 return _ConsoleCommandCancelList.GetShallowCopy();
             }
         }
+        
+        /// <summary>
+        /// Returns if the player is at a workbench.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsAtWorkbench()
+        {
+            if (IsOnline)
+            {
+                PlayerInventory invent = Inventory.InternalInventory as PlayerInventory;
+                if (invent != null)
+                {
+                    return invent.AtWorkBench();
+                }
+            }
+
+            return false;
+        }
+        
+        /// <summary>
+        /// Gets if the player is crafting.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsCrafting()
+        {
+            if (IsOnline)
+            {
+                PlayerInventory invent = Inventory.InternalInventory as PlayerInventory;
+                if (invent != null)
+                {
+                    return invent.isCrafting;
+                }
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// Checks if the player has the specified blueprint.

@@ -440,7 +440,8 @@ namespace Fougerite.PluginLoaders
         /// <param name="name">Name.</param>
         /// <param name="timeoutDelay">Timeout delay.</param>
         /// <param name="autoReset">True if the timer should raise the elapsed event each time it elapses, false if only once.</param>
-        public TimedEvent CreateTimer(string name, int timeoutDelay, bool autoReset = false)
+        /// <param name="maxElapsedCount">The maximum number of times the timer should fire. 0 = infinite.</param>
+        public TimedEvent CreateTimer(string name, int timeoutDelay, bool autoReset = false, int maxElapsedCount = 0)
         {
             TimedEvent timedEvent = GetTimer(name);
             if (timedEvent == null)
@@ -448,14 +449,15 @@ namespace Fougerite.PluginLoaders
                 GameObject go = new GameObject($"TimedEvent_{name}_{UnityEngine.Random.Range(1, 999999)}");
                 UnityEngine.Object.DontDestroyOnLoad(go);
                 timedEvent = go.AddComponent<TimedEvent>();
-        
+                
                 timedEvent.Name = name;
                 timedEvent.PluginName = Name;
                 timedEvent.Interval = timeoutDelay;
                 timedEvent.AutoReset = autoReset;
+                timedEvent.MaxElapsedCount = maxElapsedCount;
                 timedEvent.OnFire += OnTimerCB;
                 timedEvent.OnKilled += (cbName) => Timers.Remove(name);
-        
+
                 Timers.Add(name, timedEvent);
             }
 
@@ -470,7 +472,8 @@ namespace Fougerite.PluginLoaders
         /// <param name="timeoutDelay">Timeout delay.</param>
         /// <param name="callback">The callback function.</param>
         /// <param name="autoReset">True if the timer should raise the elapsed event each time it elapses, false if only once.</param>
-        public TimedEvent CreateTimer(string name, int timeoutDelay, Action<TimedEvent> callback, bool autoReset = false)
+        /// <param name="maxElapsedCount">The maximum number of times the timer should fire. 0 = infinite.</param>
+        public TimedEvent CreateTimer(string name, int timeoutDelay, Action<TimedEvent> callback, bool autoReset = false, int maxElapsedCount = 0)
         {
             TimedEvent timedEvent = GetTimer(name);
             if (timedEvent == null)
@@ -478,20 +481,20 @@ namespace Fougerite.PluginLoaders
                 GameObject go = new GameObject($"TimedEvent_{name}_{UnityEngine.Random.Range(1, 999999)}");
                 UnityEngine.Object.DontDestroyOnLoad(go);
                 timedEvent = go.AddComponent<TimedEvent>();
-        
+
                 timedEvent.Name = name;
                 timedEvent.PluginName = Name;
                 timedEvent.Interval = timeoutDelay;
                 timedEvent.AutoReset = autoReset;
+                timedEvent.MaxElapsedCount = maxElapsedCount;
                 timedEvent.OnFire += new TimedEvent.TimedEventFireDelegate(callback);
                 timedEvent.OnKilled += (cbName) => Timers.Remove(cbName);
-        
+
                 Timers.Add(name, timedEvent);
             }
 
             return timedEvent;
         }
-
 
         /// <summary>
         /// Creates a timer.
@@ -501,7 +504,8 @@ namespace Fougerite.PluginLoaders
         /// <param name="timeoutDelay">Timeout delay.</param>
         /// <param name="args">Arguments.</param>
         /// <param name="autoReset">True if the timer should raise the elapsed event each time it elapses, false if only once.</param>
-        public TimedEvent CreateTimer(string name, int timeoutDelay, Dictionary<string, object> args, bool autoReset = false)
+        /// <param name="maxElapsedCount">The maximum number of times the timer should fire. 0 = infinite.</param>
+        public TimedEvent CreateTimer(string name, int timeoutDelay, Dictionary<string, object> args, bool autoReset = false, int maxElapsedCount = 0)
         {
             TimedEvent timedEvent = GetTimer(name);
             if (timedEvent == null)
@@ -515,6 +519,7 @@ namespace Fougerite.PluginLoaders
                 timedEvent.Interval = timeoutDelay;
                 timedEvent.Args = args;
                 timedEvent.AutoReset = autoReset;
+                timedEvent.MaxElapsedCount = maxElapsedCount;
                 timedEvent.OnFire += OnTimerCB;
                 timedEvent.OnKilled += (cbName) => Timers.Remove(cbName);
                 Timers.Add(name, timedEvent);
@@ -523,7 +528,6 @@ namespace Fougerite.PluginLoaders
             return timedEvent;
         }
 
-
         /// <summary>
         /// Creates a timer.
         /// </summary>
@@ -533,8 +537,9 @@ namespace Fougerite.PluginLoaders
         /// <param name="args">Arguments.</param>
         /// <param name="callback">The callback function.</param>
         /// <param name="autoReset">True if the timer should raise the elapsed event each time it elapses, false if only once.</param>
+        /// <param name="maxElapsedCount">The maximum number of times the timer should fire. 0 = infinite.</param>
         public TimedEvent CreateTimer(string name, int timeoutDelay, Dictionary<string, object> args,
-            Action<TimedEvent> callback, bool autoReset = false)
+            Action<TimedEvent> callback, bool autoReset = false, int maxElapsedCount = 0)
         {
             TimedEvent timedEvent = GetTimer(name);
             if (timedEvent == null)
@@ -548,6 +553,7 @@ namespace Fougerite.PluginLoaders
                 timedEvent.Interval = timeoutDelay;
                 timedEvent.Args = args;
                 timedEvent.AutoReset = autoReset;
+                timedEvent.MaxElapsedCount = maxElapsedCount;
                 timedEvent.OnFire += new TimedEvent.TimedEventFireDelegate(callback);
                 timedEvent.OnKilled += (cbName) => Timers.Remove(cbName);
                 Timers.Add(name, timedEvent);

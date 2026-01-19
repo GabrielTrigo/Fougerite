@@ -9,43 +9,57 @@
         private bool _over;
         private int _qty;
         private readonly string _type;
-        private readonly ResourceTarget res;
-        private readonly ItemDataBlock dataBlock = null;
-        private readonly ResourceGivePair resourceGivePair = null;
+        private readonly ResourceTarget _res;
+        private readonly ItemDataBlock _dataBlock;
+        private readonly ResourceGivePair _resourceGivePair;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GatherEvent"/> class for Tree gathering.
+        /// </summary>
+        /// <param name="r">The resource target being hit.</param>
+        /// <param name="db">The datablock of the item being gathered.</param>
+        /// <param name="qty">The initial quantity to be gathered.</param>
         public GatherEvent(ResourceTarget r, ItemDataBlock db, int qty)
         {
-            res = r;
+            _res = r;
             _qty = qty;
             _item = db.name;
             _type = "Tree";
-            dataBlock = db;
-            Override = false;
-        }
-
-        public GatherEvent(ResourceTarget r, ResourceGivePair gp, int qty)
-        {
-            res = r;
-            _qty = qty;
-            _item = gp.ResourceItemDataBlock.name;
-            _type = res.type.ToString();
-            resourceGivePair = gp;
+            _dataBlock = db;
             Override = false;
         }
 
         /// <summary>
-        /// Gets the amount of resources left in the object.
+        /// Initializes a new instance of the <see cref="GatherEvent"/> class for general resource gathering.
+        /// </summary>
+        /// <param name="r">The resource target being hit.</param>
+        /// <param name="gp">The resource give pair containing the item data.</param>
+        /// <param name="qty">The initial quantity to be gathered.</param>
+        public GatherEvent(ResourceTarget r, ResourceGivePair gp, int qty)
+        {
+            _res = r;
+            _qty = qty;
+            _item = gp.ResourceItemDataBlock.name;
+            _dataBlock = gp.ResourceItemDataBlock;
+            _type = _res.type.ToString();
+            _resourceGivePair = gp;
+            Override = false;
+        }
+
+        /// <summary>
+        /// Gets the total amount of resources remaining in the target object.
         /// </summary>
         public int AmountLeft
         {
             get
             {
-                return res.GetTotalResLeft();
+                return _res.GetTotalResLeft();
             }
         }
 
         /// <summary>
-        /// Gets the name of item that we are receiving from the gather.
+        /// Gets or sets the name of the item that the player will receive.
+        /// Changing this allows a plugin to swap the resource gathered (Like M4, and so on).
         /// </summary>
         public string Item
         {
@@ -60,7 +74,9 @@
         }
 
         /// <summary>
-        /// Gets or Sets if we should minimize the amount of resources left in the resource.
+        /// Gets or sets a value indicating whether the gathering logic should bypass resource limits.
+        /// If false, the quantity is capped at the amount actually remaining in the resource.
+        /// If true, the player can receive the full <see cref="Quantity"/> regardless of the object's remaining health.
         /// </summary>
         public bool Override
         {
@@ -75,18 +91,20 @@
         }
 
         /// <summary>
-        /// Gets the percent of the resources.
+        /// Gets the current percentage of resources remaining in the target.
         /// </summary>
         public float PercentFull
         {
             get
             {
-                return res.GetPercentFull();
+                return _res.GetPercentFull();
             }
         }
 
         /// <summary>
-        /// Gets the Quantity of the items we are gathering.
+        /// Gets or sets the quantity of items to be gathered. 
+        /// IMPORTANT: Setting this value to 0 will effectively cancel the gathering event, 
+        /// resulting in the player receiving no items and the object receiving no damage.
         /// </summary>
         public int Quantity
         {
@@ -112,35 +130,36 @@
         }
 
         /// <summary>
-        /// Gets the resource target that we are hitting.
+        /// Gets the original <see cref="ResourceTarget"/> object being interacted with.
         /// </summary>
         public ResourceTarget ResourceTarget
         {
             get
             {
-                return res;
+                return _res;
             }
         }
 
         /// <summary>
-        /// Gets the itemdatablock that we are gathering.
+        /// Gets the <see cref="ItemDataBlock"/> representing the gathered resource.
         /// </summary>
         public ItemDataBlock ItemDataBlock
         {
             get
             {
-                return dataBlock;
+                return _dataBlock;
             }
         }
 
         /// <summary>
-        /// Gets the original ResourceGivePair class.
+        /// Gets the original <see cref="ResourceGivePair"/> associated with this gather.
+        /// Null if gathering from a Tree.
         /// </summary>
         public ResourceGivePair ResourceGivePair
         {
             get
             {
-                return resourceGivePair;
+                return _resourceGivePair;
             }
         }
     }

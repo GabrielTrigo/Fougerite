@@ -29,6 +29,19 @@ namespace Fougerite
         }
 
         /// <summary>
+        /// Returns internal PlayerInventory class.
+        /// Can be null.
+        /// </summary>
+        public PlayerInventory PlayerInventory
+        {
+            get
+            {
+                PlayerInventory inv = InternalInventory as PlayerInventory;
+                return inv;
+            }
+        }
+
+        /// <summary>
         /// Adds 1 Item to the player inventory.
         /// </summary>
         /// <param name="name"></param>
