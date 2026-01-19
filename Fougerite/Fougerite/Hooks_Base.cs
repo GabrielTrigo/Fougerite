@@ -701,6 +701,7 @@ namespace Fougerite
         public delegate void BasicTorchIgniteEventDelegate(BasicTorchIgniteEvent btie);
         
         public delegate void HeatZoneEnterEventDelegate(HeatZoneEnterEvent hze);
+        
         public delegate void WorkZoneEnterEventDelegate(WorkZoneEnterEvent wze);
         
         /// <summary>
