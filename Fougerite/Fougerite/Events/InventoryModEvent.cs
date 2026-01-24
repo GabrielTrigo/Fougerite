@@ -80,6 +80,7 @@ namespace Fougerite.Events
         
         /// <summary>
         /// Returns true if the source inventory and target inventory are the same instance.
+        /// For remove event this will always be the same due to the event's nature as much as I have tested.
         /// </summary>
         public bool IsInternalMove
         {
