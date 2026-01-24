@@ -3,6 +3,8 @@ namespace Fougerite.Events
 {
     /// <summary>
     /// This class is created when an Item is added/removed from an inventory.
+    /// Be careful because It also runs during server start where barely anything is available except inventory
+    /// and item!
     /// </summary>
     public class InventoryModEvent
     {
