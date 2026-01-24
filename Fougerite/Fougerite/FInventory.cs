@@ -3,11 +3,27 @@
     /// <summary>
     /// This class is created when an Item is added or removed to/from an inventory.
     /// </summary>
+    /// <remarks>
+    /// NOTE: During 'OnItemMoved' hooks, FInventory is typically instantiated twice:
+    /// one for the 'Source' and one for the 'Destination'. The wrappers in the 
+    /// _items array ensure that as the item's Slot changes during the move, 
+    /// the EntityItem correctly identifies its new parent container.
+    /// </remarks>
     public class FInventory
     {
-        private Inventory _inv;
-        private EntityItem[] _items;
+        private readonly Inventory _inv;
+        private readonly EntityItem[] _items;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FInventory"/> class by wrapping a raw Rust <see cref="Inventory"/>.
+        /// </summary>
+        /// <param name="inv">The underlying Rust engine <see cref="Inventory"/> to be wrapped.</param>
+        /// <remarks>
+        /// This constructor performs a "greedy" initialization. It creates a local array of <see cref="EntityItem"/> 
+        /// objects matching the <see cref="Inventory.slotCount"/> of the source. 
+        /// Each <see cref="EntityItem"/> is initialized with a reference back to this <see cref="FInventory"/> 
+        /// instance, enabling complex operations like mod-swapping and inter-slot item movement.
+        /// </remarks>
         public FInventory(Inventory inv)
         {
             _inv = inv;
@@ -94,7 +110,7 @@
             int num = 0;
             foreach (EntityItem item in Items)
             {
-                if (item.Name == name)
+                if (!item.IsEmpty() && item.Name == name)
                     num += item.UsesLeft;
             }
             return (num >= amount);
@@ -119,18 +135,16 @@
         {
             foreach (EntityItem item in Items)
             {
-                if (item.Name == name)
+                if (!item.IsEmpty() && item.Name == name)
                 {
                     if (item.UsesLeft > amount)
                     {
                         _inv.RemoveItem(item.RInventoryItem);
                         AddItem(item.Name, (item.UsesLeft - amount));
-                        return;
                     }
                     else if (item.UsesLeft == amount)
                     {
                         _inv.RemoveItem(item.RInventoryItem);
-                        return;
                     }
                     else
                     {

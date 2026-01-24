@@ -18,7 +18,7 @@ namespace Fougerite
 
             _items = new EntityItem[inv.slotCount];
             for (var i = 0; i < inv.slotCount; i++)
-                _items[i] = new EntityItem(_inv, i);
+                _items[i] = new EntityItem(_inv, i, this);
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Fougerite
         public void AddItem(string name, int amount)
         {
             ItemDataBlock item = DatablockDictionary.GetByName(name);
-            _inv.AddItemAmount (item, amount);
+            _inv.AddItemAmount(item, amount);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Fougerite
             }
         }
 
-        private int GetFreeSlots ()
+        private int GetFreeSlots()
         {
             int num = 0;
             for (int i = 0; i < _inv.slotCount; i++)
@@ -110,7 +110,7 @@ namespace Fougerite
             int num = 0;
             foreach (EntityItem item in Items)
             {
-                if (item.Name == name)
+                if (!item.IsEmpty() && item.Name == name)
                 {
                     if (Util.UStackable.Contains(name))
                     {

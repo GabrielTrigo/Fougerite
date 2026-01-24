@@ -2,6 +2,9 @@
 
 namespace Fougerite
 {
+    /// <summary>
+    /// Represents a Player inventory.
+    /// </summary>
     public class PlayerInv
     {
         private PlayerItem[] _armorItems;
@@ -115,14 +118,35 @@ namespace Fougerite
         {
             foreach (PlayerItem item in Items)
             {
+                if (!item.IsEmpty())
+                    continue;
+                
                 _inv.RemoveItem(item.RInventoryItem);
             }
+            
             foreach (PlayerItem item2 in BarItems)
             {
+                if (!item2.IsEmpty())
+                    continue;
+                
                 _inv.RemoveItem(item2.RInventoryItem);
             }
         }
 
+        /// <summary>
+        /// Clears items only.
+        /// </summary>
+        public void ClearItems()
+        {
+            foreach (PlayerItem item in Items)
+            {
+                if (!item.IsEmpty())
+                    continue;
+                
+                _inv.RemoveItem(item.RInventoryItem);
+            }
+        }
+        
         /// <summary>
         /// Clears everything from the inventory.
         /// </summary>
@@ -213,7 +237,7 @@ namespace Fougerite
             int num = 0;
             foreach (PlayerItem item in Items)
             {
-                if (item.Name == name)
+                if (!item.IsEmpty() && item.Name == name)
                 {
                     if (Util.UStackable.Contains(name))
                     {
@@ -229,7 +253,7 @@ namespace Fougerite
             }
             foreach (PlayerItem item2 in BarItems)
             {
-                if (item2.Name == name)
+                if (!item2.IsEmpty() && item2.Name == name)
                 {
                     if (Util.UStackable.Contains(name))
                     {
@@ -245,7 +269,7 @@ namespace Fougerite
             }
             foreach (PlayerItem item3 in ArmorItems)
             {
-                if (item3.Name == name)
+                if (!item3.IsEmpty() && item3.Name == name)
                 {
                     if (Util.UStackable.Contains(name))
                     {
@@ -302,7 +326,7 @@ namespace Fougerite
         {
             foreach (PlayerItem item in Items)
             {
-                if (item == pi)
+                if (!item.IsEmpty() && item == pi)
                 {
                     _inv.RemoveItem(pi.RInventoryItem);
                     return;
@@ -310,7 +334,7 @@ namespace Fougerite
             }
             foreach (PlayerItem item2 in ArmorItems)
             {
-                if (item2 == pi)
+                if (!item2.IsEmpty() && item2 == pi)
                 {
                     _inv.RemoveItem(pi.RInventoryItem);
                     return;
@@ -318,7 +342,7 @@ namespace Fougerite
             }
             foreach (PlayerItem item3 in BarItems)
             {
-                if (item3 == pi)
+                if (!item3.IsEmpty() && item3 == pi)
                 {
                     _inv.RemoveItem(pi.RInventoryItem);
                     break;
@@ -345,7 +369,7 @@ namespace Fougerite
             int qty = number;
             foreach (PlayerItem item in Items)
             {
-                if (item.Slot == slot)
+                if (!item.IsEmpty() && item.Slot == slot)
                 {
                     if (item.UsesLeft > qty)
                     {
@@ -369,7 +393,7 @@ namespace Fougerite
             {
                 foreach (PlayerItem item2 in ArmorItems)
                 {
-                    if (item2.Slot == slot)
+                    if (!item2.IsEmpty() && item2.Slot == slot)
                     {
                         if (item2.UsesLeft > qty)
                         {
@@ -393,7 +417,7 @@ namespace Fougerite
                 {
                     foreach (PlayerItem item3 in BarItems)
                     {
-                        if (item3.Slot == slot)
+                        if (!item3.IsEmpty() && item3.Slot == slot)
                         {
                             if (item3.UsesLeft > qty)
                             {
@@ -427,7 +451,7 @@ namespace Fougerite
             int qty = number;
             foreach (PlayerItem item in Items)
             {
-                if (item.Name == name)
+                if (!item.IsEmpty() && item.Name == name)
                 {
                     if (item.UsesLeft > qty)
                     {
@@ -451,7 +475,7 @@ namespace Fougerite
             {
                 foreach (PlayerItem item2 in ArmorItems)
                 {
-                    if (item2.Name == name)
+                    if (!item2.IsEmpty() && item2.Name == name)
                     {
                         if (item2.UsesLeft > qty)
                         {
@@ -475,7 +499,7 @@ namespace Fougerite
                 {
                     foreach (PlayerItem item3 in BarItems)
                     {
-                        if (item3.Name == name)
+                        if (!item3.IsEmpty() && item3.Name == name)
                         {
                             if (item3.UsesLeft > qty)
                             {

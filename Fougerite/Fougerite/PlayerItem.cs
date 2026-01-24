@@ -1,28 +1,72 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using UnityEngine;
 
 namespace Fougerite
 {
+    /// <summary>
+    /// Represents a player's item within their inventory, providing methods to manipulate
+    /// </summary>
+    /// <remarks>
+    /// IMPORTANT: Rust Legacy UI is heavily dependent on the Protobuf state.
+    /// When modifying structural data (like Mod Slots), we use a "Protobuf Flush" pattern:
+    /// 1. Use Save() to capture the current state.
+    /// 2. Manually Re-Inject Identity: Protobuf's Build() fails if 'Id' or 'Name' are missing.
+    /// 3. SetSlot() is mandatory: Without it, the client may move the item to slot 0 or 
+    ///    fail to map the update to the correct UI square.
+    /// 4. Load() & SetActiveItemManually(): This forces the client to discard the old UI 
+    ///    and rebuild the inventory view from the new Protobuf data.
+    /// </remarks>
     public class PlayerItem
     {
-        private readonly Inventory internalInv;
-        private readonly int internalSlot;
+        private readonly Inventory _internalInv;
+        private readonly int _internalSlot;
         private readonly PlayerInv _playerInv;
 
+        /// <summary>
+        /// Initializes a new, empty instance of the <see cref="PlayerItem"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This default constructor is currently unused and typically reserved for 
+        /// serialization or initialization scenarios where values are assigned later.
+        /// </remarks>
         public PlayerItem()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerItem"/> class using a direct reference 
+        /// to a Rust <see cref="Inventory"/> and a specific slot index.
+        /// </summary>
+        /// <param name="inv">A reference to the underlying Rust <see cref="Inventory"/> component.</param>
+        /// <param name="slot">The specific slot index this item instance will track.</param>
+        /// <remarks>
+        /// This constructor is currently unused but provides a lightweight way to wrap a Rust 
+        /// item without attaching it to a specific Fougerite <see cref="PlayerInv"/>.
+        /// </remarks>
         public PlayerItem(ref Inventory inv, int slot)
         {
-            internalInv = inv;
-            internalSlot = slot;
+            _internalInv = inv;
+            _internalSlot = slot;
         }
         
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlayerItem"/> class, fully associated 
+        /// with a Fougerite <see cref="PlayerInv"/> wrapper.
+        /// </summary>
+        /// <param name="inv">A reference to the underlying Rust <see cref="Inventory"/> component.</param>
+        /// <param name="slot">The specific slot index this item instance will track.</param>
+        /// <param name="playerInv">The Fougerite <see cref="PlayerInv"/> manager that owns this item.</param>
+        /// <remarks>
+        /// This is the primary constructor used throughout the framework. Passing <paramref name="playerInv"/> 
+        /// is critical for functions like <see cref="AddMod"/>, as it allows the item to interact with 
+        /// the player's overall inventory (e.g., removing a mod from the bag when attaching it to a weapon).
+        /// </remarks>
         public PlayerItem(ref Inventory inv, int slot, PlayerInv playerInv)
         {
-            internalInv = inv;
-            internalSlot = slot;
+            _internalInv = inv;
+            _internalSlot = slot;
             _playerInv = playerInv;
         }
 
@@ -45,18 +89,27 @@ namespace Fougerite
         {
             if (!IsEmpty())
             {
-                DropHelper.DropItem(internalInv, Slot);
+                DropHelper.DropItem(_internalInv, Slot);
             }
         }
 
         /// <summary>
-        /// Returns the IInventoryItem by internal slot.
+        /// Retrieves the live reference of the <see cref="IInventoryItem"/> from the 
+        /// internal Rust <see cref="Inventory"/> based on the pre-defined <see cref="_internalSlot"/>.
         /// </summary>
-        /// <returns></returns>
+        /// <remarks>
+        /// This is used internally to ensure the class is always working with the current 
+        /// state of the item, which is critical if the item has been modified, moved, 
+        /// or replaced since the <see cref="EntityItem"/> wrapper was instantiated.
+        /// </remarks>
+        /// <returns>
+        /// The <see cref="IInventoryItem"/> found at the slot, returns null if the 
+        /// slot is vacant or the inventory is invalid.
+        /// </returns>
         private IInventoryItem GetItemRef()
         {
             IInventoryItem item;
-            internalInv.GetItem(internalSlot, out item);
+            _internalInv.GetItem(_internalSlot, out item);
             return item;
         }
 
@@ -104,7 +157,7 @@ namespace Fougerite
         {
             get
             {
-                return internalInv;
+                return _internalInv;
             }
         }
 
@@ -115,7 +168,7 @@ namespace Fougerite
         {
             get
             {
-                return internalSlot;
+                return _internalSlot;
             }
         }
 
@@ -198,7 +251,10 @@ namespace Fougerite
             }
             set
             {
-                RInventoryItem.SetUses(value);
+                if (!IsEmpty())
+                {
+                    RInventoryItem.SetUses(value);
+                }
             }
         }
         
@@ -212,9 +268,10 @@ namespace Fougerite
                 return _playerInv;
             }
         }
-        
+
         /// <summary>
-        /// Gets the total number of mod slots available on the weapon.
+        /// Gets or sets the total number of mod slots available on the firearm. 
+        /// When set, it triggers a full Protobuf rebuild and network sync to update the client UI.
         /// </summary>
         public int TotalModSlots
         {
@@ -222,12 +279,89 @@ namespace Fougerite
             {
                 if (IsEmpty())
                     return 0;
-                
-                if (RInventoryItem is HeldItem<BulletWeaponDataBlock> bulletWeapon)
+
+                switch (RInventoryItem)
                 {
-                    return bulletWeapon.totalModSlots;
+                    case HeldItem<BulletWeaponDataBlock> bulletWeapon:
+                        return bulletWeapon.totalModSlots;
+                    case HeldItem<ShotgunDataBlock> shotgun:
+                        return shotgun.totalModSlots;
+                    default:
+                        return 0;
                 }
-                return 0;
+            }
+            set
+            {
+                if (IsEmpty())
+                    return;
+
+                switch (RInventoryItem)
+                {
+                    case HeldItem<BulletWeaponDataBlock> bulletWeapon:
+                        bulletWeapon.SetTotalModSlotCount(value);
+                        RInventoryItem.MarkDirty();
+                        _internalInv.MarkSlotDirty(InternalSlot);
+                        _internalInv.SendMessage("UpdateToNetListeners", SendMessageOptions.DontRequireReceiver);
+                        break;
+                    case HeldItem<ShotgunDataBlock> shotgun:
+                        shotgun.SetTotalModSlotCount(value);
+                        RInventoryItem.MarkDirty();
+                        _internalInv.MarkSlotDirty(InternalSlot);
+                        _internalInv.SendMessage("UpdateToNetListeners", SendMessageOptions.DontRequireReceiver);
+                        break;
+                    default:
+                        return;
+                }
+                
+                RustProto.Item.Builder builder = RustProto.Item.CreateBuilder();
+        
+                // Save the current item state into the Protobuf builder
+                RInventoryItem.Save(ref builder);
+                
+                // Set the basic item properties
+                builder.SetId(RInventoryItem.datablock.uniqueID);
+                builder.SetName(RInventoryItem.datablock.name);
+                builder.SetSlot(_internalSlot);
+                builder.SetCount(RInventoryItem.uses);
+                builder.SetCondition(RInventoryItem.condition);
+                builder.SetMaxcondition(RInventoryItem.maxcondition);
+                
+                // Set the subslots (mod slots) to the new value
+                builder.SetSubslots(value);
+        
+                // Build the completed item
+                RustProto.Item completedItem = builder.Build();
+        
+                // Re-load the item from the modified Protobuf data
+                RInventoryItem.Load(ref completedItem);
+                
+                // Update
+                RInventoryItem.MarkDirty();
+        
+                if (_internalInv != null)
+                {
+                    // Notify the inventory that the slot has changed
+                    _internalInv.MarkSlotDirty(_internalSlot);
+            
+                    if (_internalInv.activeItem == RInventoryItem)
+                    {
+                        ItemRepresentation rep = null;
+                        switch (RInventoryItem)
+                        {
+                            case HeldItem<BulletWeaponDataBlock> b:
+                                rep = b.itemRepresentation;
+                                break;
+                            case HeldItem<ShotgunDataBlock> s:
+                                rep = s.itemRepresentation;
+                                break;
+                        }
+                
+                        if (rep != null)
+                            _internalInv.SetActiveItemManually(_internalSlot, rep);
+                    }
+            
+                    _internalInv.SendMessage("UpdateToNetListeners", SendMessageOptions.DontRequireReceiver);
+                }
             }
         }
 
@@ -238,14 +372,18 @@ namespace Fougerite
         {
             get
             {
-                if (IsEmpty()) 
+                if (IsEmpty())
                     return 0;
-                
-                if (RInventoryItem is HeldItem<BulletWeaponDataBlock> bulletWeapon)
+
+                switch (RInventoryItem)
                 {
-                    return bulletWeapon.usedModSlots;
+                    case HeldItem<BulletWeaponDataBlock> bulletWeapon:
+                        return bulletWeapon.usedModSlots;
+                    case HeldItem<ShotgunDataBlock> shotgun:
+                        return shotgun.usedModSlots;
+                    default:
+                        return 0;
                 }
-                return 0;
             }
         }
 
@@ -256,14 +394,140 @@ namespace Fougerite
         {
             get
             {
-                if (IsEmpty()) 
+                if (IsEmpty())
                     return 0;
-                
-                if (RInventoryItem is HeldItem<BulletWeaponDataBlock> bulletWeapon)
+
+                switch (RInventoryItem)
                 {
-                    return bulletWeapon.freeModSlots;
+                    case HeldItem<BulletWeaponDataBlock> bulletWeapon:
+                        return bulletWeapon.freeModSlots;
+                    case HeldItem<ShotgunDataBlock> shotgun:
+                        return shotgun.freeModSlots;
+                    default:
+                        return 0;
                 }
-                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Adds a weapon mod to the first available slot.
+        /// </summary>
+        public bool AddMod(string modName, bool removeFromInv = true)
+        {
+            ItemModDataBlock modBlock = DatablockDictionary.GetByName(modName) as ItemModDataBlock;
+            if (modBlock == null || IsEmpty())
+                return false;
+
+            switch (RInventoryItem)
+            {
+                case HeldItem<BulletWeaponDataBlock> bulletWeapon:
+                {
+                    if (bulletWeapon.usedModSlots >= bulletWeapon.totalModSlots)
+                        return false;
+
+                    int slot = -1;
+                    for (int i = 0; i < bulletWeapon._itemMods.Length; i++)
+                    {
+                        if (bulletWeapon._itemMods[i] == null)
+                        {
+                            slot = i;
+                            break;
+                        }
+                    }
+
+                    if (slot == -1) 
+                        return false;
+
+                    if (removeFromInv && _playerInv != null)
+                    {
+                        if (_playerInv.HasItem(modName, 1))
+                            _playerInv.RemoveItem(modName, 1);
+                        else
+                            return false;
+                    }
+                
+                    bulletWeapon._itemMods[slot] = modBlock;
+                    bulletWeapon.RecalculateMods();
+
+                    if (bulletWeapon.itemRepresentation != null)
+                    {
+                        ItemRepresentation rep = bulletWeapon.itemRepresentation;
+                        MethodInfo getFlags = typeof(ItemRepresentation).GetMethod("GetCharacterStateFlags",
+                            BindingFlags.Instance | BindingFlags.NonPublic);
+                        CharacterStateFlags flags = (getFlags != null)
+                            ? (CharacterStateFlags)getFlags.Invoke(rep, null)
+                            : new CharacterStateFlags();
+                        rep._itemMods.InstallMod(slot, rep, modBlock, flags);
+
+                        uLink.BitStream stream = new uLink.BitStream(false);
+                        stream.WriteByte((byte)bulletWeapon.usedModSlots);
+                        for (int i = 0; i < bulletWeapon._itemMods.Length; i++)
+                        {
+                            if (bulletWeapon._itemMods[i] != null)
+                                stream.WriteInt32(bulletWeapon._itemMods[i].uniqueID);
+                        }
+
+                        rep.networkView.RPC("Mods", uLink.RPCMode.OthersBuffered, stream.GetDataByteArray());
+                    }
+                
+                    RInventoryItem.MarkDirty();
+                    return true;
+                }
+                case HeldItem<ShotgunDataBlock> shotgun:
+                {
+                    if (shotgun.usedModSlots >= shotgun.totalModSlots)
+                        return false;
+
+                    int slot = -1;
+                    for (int i = 0; i < shotgun._itemMods.Length; i++)
+                    {
+                        if (shotgun._itemMods[i] == null)
+                        {
+                            slot = i;
+                            break;
+                        }
+                    }
+
+                    if (slot == -1) 
+                        return false;
+
+                    if (removeFromInv && _playerInv != null)
+                    {
+                        if (_playerInv.HasItem(modName, 1))
+                            _playerInv.RemoveItem(modName, 1);
+                        else
+                            return false;
+                    }
+                    
+                    shotgun._itemMods[slot] = modBlock;
+                    shotgun.RecalculateMods();
+
+                    if (shotgun.itemRepresentation != null)
+                    {
+                        ItemRepresentation rep = shotgun.itemRepresentation;
+                        MethodInfo getFlags = typeof(ItemRepresentation).GetMethod("GetCharacterStateFlags",
+                            BindingFlags.Instance | BindingFlags.NonPublic);
+                        CharacterStateFlags flags = (getFlags != null)
+                            ? (CharacterStateFlags)getFlags.Invoke(rep, null)
+                            : new CharacterStateFlags();
+                        rep._itemMods.InstallMod(slot, rep, modBlock, flags);
+
+                        uLink.BitStream stream = new uLink.BitStream(false);
+                        stream.WriteByte((byte)shotgun.usedModSlots);
+                        for (int i = 0; i < shotgun._itemMods.Length; i++)
+                        {
+                            if (shotgun._itemMods[i] != null)
+                                stream.WriteInt32(shotgun._itemMods[i].uniqueID);
+                        }
+
+                        rep.networkView.RPC("Mods", uLink.RPCMode.OthersBuffered, stream.GetDataByteArray());
+                    }
+                    
+                    RInventoryItem.MarkDirty();
+                    return true;
+                }
+                default:
+                    return false;
             }
         }
 
@@ -272,46 +536,72 @@ namespace Fougerite
         /// </summary>
         public bool RemoveMod(int slot, bool giveBack = true)
         {
-            if (IsEmpty()) 
+            if (IsEmpty())
                 return false;
-            
-            if (RInventoryItem is HeldItem<BulletWeaponDataBlock> bulletWeapon)
+
+            switch (RInventoryItem)
             {
-                ItemModDataBlock[] mods = bulletWeapon._itemMods;
-
-                if (slot < 0 || slot >= mods.Length || mods[slot] == null)
+                case HeldItem<BulletWeaponDataBlock> bulletWeapon:
                 {
-                    return false;
-                }
+                    ItemModDataBlock[] mods = bulletWeapon._itemMods;
+                    if (slot < 0 || slot >= mods.Length || mods[slot] == null) 
+                        return false;
 
-                string modName = mods[slot].name;
-                mods[slot] = null;
-                bulletWeapon.RecalculateMods();
-                
-                if (bulletWeapon.itemRepresentation != null)
-                {
-                    ItemRepresentation rep = bulletWeapon.itemRepresentation;
-                    if (slot < 5)
+                    string modName = mods[slot].name;
+                    mods[slot] = null;
+                    bulletWeapon.RecalculateMods();
+
+                    if (bulletWeapon.itemRepresentation != null)
                     {
-                        ItemRepresentation.ItemModPair pair = rep._itemMods[slot];
-                        rep.KillModRep(ref pair.representation, false);
-                        pair.dataBlock = null;
-                        pair.bindState = ItemRepresentation.BindState.Vacant;
-                        rep._itemMods[slot] = pair;
+                        ItemRepresentation rep = bulletWeapon.itemRepresentation;
+                        if (slot < 5)
+                        {
+                            ItemRepresentation.ItemModPair pair = rep._itemMods[slot];
+                            rep.KillModRep(ref pair.representation, false);
+                            pair.dataBlock = null;
+                            pair.bindState = ItemRepresentation.BindState.Vacant;
+                            rep._itemMods[slot] = pair;
+                        }
                     }
-                }
-                
-                RInventoryItem.MarkDirty();
 
-                if (giveBack && _playerInv != null)
+                    RInventoryItem.MarkDirty();
+                    if (giveBack && _playerInv != null)
+                        _playerInv.AddItem(modName, 1);
+                    
+                    return true;
+                }
+                case HeldItem<ShotgunDataBlock> shotgun:
                 {
-                    _playerInv.AddItem(modName, 1);
+                    ItemModDataBlock[] mods = shotgun._itemMods;
+                    if (slot < 0 || slot >= mods.Length || mods[slot] == null)
+                        return false;
+
+                    string modName = mods[slot].name;
+                    mods[slot] = null;
+                    shotgun.RecalculateMods();
+
+                    if (shotgun.itemRepresentation != null)
+                    {
+                        ItemRepresentation rep = shotgun.itemRepresentation;
+                        if (slot < 5)
+                        {
+                            ItemRepresentation.ItemModPair pair = rep._itemMods[slot];
+                            rep.KillModRep(ref pair.representation, false);
+                            pair.dataBlock = null;
+                            pair.bindState = ItemRepresentation.BindState.Vacant;
+                            rep._itemMods[slot] = pair;
+                        }
+                    }
+
+                    RInventoryItem.MarkDirty();
+                    if (giveBack && _playerInv != null)
+                        _playerInv.AddItem(modName, 1);
+                    
+                    return true;
                 }
-
-                return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         /// <summary>
@@ -319,7 +609,7 @@ namespace Fougerite
         /// </summary>
         public bool ClearMods(bool giveBack = true)
         {
-            if (IsEmpty()) 
+            if (IsEmpty())
                 return false;
 
             bool anyRemoved = false;
@@ -340,32 +630,39 @@ namespace Fougerite
         public List<string> GetMods()
         {
             List<string> modNames = new List<string>(5);
-            if (IsEmpty())
-            {
+            if (IsEmpty()) 
                 return modNames;
-            }
 
-            IInventoryItem item = RInventoryItem;
-            
-            if (item is HeldItem<BulletWeaponDataBlock> bulletWeapon)
+            switch (RInventoryItem)
             {
-                int totalSlots = bulletWeapon.totalModSlots;
-                ItemModDataBlock[] mods = bulletWeapon.itemMods;
-                if (mods != null)
+                case HeldItem<BulletWeaponDataBlock> bulletWeapon:
                 {
-                    for (int i = 0; i < totalSlots; i++)
+                    int totalSlots = bulletWeapon.totalModSlots;
+                    ItemModDataBlock[] mods = bulletWeapon.itemMods;
+                    if (mods != null)
                     {
-                        if (mods[i] != null)
+                        for (int i = 0; i < totalSlots; i++)
                         {
-                            modNames.Add(mods[i].name);
-                        }
-                        else
-                        {
-                            modNames.Add("Empty slot");
+                            modNames.Add(mods[i] != null ? mods[i].name : "Empty slot");
                         }
                     }
-                }
 
+                    break;
+                }
+                case HeldItem<ShotgunDataBlock> shotgun:
+                {
+                    int totalSlots = shotgun.totalModSlots;
+                    ItemModDataBlock[] mods = shotgun.itemMods;
+                    if (mods != null)
+                    {
+                        for (int i = 0; i < totalSlots; i++)
+                        {
+                            modNames.Add(mods[i] != null ? mods[i].name : "Empty slot");
+                        }
+                    }
+
+                    break;
+                }
             }
 
             return modNames;

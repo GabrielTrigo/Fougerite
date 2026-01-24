@@ -1740,7 +1740,7 @@ namespace Fougerite
                 InventoryModEvent e = null;
                 try
                 {
-                    e = new InventoryModEvent(inv, slot, inventoryItem.iface, "Remove");
+                    e = new InventoryModEvent(inv, slot, inventoryItem.iface, "Remove", inventoryItem.inventory);
                     ExecuteSubscribers(OnItemRemoved, "InventoryRemoveEvent", e);
                 }
                 catch (Exception ex)
@@ -1772,7 +1772,7 @@ namespace Fougerite
                 InventoryModEvent e = null;
                 try
                 {
-                    e = new InventoryModEvent(args.inventory, args.slot, args.item.iface, "Add");
+                    e = new InventoryModEvent(args.inventory, args.slot, args.item.iface, "Add", args.item?.inventory);
                     ExecuteSubscribers(OnItemAdded, "InventoryAddEvent", e);
                 }
                 catch (Exception ex)
