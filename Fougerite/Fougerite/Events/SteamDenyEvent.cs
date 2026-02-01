@@ -1,5 +1,4 @@
-﻿
-using uLink;
+﻿using uLink;
 
 namespace Fougerite.Events
 {

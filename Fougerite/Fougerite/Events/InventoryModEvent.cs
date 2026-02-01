@@ -1,5 +1,4 @@
-﻿
-namespace Fougerite.Events
+﻿namespace Fougerite.Events
 {
     /// <summary>
     /// This class is created when an Item is added/removed from an inventory.

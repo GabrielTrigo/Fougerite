@@ -1,8 +1,7 @@
-﻿
+﻿using uLink;
+
 namespace Fougerite.Events
 {
-    using uLink;
-
     /// <summary>
     /// This class is created when the player is authenticating with the server.
     /// </summary>

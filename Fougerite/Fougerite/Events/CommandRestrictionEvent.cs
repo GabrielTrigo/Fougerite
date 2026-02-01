@@ -1,11 +1,17 @@
 namespace Fougerite.Events
 {
+    /// <summary>
+    /// The type of command restriction.
+    /// </summary>
     public enum CommandRestrictionType
     {
         Command,
         ConsoleCommand
     }
 
+    /// <summary>
+    /// The scale of the command restriction.
+    /// </summary>
     public enum CommandRestrictionScale
     {
         Global,

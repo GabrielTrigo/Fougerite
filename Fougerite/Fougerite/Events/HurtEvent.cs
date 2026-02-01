@@ -1,11 +1,9 @@
-﻿using Fougerite.Caches;
+﻿using System;
+using System.Collections.Generic;
+using Fougerite.Caches;
 
 namespace Fougerite.Events
 {
-    using Fougerite;
-    using System;
-    using System.Collections.Generic;
-
     /// <summary>
     /// This class is created when a Player or an AI or an Entity is Hurt.
     /// </summary>

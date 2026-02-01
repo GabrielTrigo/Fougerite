@@ -1,8 +1,8 @@
-﻿namespace Fougerite.PluginLoaders
-{
-    using System;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
+namespace Fougerite.PluginLoaders
+{
     public class PluginLoader : Singleton<PluginLoader>, ISingleton
     {
         private bool _AllPluginsLoaded = false;

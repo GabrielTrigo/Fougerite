@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using Fougerite.Permissions;
 using RustPP;
 using RustPP.Commands;
 using RustPP.Permissions;
 using RustPP.Social;
-using System.Collections.Generic;
-using Fougerite.Permissions;
 
 namespace Fougerite
 {

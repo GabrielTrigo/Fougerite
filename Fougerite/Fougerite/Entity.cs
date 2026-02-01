@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
 using Fougerite.Caches;
+using UnityEngine;
 
 namespace Fougerite
 {

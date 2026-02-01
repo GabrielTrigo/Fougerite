@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using Facepunch;
 using Fougerite.Caches;
+using Fougerite.Tools;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Random = System.Random;
-using Fougerite.Tools;
 
 namespace Fougerite
 {

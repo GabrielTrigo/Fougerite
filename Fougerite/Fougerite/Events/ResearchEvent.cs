@@ -1,6 +1,4 @@
-﻿
-
-namespace Fougerite.Events
+﻿namespace Fougerite.Events
 {
     /// <summary>
     /// This class is created when something is being researched.

@@ -1,9 +1,15 @@
 namespace Fougerite.Events
 {
+    /// <summary>
+    /// The previous day cycle state.
+    /// </summary>
     public enum PreviousDayCycle
     {
         Day = 0,
         Night = 1,
+        /// <summary>
+        /// Unknown previous state (server just started).
+        /// </summary>
         Unknown = 2
     }
     

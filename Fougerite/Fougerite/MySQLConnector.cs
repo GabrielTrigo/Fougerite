@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 
-//using MySql.Data.MySqlClient;
-
 namespace Fougerite
 {
     /// <summary>

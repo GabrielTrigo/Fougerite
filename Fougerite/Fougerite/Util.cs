@@ -15,10 +15,10 @@ using Fougerite.Caches;
 using Fougerite.Concurrent;
 using Fougerite.Events;
 using Fougerite.Permissions;
+using Fougerite.Tools;
 using IronPython.Runtime.Types;
 using UnityEngine;
 using String = Facepunch.Utility.String;
-using Fougerite.Tools;
 
 namespace Fougerite
 {

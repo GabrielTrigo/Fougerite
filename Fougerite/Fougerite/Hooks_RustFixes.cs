@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using Fougerite.Events;
-using uLink;
-using Debug = UnityEngine.Debug;
 using Facepunch.MeshBatch;
 using Fougerite.Concurrent;
+using Fougerite.Events;
+using uLink;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Fougerite
 {

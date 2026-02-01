@@ -1,7 +1,7 @@
-﻿namespace Fougerite.Events
-{
-    using UnityEngine;
+﻿using UnityEngine;
 
+namespace Fougerite.Events
+{
     /// <summary>
     /// This class is created when a player is spawning or just spawned.
     /// </summary>

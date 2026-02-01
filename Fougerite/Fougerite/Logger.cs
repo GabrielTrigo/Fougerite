@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
-using UnityEngine;
 using Fougerite.Events;
+using UnityEngine;
 
 namespace Fougerite
 {

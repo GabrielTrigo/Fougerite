@@ -1,5 +1,8 @@
 ﻿namespace Fougerite.Events
 {
+    /// <summary>
+    /// The type of pickup event (before or after the item is added to the inventory).
+    /// </summary>
     public enum PickupEventType
     {
         Before,
