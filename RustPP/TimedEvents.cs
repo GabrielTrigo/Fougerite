@@ -9,6 +9,7 @@ namespace RustPP
         public static bool init = false;
         public static int time = 60;
         public static TimedEvent timer;
+        public static TimedEvent shutdownTimer;
 
         /// <summary>
         /// Fires the advertisement messages defined in the config.
@@ -47,7 +48,7 @@ namespace RustPP
             savealldata();
             if (int.TryParse(Core.config.GetSetting("Settings", "shutdown_countdown"), out time))
             {
-                Util.GetUtil().CreateParallelTimer("RPP_ShutdownTimer", 10000, null, delegate (TimedEvent te)
+                shutdownTimer = Util.GetUtil().CreateParallelTimer("RPP_ShutdownTimer", 10000, null, delegate (TimedEvent te)
                 {
                     shutdown_tick(te);
                 }, true, "RustPP");
