@@ -43,7 +43,7 @@ namespace Fougerite.Permissions
         /// </summary>
         /// <param name="steamid">The SteamID of the player whose permissions should be disabled.</param>
         /// <param name="removeDefaultGroupPermissions">If true, permissions from the default group will also be revoked.</param>
-        /// <returns>True if the player's permissions were successfully forced off; otherwise, false.</returns>
+        /// <returns>True if the player's permissions were successfully forced off,otherwise, false.</returns>
         public bool ForceOffPermissions(ulong steamid, bool removeDefaultGroupPermissions)
         {
             DisableLock.AcquireWriterLock(Timeout.Infinite);
@@ -73,7 +73,7 @@ namespace Fougerite.Permissions
         /// Restores a player's permissions that were previously revoked via the ForceOff mechanism.
         /// </summary>
         /// <param name="steamid">The SteamID of the player.</param>
-        /// <returns>True if the revocation was removed; otherwise, false.</returns>
+        /// <returns>True if the revocation was removed,otherwise, false.</returns>
         public bool RemoveForceOffPermissions(ulong steamid)
         {
             DisableLock.AcquireWriterLock(Timeout.Infinite);
@@ -103,7 +103,7 @@ namespace Fougerite.Permissions
         /// Checks if the player currently has their permissions revoked via the ForceOff mechanism.
         /// </summary>
         /// <param name="steamid">The SteamID of the player.</param>
-        /// <returns>True if permissions are forced off; otherwise, false.</returns>
+        /// <returns>True if permissions are forced off,otherwise, false.</returns>
         public bool HasPermissionsForcedOff(ulong steamid)
         {
             DisableLock.AcquireReaderLock(Timeout.Infinite);
@@ -127,7 +127,7 @@ namespace Fougerite.Permissions
         /// Determines if a player has their permissions revoked and if default group access is also disabled.
         /// </summary>
         /// <param name="steamid">The SteamID of the player.</param>
-        /// <returns>True if the player has their default permissions forced off; otherwise, false.</returns>
+        /// <returns>True if the player has their default permissions forced off,otherwise, false.</returns>
         public bool HasDefaultPermissionsForcedOff(ulong steamid)
         {
             DisableLock.AcquireReaderLock(Timeout.Infinite);
@@ -519,7 +519,7 @@ namespace Fougerite.Permissions
         /// </summary>
         /// <param name="player">The player instance.</param>
         /// <param name="groupname">The name of the group.</param>
-        /// <returns>True if the player is in the group; otherwise, false.</returns>
+        /// <returns>True if the player is in the group,otherwise, false.</returns>
         public bool PlayerHasGroup(Player player, string groupname)
         {
             return player != null && PlayerHasGroup(player.UID, groupname);
@@ -530,7 +530,7 @@ namespace Fougerite.Permissions
         /// </summary>
         /// <param name="steamid">The SteamID of the player.</param>
         /// <param name="groupname">The name of the group.</param>
-        /// <returns>True if the player is in the group; otherwise, false.</returns>
+        /// <returns>True if the player is in the group,otherwise, false.</returns>
         public bool PlayerHasGroup(ulong steamid, string groupname)
         {
             groupname = groupname.Trim().ToLower();
@@ -555,7 +555,7 @@ namespace Fougerite.Permissions
         /// </summary>
         /// <param name="permissionplayer">The permission player record.</param>
         /// <param name="groupname">The name of the group.</param>
-        /// <returns>True if the player record contains the group; otherwise, false.</returns>
+        /// <returns>True if the player record contains the group,otherwise, false.</returns>
         public bool PlayerHasGroup(PermissionPlayer permissionplayer, string groupname)
         {
             return permissionplayer != null && PlayerHasGroup(permissionplayer.SteamID, groupname);
@@ -566,7 +566,7 @@ namespace Fougerite.Permissions
         /// </summary>
         /// <param name="steamid">The SteamID of the player.</param>
         /// <param name="permission">The permission string to validate.</param>
-        /// <returns>True if access is granted; otherwise, false.</returns>
+        /// <returns>True if access is granted,otherwise, false.</returns>
         public bool PlayerHasPermission(ulong steamid, string permission)
         {
             // Check if permissions were revoked.
@@ -626,7 +626,7 @@ namespace Fougerite.Permissions
         /// </summary>
         /// <param name="permissionPlayer">The permission player record.</param>
         /// <param name="permission">The permission string.</param>
-        /// <returns>True if access is granted; otherwise, false.</returns>
+        /// <returns>True if access is granted,otherwise, false.</returns>
         public bool PlayerHasPermission(PermissionPlayer permissionPlayer, string permission)
         {
             return permissionPlayer != null && PlayerHasPermission(permissionPlayer.SteamID, permission);
@@ -637,7 +637,7 @@ namespace Fougerite.Permissions
         /// </summary>
         /// <param name="player">The player instance.</param>
         /// <param name="permission">The permission string.</param>
-        /// <returns>True if access is granted; otherwise, false.</returns>
+        /// <returns>True if access is granted,otherwise, false.</returns>
         public bool PlayerHasPermission(Player player, string permission)
         {
             return player != null && PlayerHasPermission(player.UID, permission);
@@ -731,7 +731,7 @@ namespace Fougerite.Permissions
         /// Deletes the permission record for the given Player instance from the database.
         /// </summary>
         /// <param name="player">The player instance to remove.</param>
-        /// <returns>True if the record was successfully removed; otherwise, false.</returns>
+        /// <returns>True if the record was successfully removed,otherwise, false.</returns>
         public bool RemovePermissionPlayer(Player player)
         {
             return player != null && RemovePermissionPlayer(player.UID);
@@ -741,7 +741,7 @@ namespace Fougerite.Permissions
         /// Deletes a specific PermissionPlayer object from the database.
         /// </summary>
         /// <param name="permissionPlayer">The record object to remove.</param>
-        /// <returns>True if the record was removed; otherwise, false.</returns>
+        /// <returns>True if the record was removed,otherwise, false.</returns>
         public bool RemovePermissionPlayer(PermissionPlayer permissionPlayer)
         {
             if (permissionPlayer == null)
@@ -776,7 +776,7 @@ namespace Fougerite.Permissions
         /// Deletes a player's permission record from the database by their SteamID.
         /// </summary>
         /// <param name="steamid">The SteamID to remove.</param>
-        /// <returns>True if the record was found and removed; otherwise, false.</returns>
+        /// <returns>True if the record was found and removed,otherwise, false.</returns>
         public bool RemovePermissionPlayer(ulong steamid)
         {
             var permissionplayer = GetPlayerBySteamID(steamid);
@@ -806,7 +806,7 @@ namespace Fougerite.Permissions
         /// </summary>
         /// <param name="steamid">The SteamID of the player.</param>
         /// <param name="groupname">The name of the group to add.</param>
-        /// <returns>True if the group was added; false if the player was not found or already in the group.</returns>
+        /// <returns>True if the group was added,false if the player was not found or already in the group.</returns>
         public bool AddGroupToPlayer(ulong steamid, string groupname)
         {
             groupname = groupname.Trim().ToLower();
@@ -844,7 +844,7 @@ namespace Fougerite.Permissions
         /// </summary>
         /// <param name="steamid">The SteamID of the player.</param>
         /// <param name="groupname">The name of the group to remove.</param>
-        /// <returns>True if the player was removed from the group; otherwise, false.</returns>
+        /// <returns>True if the player was removed from the group,otherwise, false.</returns>
         public bool RemoveGroupFromPlayer(ulong steamid, string groupname)
         {
             groupname = groupname.Trim().ToLower();
@@ -884,7 +884,7 @@ namespace Fougerite.Permissions
         /// <param name="groupname">The unique name for the group.</param>
         /// <param name="permissions">Optional initial list of granted permission strings.</param>
         /// <param name="nickname">Optional display nickname for the group.</param>
-        /// <returns>True if the group was created; false if it already exists.</returns>
+        /// <returns>True if the group was created,false if it already exists.</returns>
         public bool CreateGroup(string groupname, List<string> permissions = null, string nickname = null)
         {
             if (permissions == null)
@@ -932,7 +932,7 @@ namespace Fougerite.Permissions
         /// Deletes a permission group and unassigns all players currently associated with it.
         /// </summary>
         /// <param name="groupname">The name of the group to disband.</param>
-        /// <returns>True if the group was removed; false if it's the "Default" group or was not found.</returns>
+        /// <returns>True if the group was removed,false if it's the "Default" group or was not found.</returns>
         public bool RemoveGroup(string groupname)
         {
             groupname = groupname.Trim().ToLower();
@@ -982,7 +982,7 @@ namespace Fougerite.Permissions
         /// </summary>
         /// <param name="groupname">The name of the group.</param>
         /// <param name="permission">The permission string to grant.</param>
-        /// <returns>True if the operation completed successfully; otherwise, false.</returns>
+        /// <returns>True if the operation completed successfully,otherwise, false.</returns>
         public bool AddPermissionToGroup(string groupname, string permission)
         {
             groupname = groupname.Trim().ToLower();
@@ -1019,7 +1019,7 @@ namespace Fougerite.Permissions
         /// </summary>
         /// <param name="groupname">The name of the group.</param>
         /// <param name="permission">The permission string to revoke.</param>
-        /// <returns>True if the permission was found and removed; otherwise, false.</returns>
+        /// <returns>True if the permission was found and removed,otherwise, false.</returns>
         public bool RemovePermissionFromGroup(string groupname, string permission)
         {
             groupname = groupname.Trim().ToLower();
@@ -1057,7 +1057,7 @@ namespace Fougerite.Permissions
         /// </summary>
         /// <param name="groupname">The name of the group.</param>
         /// <param name="permission">The permission string to check.</param>
-        /// <returns>True if the group possesses the permission; otherwise, false.</returns>
+        /// <returns>True if the group possesses the permission,otherwise, false.</returns>
         public bool GroupHasPermission(string groupname, string permission)
         {
             groupname = groupname.Trim().ToLower();
@@ -1089,7 +1089,7 @@ namespace Fougerite.Permissions
         /// </summary>
         /// <param name="groupname">The name of the group.</param>
         /// <param name="nickname">The new nickname.</param>
-        /// <returns>True if the nickname was updated; otherwise, false.</returns>
+        /// <returns>True if the nickname was updated,otherwise, false.</returns>
         public bool SetGroupNickName(string groupname, string nickname)
         {
             groupname = groupname.Trim().ToLower();
@@ -1121,7 +1121,7 @@ namespace Fougerite.Permissions
         /// </summary>
         /// <param name="groupname">The current name of the group.</param>
         /// <param name="newname">The desired new name.</param>
-        /// <returns>True if the renaming was successful; otherwise, false.</returns>
+        /// <returns>True if the renaming was successful,otherwise, false.</returns>
         public bool ChangeGroupName(string groupname, string newname)
         {
             groupname = groupname.Trim().ToLower();
@@ -1165,7 +1165,7 @@ namespace Fougerite.Permissions
         /// </summary>
         /// <param name="player">The player instance.</param>
         /// <param name="permission">The permission string to grant.</param>
-        /// <returns>True if granted; otherwise, false.</returns>
+        /// <returns>True if granted,otherwise, false.</returns>
         public bool AddPermission(Player player, string permission)
         {
             return player != null && AddPermission(player.UID, permission);
@@ -1176,7 +1176,7 @@ namespace Fougerite.Permissions
         /// </summary>
         /// <param name="permissionPlayer">The permission player record.</param>
         /// <param name="permission">The permission string to grant.</param>
-        /// <returns>True if granted; otherwise, false.</returns>
+        /// <returns>True if granted,otherwise, false.</returns>
         public bool AddPermission(PermissionPlayer permissionPlayer, string permission)
         {
             return permissionPlayer != null && AddPermission(permissionPlayer.SteamID, permission);
@@ -1187,7 +1187,7 @@ namespace Fougerite.Permissions
         /// </summary>
         /// <param name="steamid">The SteamID of the player.</param>
         /// <param name="permission">The permission string to grant.</param>
-        /// <returns>True if granted; otherwise, false.</returns>
+        /// <returns>True if granted,otherwise, false.</returns>
         public bool AddPermission(ulong steamid, string permission)
         {
             permission = permission.Trim().ToLower();
@@ -1225,7 +1225,7 @@ namespace Fougerite.Permissions
         /// </summary>
         /// <param name="player">The player instance.</param>
         /// <param name="permission">The permission string to revoke.</param>
-        /// <returns>True if the permission was found and revoked; otherwise, false.</returns>
+        /// <returns>True if the permission was found and revoked,otherwise, false.</returns>
         public bool RemovePermission(Player player, string permission)
         {
             return player != null && RemovePermission(player.UID, permission);
@@ -1236,7 +1236,7 @@ namespace Fougerite.Permissions
         /// </summary>
         /// <param name="permissionPlayer">The permission player record.</param>
         /// <param name="permission">The permission string to revoke.</param>
-        /// <returns>True if the permission was found and revoked; otherwise, false.</returns>
+        /// <returns>True if the permission was found and revoked,otherwise, false.</returns>
         public bool RemovePermission(PermissionPlayer permissionPlayer, string permission)
         {
             return permissionPlayer != null && RemovePermission(permissionPlayer.SteamID, permission);
@@ -1247,7 +1247,7 @@ namespace Fougerite.Permissions
         /// </summary>
         /// <param name="steamid">The SteamID of the player.</param>
         /// <param name="permission">The permission string to revoke.</param>
-        /// <returns>True if the permission was found and revoked; otherwise, false.</returns>
+        /// <returns>True if the permission was found and revoked,otherwise, false.</returns>
         public bool RemovePermission(ulong steamid, string permission)
         {
             permission = permission.Trim().ToLower();
@@ -1284,7 +1284,7 @@ namespace Fougerite.Permissions
         /// </summary>
         /// <param name="pattern">The stored permission pattern.</param>
         /// <param name="requested">The specific permission being validated.</param>
-        /// <returns>True if the pattern authorizes the requested permission; otherwise, false.</returns>
+        /// <returns>True if the pattern authorizes the requested permission,otherwise, false.</returns>
         public bool Matches(string pattern, string requested)
         {
             pattern = pattern.Trim().ToLower();
