@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
-using System.Timers;
 using Fougerite;
+using Fougerite.Events;
 
 namespace RustPP
 {
@@ -8,52 +8,60 @@ namespace RustPP
     {
         public static bool init = false;
         public static int time = 60;
-        public static System.Timers.Timer timer;
+        public static TimedEvent timer;
 
-        private static void advertise_begin()
+        /// <summary>
+        /// Fires the advertisement messages defined in the config.
+        /// </summary>
+        private static void advertise_begin(TimedEvent te)
         {
-            for (int i = 0; i < int.Parse(Core.config.GetSetting("Settings", "notice_messages_amount")); i++)
+            int amount;
+            if (int.TryParse(Core.config.GetSetting("Settings", "notice_messages_amount"), out amount))
             {
-                Server.GetServer().BroadcastFrom(Core.Name, Core.config.GetSetting("Settings", "notice" + (i + 1)));
+                for (int i = 0; i < amount; i++)
+                {
+                    Server.GetServer().BroadcastFrom(Core.Name, Core.config.GetSetting("Settings", "notice" + (i + 1)));
+                }
             }
         }
 
         private static void airdrop_begin()
         {
-            int num = int.Parse(Core.config.GetSetting("Settings", "airdrop_count"));
-            World.GetWorld().Airdrop(num);
+            int num;
+            if (int.TryParse(Core.config.GetSetting("Settings", "airdrop_count"), out num))
+            {
+                World.GetWorld().Airdrop(num);
+            }
         }
 
         public static void savealldata()
         {
-            try
-            {
-                AvatarSaveProc.SaveAll();
-                ServerSaveManager.AutoSave();
-            }
-            catch{}
+            World.GetWorld().ServerSaveHandler.ManualSave();
         }
 
+        /// <summary>
+        /// Initiates the server shutdown sequence using the Util timer system.
+        /// </summary>
         public static void shutdown()
         {
             savealldata();
-            time = int.Parse(Core.config.GetSetting("Settings", "shutdown_countdown"));
-            System.Timers.Timer timer = new System.Timers.Timer();
-            timer.Interval = 10000.0;
-            timer.AutoReset = true;
-            timer.Elapsed += delegate (object x, ElapsedEventArgs y)
+            if (int.TryParse(Core.config.GetSetting("Settings", "shutdown_countdown"), out time))
             {
-                shutdown_tick();
-            };
-            timer.Start();
-            shutdown_tick();
+                Util.GetUtil().CreateParallelTimer("RPP_ShutdownTimer", 10000, null, delegate (TimedEvent te)
+                {
+                    shutdown_tick(te);
+                }, true, "RustPP");
+
+                // Execute the first tick immediately
+                shutdown_tick(null);
+            }
         }
 
-        public static void shutdown_tick()
+        public static void shutdown_tick(TimedEvent te)
         {
-            if (time == 0)
+            if (time <= 0)
             {
-                //savealldata();
+                te?.Kill(); 
                 Helper.CreateSaves();
                 Server.GetServer().BroadcastFrom(Core.Name, "Server Shutdown NOW!");
                 Process.GetCurrentProcess().Kill();
@@ -66,57 +74,32 @@ namespace RustPP
             time -= 10;
         }
 
+        /// <summary>
+        /// Starts the initial server events and advertisement timers.
+        /// </summary>
         public static void startEvents()
         {
             if (!init)
             {
                 init = true;
-                if (Core.config.GetBoolSetting("Settings", "pvp"))
-                {
-                    server.pvp = true;
-                }
-                else
-                {
-                    server.pvp = false;
-                }
-                if (Core.config.GetBoolSetting("Settings", "instant_craft"))
-                {
-                    crafting.instant = true;
-                }
-                else
-                {
-                    crafting.instant = false;
-                }
-                if (Core.config.GetSetting("Settings", "sleepers") == "true")
-                {
-                    sleepers.on = true;
-                }
-                else
-                {
-                    sleepers.on = false;
-                }
-                if (Core.config.GetBoolSetting("Settings", "enforce_truth"))
-                {
-                    truth.punish = true;
-                }
-                else
-                {
-                    truth.punish = false;
-                }
+                
+                server.pvp = Core.config.GetBoolSetting("Settings", "pvp");
+                crafting.instant = Core.config.GetBoolSetting("Settings", "instant_craft");
+                sleepers.on = Core.config.GetSetting("Settings", "sleepers") == "true";
+                truth.punish = Core.config.GetBoolSetting("Settings", "enforce_truth");
+                
                 if (!Core.config.GetBoolSetting("Settings", "voice_proximity"))
                 {
                     voice.distance = 2.147484E+09f;
                 }
+
                 if (Core.config.GetBoolSetting("Settings", "notice_enabled"))
                 {
-                    timer = new System.Timers.Timer();
-                    timer.Interval = int.Parse(Core.config.GetSetting("Settings", "notice_interval"));
-                    timer.AutoReset = true;
-                    timer.Elapsed += delegate(object x, ElapsedEventArgs y)
+                    int interval;
+                    if (int.TryParse(Core.config.GetSetting("Settings", "notice_interval"), out interval))
                     {
-                        advertise_begin();
-                    };
-                    timer.Start();
+                        timer = Util.GetUtil().CreateTimer("RPP_Advertiser", interval, advertise_begin, true, "RustPP");
+                    }
                 }
             }
         }

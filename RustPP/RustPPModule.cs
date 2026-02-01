@@ -120,7 +120,7 @@ namespace RustPP
             Fougerite.Hooks.OnChat -= Chat;
             Fougerite.Hooks.OnFallDamage -= OnFallDamage;
             Fougerite.Hooks.OnServerSaved -= OnServerSaved;
-            TimedEvents.timer.Stop();
+            TimedEvents.timer.Kill();
             Logger.LogDebug("DeInitialized RPP");
         }
 
