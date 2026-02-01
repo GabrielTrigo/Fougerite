@@ -28,7 +28,7 @@ namespace RustPP
 
         public override Version Version
         {
-            get { return new Version("1.1.8.1"); }
+            get { return new Version(Core.Version); }
         }
 
         public static string GetAbsoluteFilePath(string fileName)

@@ -11,7 +11,7 @@ namespace RustPP
     public class Core
     {
         public static string Name = "Rust++";
-        public static string Version = "1.1.8.0";
+        public static string Version = "1.1.8.2";
         public static IniParser config;
         public static PList blackList = new PList();
         public static PList whiteList = new PList();
@@ -39,89 +39,48 @@ namespace RustPP
         public static void Init()
         {
             InitializeCommands();
-            ShareCommand command = ChatCommand.GetCommand("share") as ShareCommand;
-            FriendsCommand command2 = ChatCommand.GetCommand("friends") as FriendsCommand;
-            bool success = false;
-            if (File.Exists(RustPPModule.GetAbsoluteFilePath("doorsSave.xml")))
-            {
-                SerializableDictionary<ulong, List<ulong>> doorsDict;
-                doorsDict = Helper.ObjectFromXML<SerializableDictionary<ulong, List<ulong>>>(RustPPModule.GetAbsoluteFilePath("doorsSave.xml"));
-                Hashtable doorsSave = new Hashtable();
-                foreach (KeyValuePair<ulong, List<ulong>> kvp in doorsDict)
-                {
-                    ArrayList arr = new ArrayList(kvp.Value);
-                    doorsSave.Add(kvp.Key, arr);
-                }
-                command.SetSharedDoors(doorsSave);
-                success = true;
-            }
-            if (File.Exists(RustPPModule.GetAbsoluteFilePath("doorsSave.rpp")) && !success)
-                command.SetSharedDoors(Helper.ObjectFromFile<Hashtable>(RustPPModule.GetAbsoluteFilePath("doorsSave.rpp")));
+            ShareCommand shareCmd = (ShareCommand) ChatCommand.GetCommand("share");
+            FriendsCommand friendsCmd = (FriendsCommand) ChatCommand.GetCommand("friends");
 
-            if (!File.Exists(RustPPModule.GetAbsoluteFilePath("doorsSave.xml")))
+            // Doors: JSON -> XML -> doorsSave.rpp
+            var doors = Helper
+                .LoadWithMigration<Dictionary<ulong, List<ulong>>, SerializableDictionary<ulong, List<ulong>>>(
+                    "doorsSave.json", "doorsSave.xml", "doorsSave.rpp");
+            if (doors != null)
             {
-                SerializableDictionary<ulong, List<ulong>> doorsSave = new SerializableDictionary<ulong, List<ulong>>();
-                foreach (DictionaryEntry entry in command.GetSharedDoors())
-                {
-                    ulong key = (ulong)entry.Key;
-                    ArrayList value = (ArrayList)entry.Value;
-                    List<ulong> list = new List<ulong>(value.OfType<ulong>());
-                    doorsSave.Add(key, list);
-                }
-                Helper.ObjectToXML<SerializableDictionary<ulong, List<ulong>>>(doorsSave, RustPPModule.GetAbsoluteFilePath("doorsSave.xml"));
+                Hashtable ht = new Hashtable();
+                foreach (var kvp in doors) ht.Add(kvp.Key, new ArrayList(kvp.Value));
+                shareCmd.SetSharedDoors(ht);
             }
-            if (File.Exists(RustPPModule.GetAbsoluteFilePath("friendsSave.rpp")))
-            {
-                command2.SetFriendsLists(Helper.ObjectFromFile<Hashtable>(RustPPModule.GetAbsoluteFilePath("friendsSave.rpp")));
-            }
-            if (File.Exists(RustPPModule.GetAbsoluteFilePath("admins.xml")))
-            {
-                Administrator.AdminList = Helper.ObjectFromXML<List<Administrator>>(RustPPModule.GetAbsoluteFilePath("admins.xml"));
-            }
-            success = false;
-            if (File.Exists(RustPPModule.GetAbsoluteFilePath("userCache.xml")))
-            {
-                FileInfo fi = new FileInfo(RustPPModule.GetAbsoluteFilePath("userCache.xml"));
-                float mega = (fi.Length / 1024f) / 1024f;
-                if (mega > 0.70)
-                {
-                    Logger.LogWarning("Rust++ Cache.xml and Cache.rpp is getting big. Deletion is suggested.");
-                }
-                SerializableDictionary<ulong, string> userDict = Helper.ObjectFromXML<SerializableDictionary<ulong, string>>(RustPPModule.GetAbsoluteFilePath("userCache.xml"));
-                userCache = new Dictionary<ulong, string>(userDict);
-                success = true;
-            }
-            if (File.Exists(RustPPModule.GetAbsoluteFilePath("cache.rpp")) && !success)
-            {
-                userCache = Helper.ObjectFromFile<Dictionary<ulong, string>>(RustPPModule.GetAbsoluteFilePath("cache.rpp"));
-                if (!File.Exists(RustPPModule.GetAbsoluteFilePath("userCache.xml")))
-                    Helper.ObjectToXML<SerializableDictionary<ulong, string>>(new SerializableDictionary<ulong, string>(userCache), RustPPModule.GetAbsoluteFilePath("userCache.xml"));
-            }
-            else if (!success)
-            {
-                userCache = new Dictionary<ulong, string>();
-            }
-            if (File.Exists(RustPPModule.GetAbsoluteFilePath("whitelist.xml")))
-            {
-                whiteList = new PList(Helper.ObjectFromXML<List<PList.Player>>(RustPPModule.GetAbsoluteFilePath("whitelist.xml")));
-            } else
-            {
-                whiteList = new PList();
-            }
-            if (File.Exists(RustPPModule.GetAbsoluteFilePath("mutelist.xml")))
-            {
-                muteList = new PList(Helper.ObjectFromXML<List<PList.Player>>(RustPPModule.GetAbsoluteFilePath("mutelist.xml")));
-            } else
-            {
-                muteList = new PList();
-            }
-            if (File.Exists(RustPPModule.GetAbsoluteFilePath("bans.xml")))
-            {
-                blackList = new PList(Helper.ObjectFromXML<List<PList.Player>>(RustPPModule.GetAbsoluteFilePath("bans.xml")));
-            } else
-            {
-                blackList = new PList();
-            }
+
+            // Friends: JSON -> XML -> friendsSave.rpp
+            var friends =
+                Helper.LoadWithMigration<Hashtable, Hashtable>("friendsSave.json", "friendsSave.xml",
+                    "friendsSave.rpp");
+            if (friends != null) 
+                friendsCmd.SetFriendsLists(friends);
+
+            // Admins: JSON -> XML
+            var admins =
+                Helper.LoadWithMigration<List<Administrator>, List<Administrator>>("admins.json", "admins.xml");
+            if (admins != null) 
+                Administrator.AdminList = admins;
+
+            var cache =
+                Helper.LoadWithMigration<Dictionary<ulong, string>, SerializableDictionary<ulong, string>>(
+                    "userCache.json", "userCache.xml", "cache.rpp");
+            userCache = cache ?? new Dictionary<ulong, string>();
+
+            // PLists: JSON -> XML
+            whiteList = new PList(
+                Helper.LoadWithMigration<List<PList.Player>, List<PList.Player>>("whitelist.json", "whitelist.xml") ??
+                new List<PList.Player>());
+            muteList = new PList(
+                Helper.LoadWithMigration<List<PList.Player>, List<PList.Player>>("mutelist.json", "mutelist.xml") ??
+                new List<PList.Player>());
+            blackList = new PList(
+                Helper.LoadWithMigration<List<PList.Player>, List<PList.Player>>("bans.json", "bans.xml") ??
+                new List<PList.Player>());
         }
 
         public static void handleCommand(ref ConsoleSystem.Arg arg)

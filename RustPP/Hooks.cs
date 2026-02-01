@@ -131,8 +131,7 @@ namespace RustPP
         {
             try
             {
-                string name = SecurityElement.Escape(pl.Name);
-                name = Util.GetUtil().ToValidXmlCharactersString(name);
+                string name = pl.Name;
                 
                 if (Core.blackList.Contains(pl.UID))
                 {

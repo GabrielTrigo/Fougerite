@@ -20,7 +20,7 @@ namespace RustPP
 
         public void Add(ulong uid, string dname)
         {
-            this.players.Add(new Player(uid, SecurityElement.Escape(dname)));
+            this.players.Add(new Player(uid, dname));
         }
 
         public void Add(Player player)

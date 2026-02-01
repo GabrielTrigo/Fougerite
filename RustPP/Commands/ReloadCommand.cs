@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using Fougerite;
 using RustPP.Permissions;
 
@@ -11,33 +10,22 @@ namespace RustPP.Commands
         {
             var sender = Server.GetServer().GetCachePlayer(Arguments.argUser.userID);
             sender.MessageFrom(Core.Name, "Reloading...");
+
+            // Re-initialize timed events/config settings
             TimedEvents.startEvents();
-            if (File.Exists(RustPPModule.GetAbsoluteFilePath("admins.xml")))
-            {
-                Administrator.AdminList =
-                    Helper.ObjectFromXML<List<Administrator>>(RustPPModule.GetAbsoluteFilePath("admins.xml"));
-            }
 
-            if (File.Exists(RustPPModule.GetAbsoluteFilePath("whitelist.xml")))
-            {
-                Core.whiteList =
-                    new PList(Helper.ObjectFromXML<List<PList.Player>>(
-                        RustPPModule.GetAbsoluteFilePath("whitelist.xml")));
-            }
-            else
-            {
-                Core.whiteList = new PList();
-            }
+            // Reload Admins json -> xml
+            var admins = Helper.LoadWithMigration<List<Administrator>, List<Administrator>>("admins.json", "admins.xml");
+            if (admins != null) 
+                Administrator.AdminList = admins;
 
-            if (File.Exists(RustPPModule.GetAbsoluteFilePath("bans.xml")))
-            {
-                Core.blackList =
-                    new PList(Helper.ObjectFromXML<List<PList.Player>>(RustPPModule.GetAbsoluteFilePath("bans.xml")));
-            }
-            else
-            {
-                Core.blackList = new PList();
-            }
+            // Reload Whitelist json -> whitelist.xml
+            var wl = Helper.LoadWithMigration<List<PList.Player>, List<PList.Player>>("whitelist.json", "whitelist.xml");
+            Core.whiteList = new PList(wl ?? new List<PList.Player>());
+
+            // Reload Bans (Blacklist) json -> bans.xml
+            var bl = Helper.LoadWithMigration<List<PList.Player>, List<PList.Player>>("bans.json", "bans.xml");
+            Core.blackList = new PList(bl ?? new List<PList.Player>());
 
             sender.MessageFrom(Core.Name, "Reloaded!");
         }

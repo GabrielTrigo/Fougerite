@@ -3,6 +3,7 @@ using System.Security;
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using Newtonsoft.Json;
 
 namespace RustPP.Permissions
 {
@@ -13,8 +14,11 @@ namespace RustPP.Permissions
         private string _name;
         private ulong _userid;
         [XmlIgnore]
+        [JsonIgnore]
         private static List<Administrator> admins = new List<Administrator>();
-        public static string[] PermissionsFlags = new string[] { 
+
+        public static string[] PermissionsFlags = new string[]
+        {
             "CanMute", "CanUnmute", "CanWhiteList", "CanKill", "CanKick", "CanBan", "CanUnban", "CanTeleport",
             "CanLoadout", "CanAnnounce", "CanSpawnItem", "CanGiveItem", "CanReload", "CanSaveAll", "CanAddAdmin",
             "CanDeleteAdmin", "CanGetFlags", "CanAddFlags", "CanUnflag", "CanInstaKO", "CanGodMode", "RCON",
@@ -75,6 +79,7 @@ namespace RustPP.Permissions
                 if (userID == administrator.UserID)
                     return administrator;
             }
+
             return null;
         }
 
@@ -85,6 +90,7 @@ namespace RustPP.Permissions
                 if (name.Equals(administrator.DisplayName, StringComparison.OrdinalIgnoreCase))
                     return administrator;
             }
+
             return null;
         }
 
@@ -95,6 +101,7 @@ namespace RustPP.Permissions
                 if (flag.Equals(name, StringComparison.OrdinalIgnoreCase))
                     return flag;
             }
+
             return string.Empty;
         }
 
@@ -110,6 +117,7 @@ namespace RustPP.Permissions
                 if (uid == administrator.UserID)
                     return true;
             }
+
             return false;
         }
 
@@ -120,6 +128,7 @@ namespace RustPP.Permissions
                 if (name.Equals(administrator.DisplayName, StringComparison.OrdinalIgnoreCase))
                     return true;
             }
+
             return false;
         }
 
@@ -141,52 +150,29 @@ namespace RustPP.Permissions
         }
 
         [XmlIgnore]
+        [JsonIgnore]
         public static List<Administrator> AdminList
         {
-            get
-            {
-                return admins;
-            }
-            set
-            {
-                admins = value;
-            }
+            get { return admins; }
+            set { admins = value; }
         }
 
         public string DisplayName
         {
-            get
-            {
-                return this._name;
-            }
-            set
-            {
-                this._name = value;
-            }
+            get { return this._name; }
+            set { this._name = value; }
         }
 
         public List<string> Flags
         {
-            get
-            {
-                return this._flags;
-            }
-            set
-            {
-                this._flags = value;
-            }
+            get { return this._flags; }
+            set { this._flags = value; }
         }
 
         public ulong UserID
         {
-            get
-            {
-                return this._userid;
-            }
-            set
-            {
-                this._userid = value;
-            }
+            get { return this._userid; }
+            set { this._userid = value; }
         }
     }
 }
