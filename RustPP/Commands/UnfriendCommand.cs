@@ -1,10 +1,9 @@
-﻿namespace RustPP.Commands
-{
-    using Fougerite;
-    using RustPP.Social;
-    using System;
-    using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Fougerite;
+using RustPP.Social;
 
+namespace RustPP.Commands
+{
     public class UnfriendCommand : ChatCommand
     {
         public override void Execute(ref ConsoleSystem.Arg Arguments, ref string[] ChatArguments)

@@ -1,6 +1,5 @@
 ﻿using Fougerite;
 using RustPP;
-using System;
 using RustPP.Commands;
 
 public class rustpp : ConsoleSystem

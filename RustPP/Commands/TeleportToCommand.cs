@@ -1,13 +1,12 @@
 ﻿using System.Runtime.InteropServices;
 using UnityEngine;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using Fougerite;
 
 namespace RustPP.Commands
 {
-    using Fougerite;
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-
     public class TeleportToCommand : ChatCommand
     {
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Unicode, SetLastError = true)]

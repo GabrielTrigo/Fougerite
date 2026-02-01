@@ -1,10 +1,8 @@
-﻿namespace RustPP.Commands
+﻿using Fougerite;
+using RustPP.Permissions;
+ 
+namespace RustPP.Commands
 {
-    using Fougerite;
-    using RustPP;
-    using RustPP.Permissions;
-    using System;
-
     public class HelpCommand : ChatCommand
     {
         public override void Execute(ref ConsoleSystem.Arg Arguments, ref string[] ChatArguments)

@@ -1,13 +1,12 @@
-﻿namespace RustPP.Commands
-{
-    using Fougerite;
-    using RustPP;
-    using RustPP.Social;
-    using System;
-    using System.Collections.Generic;
-    using System.Security;
+﻿using System;
+using System.Collections.Generic;
+using System.Security;
+using Fougerite;
+using RustPP.Social;
 
-    internal class AddFriendCommand : ChatCommand
+namespace RustPP.Commands
+{
+    public class AddFriendCommand : ChatCommand
     {
         public override void Execute(ref ConsoleSystem.Arg Arguments, ref string[] ChatArguments)
         {

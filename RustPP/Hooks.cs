@@ -1,19 +1,14 @@
-﻿
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Xml;
+﻿using System.Collections;
+using System.Linq;
+using System.Security;
+using Fougerite;
+using Fougerite.Events;
+using RustPP.Commands;
+using RustPP.Permissions;
+using RustPP.Social;
 
 namespace RustPP
 {
-    using Fougerite;
-    using RustPP.Commands;
-    using RustPP.Permissions;
-    using RustPP.Social;
-    using System.Collections;
-    using System.Linq;
-    using System.Security;
-    using Fougerite.Events;
-
     internal class Hooks
     {
         public static void broadcastDeath(string victim, string killer, string weapon)

@@ -1,10 +1,8 @@
-﻿namespace RustPP.Commands
-{
-    using Fougerite;
-    using RustPP;
-    using System;
-    using System.IO;
+﻿using System.IO;
+using Fougerite;
 
+namespace RustPP.Commands
+{
     public class RulesCommand : ChatCommand
     {
         public override void Execute(ref ConsoleSystem.Arg Arguments, ref string[] ChatArguments)

@@ -1,18 +1,13 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Fougerite;
+using RustPP.Commands;
+using RustPP.Permissions;
 
 namespace RustPP
 {
-    using Fougerite;
-    using RustPP.Commands;
-    using RustPP.Permissions;
-    using RustPP.Social;
-    using System;
-    using System.Linq;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.IO;
-    using uLink;
-
     public class Core
     {
         public static string Name = "Rust++";

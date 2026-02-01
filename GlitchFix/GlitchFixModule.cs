@@ -1,15 +1,12 @@
-using System.Collections.Generic;
-using System.Reflection;
+using System;
+using System.IO;
+using System.Linq;
+using Fougerite;
+using Fougerite.Events;
+using UnityEngine;
 
 namespace GlitchFix
 {
-    using Fougerite;
-    using System;
-    using System.IO;
-    using System.Linq;
-    using Fougerite.Events;
-    using UnityEngine;
-
     public class GlitchFix : Fougerite.Module
     {
         private bool enabled;

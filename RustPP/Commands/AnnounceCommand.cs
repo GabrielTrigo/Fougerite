@@ -1,9 +1,7 @@
-﻿namespace RustPP.Commands
-{
-    using Fougerite;
-    using Rust;
-    using System;
+﻿using Fougerite;
 
+namespace RustPP.Commands
+{
     public class AnnounceCommand : ChatCommand
     {
         public override void Execute(ref ConsoleSystem.Arg Arguments, ref string[] ChatArguments)

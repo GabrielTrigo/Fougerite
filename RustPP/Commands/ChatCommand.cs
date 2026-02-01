@@ -1,13 +1,10 @@
 ﻿using Fougerite.Permissions;
+using System.Collections.Generic;
+using Fougerite;
+using RustPP.Permissions;
 
 namespace RustPP.Commands
 {
-    using Fougerite;
-    using RustPP;
-    using RustPP.Permissions;
-    using System;
-    using System.Collections.Generic;
-
     public abstract class ChatCommand
     {
         private string _adminFlags;

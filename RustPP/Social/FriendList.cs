@@ -1,10 +1,10 @@
-﻿namespace RustPP.Social
-{
-    using Fougerite;
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using Fougerite;
 
+namespace RustPP.Social
+{
     [Serializable]
     public class FriendList : ArrayList
     {

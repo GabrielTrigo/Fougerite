@@ -1,11 +1,10 @@
-﻿namespace RustPP.Commands
-{
-    using Fougerite;
-    using RustPP;
-    using RustPP.Permissions;
-    using System;
+﻿using System;
+using Fougerite;
+using RustPP.Permissions;
 
-    internal class UnbanCommand : ChatCommand
+namespace RustPP.Commands
+{
+    public class UnbanCommand : ChatCommand
     {
         public override void Execute(ref ConsoleSystem.Arg Arguments, ref string[] ChatArguments)
         {

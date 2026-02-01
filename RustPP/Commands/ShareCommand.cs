@@ -1,11 +1,10 @@
-﻿namespace RustPP.Commands
-{
-    using Fougerite;
-    using RustPP;
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using Fougerite;
 
+namespace RustPP.Commands
+{
     public class ShareCommand : ChatCommand
     {
         public static Hashtable shared_doors = new Hashtable();

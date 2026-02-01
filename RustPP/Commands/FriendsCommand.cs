@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Collections;
+using Fougerite;
+using RustPP.Social;
 
 namespace RustPP.Commands
 {
-    using Fougerite;
-    using RustPP.Social;
-    using System;
-    using System.Collections;
-
     public class FriendsCommand : ChatCommand
     {
         public static Hashtable friendsLists = new Hashtable();

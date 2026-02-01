@@ -1,10 +1,9 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.Security;
+
 namespace RustPP
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Security;
-
     public class PList
     {
         private List<Player> players;

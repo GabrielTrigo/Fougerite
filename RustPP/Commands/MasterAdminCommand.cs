@@ -1,9 +1,8 @@
-﻿namespace RustPP.Commands
-{
-    using Fougerite;
-    using RustPP.Permissions;
-    using System;
+﻿using Fougerite;
+using RustPP.Permissions;
 
+namespace RustPP.Commands
+{
     public class MasterAdminCommand : ChatCommand
     {
         private static string MasterAdminPreset = "CanKick|CanBan|CanUnban|CanTeleport|CanLoadout|CanAnnounce|CanSpawnItem|CanGiveItem|CanReload|CanSaveAll|CanAddAdmin|CanDeleteAdmin|CanGetFlags|CanInstaKO|CanAddFlags|CanUnflag|CanWhiteList|CanKill|CanMute|CanUnmute|CanGodMode|RCON";

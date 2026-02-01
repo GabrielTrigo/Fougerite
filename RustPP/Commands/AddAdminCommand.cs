@@ -1,14 +1,12 @@
 ﻿using System.Security;
+using System;
+using System.Collections.Generic;
+using Fougerite;
+using RustPP.Permissions;
 
 namespace RustPP.Commands
 {
-    using Fougerite;
-    using RustPP.Permissions;
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-
-    internal class AddAdminCommand : ChatCommand
+    public class AddAdminCommand : ChatCommand
     {
         public override void Execute(ref ConsoleSystem.Arg Arguments, ref string[] ChatArguments)
         {

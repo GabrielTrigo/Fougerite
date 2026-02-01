@@ -1,12 +1,10 @@
-﻿namespace RustPP.Commands
-{
-    using Fougerite;
-    using RustPP;
-    using RustPP.Permissions;
-    using System;
-    using System.IO;
-    using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.IO;
+using Fougerite;
+using RustPP.Permissions;
 
+namespace RustPP.Commands
+{
     public class ReloadCommand : ChatCommand
     {
         public override void Execute(ref ConsoleSystem.Arg Arguments, ref string[] ChatArguments)

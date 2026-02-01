@@ -1,12 +1,11 @@
-﻿namespace RustPP.Commands
-{
-    using Fougerite;
-    using System;
-    using RustPP;
-    using RustPP.Permissions;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Fougerite;
+using RustPP.Permissions;
 
-    internal class WhiteListAddCommand : ChatCommand
+namespace RustPP.Commands
+{
+    public class WhiteListAddCommand : ChatCommand
     {
         public override void Execute(ref ConsoleSystem.Arg Arguments, ref string[] ChatArguments)
         {

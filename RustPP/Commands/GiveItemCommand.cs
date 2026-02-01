@@ -1,13 +1,11 @@
-﻿namespace RustPP.Commands
-{
-    using Facepunch.Utility;
-    using Fougerite;
-    using System;
-    using System.Linq;
-    using System.Collections;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Fougerite;
 
-    internal class GiveItemCommand : ChatCommand
+namespace RustPP.Commands
+{
+    public class GiveItemCommand : ChatCommand
     {
         public override void Execute(ref ConsoleSystem.Arg Arguments, ref string[] ChatArguments)
         {

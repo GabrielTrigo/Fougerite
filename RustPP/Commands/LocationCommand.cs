@@ -1,9 +1,9 @@
-﻿namespace RustPP.Commands
-{
-    using Fougerite;
-    using RustPP.Permissions;
-    using System;
+﻿using System;
+using Fougerite;
+using RustPP.Permissions;
 
+namespace RustPP.Commands
+{
     public class LocationCommand : ChatCommand
     {
         public override void Execute(ref ConsoleSystem.Arg Arguments, ref string[] ChatArguments)

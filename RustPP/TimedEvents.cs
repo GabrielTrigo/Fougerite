@@ -1,11 +1,9 @@
-﻿namespace RustPP
-{
-    using Fougerite;
-    using System;
-    using System.Diagnostics;
-    using System.Timers;
-    using UnityEngine;
+﻿using System.Diagnostics;
+using System.Timers;
+using Fougerite;
 
+namespace RustPP
+{
     public class TimedEvents
     {
         public static bool init = false;

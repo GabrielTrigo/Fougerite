@@ -1,12 +1,10 @@
-﻿namespace RustPP.Commands
-{
-    using Facepunch.Utility;
-    using Fougerite;
-    using System;
-    using System.Linq;
-    using System.Collections;
-    using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Fougerite;
 
+namespace RustPP.Commands
+{
     public class PrivateMessagesCommand : ChatCommand
     {
         string green = "[color #009900]";

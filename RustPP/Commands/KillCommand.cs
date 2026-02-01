@@ -1,14 +1,10 @@
-﻿using Fougerite.Permissions;
+﻿using System;
+using Fougerite;
+using RustPP.Permissions;
 
 namespace RustPP.Commands
 {
-    using Fougerite;
-    using System;
-    using RustPP;
-    using RustPP.Permissions;
-    using System.Collections.Generic;
-
-    internal class KillCommand : ChatCommand
+    public class KillCommand : ChatCommand
     {
         public override void Execute(ref ConsoleSystem.Arg Arguments, ref string[] ChatArguments)
         {

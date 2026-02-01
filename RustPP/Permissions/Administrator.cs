@@ -1,15 +1,11 @@
 ﻿using System.Linq;
 using System.Security;
-using Fougerite.Permissions;
+using System;
+using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace RustPP.Permissions
 {
-    using Fougerite;
-    using RustPP;
-    using System;
-    using System.Collections.Generic;
-    using System.Xml.Serialization;
-
     [Serializable]
     public class Administrator
     {

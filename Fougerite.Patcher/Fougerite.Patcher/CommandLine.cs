@@ -29,7 +29,6 @@ namespace Fougerite.Patcher
 
             for (var i = 0; i < cmd.Length; i++)
             {
-
                 var key = CleanVariableKey(cmd[i]);
                 var next = i + 1;
                 var value = (cmd.Length == next ? null : cmd[next]);
@@ -95,7 +94,8 @@ namespace Fougerite.Patcher
             {
                 var f = key[0];
 
-                if (!f.Equals(Path.DirectorySeparatorChar) && !f.Equals(Path.AltDirectorySeparatorChar) && !f.Equals('-'))
+                if (!f.Equals(Path.DirectorySeparatorChar) && !f.Equals(Path.AltDirectorySeparatorChar) &&
+                    !f.Equals('-'))
                     return key.Trim();
 
                 key = key.Remove(0, 1);

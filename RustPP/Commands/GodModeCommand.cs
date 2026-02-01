@@ -1,9 +1,8 @@
-﻿namespace RustPP.Commands
-{
-    using Fougerite;
-    using System;
-    using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Fougerite;
 
+namespace RustPP.Commands
+{
     public class GodModeCommand : ChatCommand
     {
         public List<ulong> userIDs = new List<ulong>();

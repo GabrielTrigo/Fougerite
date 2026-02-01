@@ -1,14 +1,14 @@
-﻿namespace RustPP
-{
-    using Fougerite;
-    using Fougerite.Events;
-    using Rust;
-    using RustPP.Commands;
-    using System;
-    using System.Collections;
-    using System.IO;
-    using System.Timers;
+﻿using System;
+using System.Collections;
+using System.IO;
+using System.Timers;
+using Fougerite;
+using Fougerite.Events;
+using Rust;
+using RustPP.Commands;
 
+namespace RustPP
+{
     public class RustPPModule : Fougerite.Module
     {
         public override string Name

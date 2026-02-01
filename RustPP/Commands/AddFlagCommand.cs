@@ -1,15 +1,12 @@
 ﻿using Fougerite.Permissions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Fougerite;
+using RustPP.Permissions;
 
 namespace RustPP.Commands
 {
-    using Facepunch.Utility;
-    using Fougerite;
-    using RustPP.Permissions;
-    using System;
-    using System.Linq;
-    using System.Collections;
-    using System.Collections.Generic;
-
     public class AddFlagCommand : ChatCommand
     {
         public override void Execute(ref ConsoleSystem.Arg Arguments, ref string[] ChatArguments)

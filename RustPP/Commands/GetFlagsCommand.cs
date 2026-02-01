@@ -1,11 +1,11 @@
-﻿namespace RustPP.Commands
-{
-    using Fougerite;
-    using RustPP.Permissions;
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Fougerite;
+using RustPP.Permissions;
 
+namespace RustPP.Commands
+{
     public class GetFlagsCommand : ChatCommand
     {
         public override void Execute(ref ConsoleSystem.Arg Arguments, ref string[] ChatArguments)

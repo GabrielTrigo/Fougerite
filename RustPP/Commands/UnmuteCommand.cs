@@ -1,12 +1,10 @@
-﻿namespace RustPP.Commands
-{
-    using Fougerite;
-    using RustPP;
-    using RustPP.Permissions;
-    using System;
-    using System.Collections.Generic;
+﻿using System;
+using Fougerite;
+using RustPP.Permissions;
 
-    internal class UnmuteCommand : ChatCommand
+namespace RustPP.Commands
+{
+    public class UnmuteCommand : ChatCommand
     {
         public override void Execute(ref ConsoleSystem.Arg Arguments, ref string[] ChatArguments)
         {

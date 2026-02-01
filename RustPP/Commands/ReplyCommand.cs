@@ -1,9 +1,8 @@
-﻿namespace RustPP.Commands
-{
-    using Fougerite;
-    using System;
-    using System.Collections;
+﻿using System.Collections;
+using Fougerite;
 
+namespace RustPP.Commands
+{
     public class ReplyCommand : ChatCommand
     {
         private Hashtable replies = new Hashtable();

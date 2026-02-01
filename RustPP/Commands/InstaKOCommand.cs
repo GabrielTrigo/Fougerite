@@ -1,9 +1,7 @@
-﻿namespace RustPP.Commands
-{
-    using Fougerite;
-    using System;
-    using System.Collections.Generic;
+﻿using Fougerite;
 
+namespace RustPP.Commands
+{
     public class InstaKOCommand : ChatCommand
     {
         public System.Collections.Generic.List<ulong> userIDs = new System.Collections.Generic.List<ulong>();

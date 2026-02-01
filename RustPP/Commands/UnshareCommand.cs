@@ -1,11 +1,9 @@
-﻿using System.Runtime.Remoting;
+﻿using System;
+using System.Collections;
+using Fougerite;
 
 namespace RustPP.Commands
 {
-    using Fougerite;
-    using System;
-    using System.Collections;
-
     public class UnshareCommand : ChatCommand
     {
         public override void Execute(ref ConsoleSystem.Arg Arguments, ref string[] ChatArguments)

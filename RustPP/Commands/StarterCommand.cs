@@ -1,10 +1,9 @@
-﻿namespace RustPP.Commands
-{
-    using Fougerite;
-    using RustPP;
-    using System;
-    using System.Collections;
+﻿using System;
+using System.Collections;
+using Fougerite;
 
+namespace RustPP.Commands
+{
     public class StarterCommand : ChatCommand
     {
         private Hashtable starterkits = new Hashtable();
