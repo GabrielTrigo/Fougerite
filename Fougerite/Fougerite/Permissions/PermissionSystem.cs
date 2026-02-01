@@ -58,10 +58,16 @@ namespace Fougerite.Permissions
 
                 return false;
             }
+            catch (Exception ex)
+            {
+                Logger.LogError("[PermissionSystem] ForceOffPermissions Error: " + ex);
+            }
             finally
             {
                 DisableLock.ReleaseWriterLock();
             }
+
+            return false;
         }
 
         /// <summary>
@@ -82,10 +88,16 @@ namespace Fougerite.Permissions
 
                 return false;
             }
+            catch (Exception ex)
+            {
+                Logger.LogError("[PermissionSystem] RemoveForceOffPermissions Error: " + ex);
+            }
             finally
             {
                 DisableLock.ReleaseWriterLock();
             }
+
+            return false;
         }
 
         /// <summary>
@@ -100,10 +112,16 @@ namespace Fougerite.Permissions
             {
                 return _disabledpermissions.ContainsKey(steamid);
             }
+            catch (Exception ex)
+            {
+                Logger.LogError("[PermissionSystem] HasPermissionsForcedOff Error: " + ex);
+            }
             finally
             {
                 DisableLock.ReleaseReaderLock();
             }
+
+            return false;
         }
 
         /// <summary>
@@ -124,10 +142,16 @@ namespace Fougerite.Permissions
 
                 return false;
             }
+            catch (Exception ex)
+            {
+                Logger.LogError("[PermissionSystem] HasDefaultPermissionsForcedOff Error: " + ex);
+            }
             finally
             {
                 DisableLock.ReleaseReaderLock();
             }
+
+            return false;
         }
 
         /// <summary>
@@ -142,10 +166,16 @@ namespace Fougerite.Permissions
                 {
                     return new Dictionary<ulong, bool>(_disabledpermissions);
                 }
+                catch (Exception ex)
+                {
+                    Logger.LogError("[PermissionSystem] DisabledPermissions Error: " + ex);
+                }
                 finally
                 {
                     DisableLock.ReleaseReaderLock();
                 }
+                
+                return new Dictionary<ulong, bool>();
             }
         }
 
@@ -239,6 +269,10 @@ namespace Fougerite.Permissions
                     _handler.PermissionGroups = JsonConvert.DeserializeObject<List<PermissionGroup>>(File.ReadAllText(_groupPermissionsPath));
                     _handler.PermissionPlayers = JsonConvert.DeserializeObject<List<PermissionPlayer>>(File.ReadAllText(_playerPermissionsPath));
                 }
+                catch (Exception ex)
+                {
+                    Logger.LogError("[PermissionSystem] ReloadPermissions Error: " + ex);
+                }
                 finally
                 {
                     PermLock.ReleaseWriterLock();
@@ -310,8 +344,12 @@ namespace Fougerite.Permissions
                 PermLock.AcquireReaderLock(Timeout.Infinite);
                 try
                 {
-                    PermissionGroups  = new List<PermissionGroup>(_handler.PermissionGroups);
+                    PermissionGroups = new List<PermissionGroup>(_handler.PermissionGroups);
                     PermissionPlayers = new List<PermissionPlayer>(_handler.PermissionPlayers);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("[PermissionSystem] SaveToDisk Error: " + ex);
                 }
                 finally
                 {
@@ -362,10 +400,16 @@ namespace Fougerite.Permissions
             {
                 return new List<PermissionGroup>(_handler.PermissionGroups);
             }
+            catch (Exception ex)
+            {
+                Logger.LogError("[PermissionSystem] GetPermissionGroups Error: " + ex);
+            }
             finally
             {
                 PermLock.ReleaseReaderLock();
             }
+            
+            return new List<PermissionGroup>();
         }
         
         /// <summary>
@@ -381,10 +425,16 @@ namespace Fougerite.Permissions
             {
                 return new List<PermissionPlayer>(_handler.PermissionPlayers);
             }
+            catch (Exception ex)
+            {
+                Logger.LogError("[PermissionSystem] GetPermissionPlayers Error: " + ex);
+            }
             finally
             {
                 PermLock.ReleaseReaderLock();
             }
+            
+            return new List<PermissionPlayer>();
         }
 
         /// <summary>
@@ -403,10 +453,16 @@ namespace Fougerite.Permissions
             {
                 return _handler.PermissionGroups.FirstOrDefault(x => x.UniqueID == uniqueid);
             }
+            catch (Exception ex)
+            {
+                Logger.LogError("[PermissionSystem] GetGroupByName Error: " + ex);
+            }
             finally
             {
                 PermLock.ReleaseReaderLock();
             }
+
+            return null;
         }
 
         /// <summary>
@@ -423,10 +479,16 @@ namespace Fougerite.Permissions
             {
                 return _handler.PermissionGroups.FirstOrDefault(x => x.UniqueID == groupid);
             }
+            catch (Exception ex)
+            {
+                Logger.LogError("[PermissionSystem] GetGroupByID Error: " + ex);
+            }
             finally
             {
                 PermLock.ReleaseReaderLock();
             }
+
+            return null;
         }
 
         /// <summary>
@@ -443,10 +505,16 @@ namespace Fougerite.Permissions
             {
                 return _handler.PermissionPlayers.FirstOrDefault(x => x.SteamID == steamid);
             }
+            catch (Exception ex)
+            {
+                Logger.LogError("[PermissionSystem] GetPlayerBySteamID Error: " + ex);
+            }
             finally
             {
                 PermLock.ReleaseReaderLock();
             }
+
+            return null;
         }
         
         /// <summary>
@@ -632,6 +700,10 @@ namespace Fougerite.Permissions
                     _handler.PermissionPlayers.Add(permissionPlayer);
                     return permissionPlayer;
                 }
+                catch (Exception ex)
+                {
+                    Logger.LogError($"[PermissionSystem Error] CreatePermissionPlayer: {ex}");
+                }
                 finally
                 {
                     PermLock.ReleaseWriterLock();
@@ -665,6 +737,10 @@ namespace Fougerite.Permissions
                 {
                     _handler.PermissionPlayers.Add(permissionPlayer);
                     return permissionPlayer;
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("[PermissionSystem] CreatePermissionPlayer Error: " + ex);
                 }
                 finally
                 {
@@ -705,6 +781,12 @@ namespace Fougerite.Permissions
                     _handler.PermissionPlayers.Remove(permissionPlayer);
                     return true;
                 }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("[PermissionSystem] RemovePermissionPlayer Error: " + ex);
             }
             finally
             {
@@ -729,6 +811,10 @@ namespace Fougerite.Permissions
                 {
                     _handler.PermissionPlayers.Remove(permissionplayer);
                     return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("[PermissionSystem] RemovePermissionPlayer (ulong) Error: " + ex);
                 }
                 finally
                 {
@@ -762,6 +848,12 @@ namespace Fougerite.Permissions
                         return true;
                     }
                 }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("[PermissionSystem] AddGroupToPlayer Error: " + ex);
             }
             finally
             {
@@ -795,6 +887,12 @@ namespace Fougerite.Permissions
                         return true;
                     }
                 }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("[PermissionSystem] RemoveGroupFromPlayer Error: " + ex);
             }
             finally
             {
@@ -842,10 +940,16 @@ namespace Fougerite.Permissions
 
                 return true;
             }
+            catch (Exception ex)
+            {
+                Logger.LogError("[PermissionSystem] CreateGroup Error: " + ex);
+            }
             finally
             {
                 PermLock.ReleaseWriterLock();
             }
+
+            return false;
         }
 
         /// <summary>
@@ -884,6 +988,10 @@ namespace Fougerite.Permissions
 
                     return true;
                 }
+                catch (Exception ex)
+                {
+                    Logger.LogError("[PermissionSystem] RemoveGroup Error: " + ex);
+                }
                 finally
                 {
                     PermLock.ReleaseWriterLock();
@@ -917,6 +1025,10 @@ namespace Fougerite.Permissions
                     
                     return true;
                 }
+                catch (Exception ex)
+                {
+                    Logger.LogError("[PermissionSystem] AddPermissionToGroup Error: " + ex);
+                }
                 finally
                 {
                     PermLock.ReleaseWriterLock();
@@ -948,6 +1060,12 @@ namespace Fougerite.Permissions
                         group.GroupPermissions.Remove(permission);
                         return true;
                     }
+
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("[PermissionSystem] RemovePermissionFromGroup Error: " + ex);
                 }
                 finally
                 {
@@ -977,6 +1095,10 @@ namespace Fougerite.Permissions
                 {
                     return group.GroupPermissions.Contains(permission);
                 }
+                catch (Exception ex)
+                {
+                    Logger.LogError("[PermissionSystem] GroupHasPermission Error: " + ex);
+                }
                 finally
                 {
                     PermLock.ReleaseReaderLock();
@@ -1004,6 +1126,10 @@ namespace Fougerite.Permissions
                 {
                     group.NickName = nickname;
                     return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("[PermissionSystem] SetGroupNickName Error: " + ex);
                 }
                 finally
                 {
@@ -1045,6 +1171,10 @@ namespace Fougerite.Permissions
                     }
 
                     return true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("[PermissionSystem] ChangeGroupName Error: " + ex);
                 }
                 finally
                 {
@@ -1103,10 +1233,16 @@ namespace Fougerite.Permissions
 
                 return false;
             }
+            catch (Exception ex)
+            {
+                Logger.LogError("[PermissionSystem] AddPermission Error: " + ex);
+            }
             finally
             {
                 PermLock.ReleaseWriterLock();
             }
+
+            return false;
         }
 
         /// <summary>
@@ -1156,10 +1292,16 @@ namespace Fougerite.Permissions
 
                 return false;
             }
+            catch (Exception ex)
+            {
+                Logger.LogError("[PermissionSystem] RemovePermission Error: " + ex);
+            }
             finally
             {
                 PermLock.ReleaseWriterLock();
             }
+
+            return false;
         }
 
         /// <summary>
