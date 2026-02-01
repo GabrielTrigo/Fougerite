@@ -694,7 +694,7 @@ namespace Fougerite
                     Logger.LogError("[Fougerite WorldSave] Recycler is null, what the hell?");
                     return;
                 }
-                SavedObject.Builder builder = recycler.OpenBuilder();
+                SavedObject.Builder openBuilder = recycler.OpenBuilder();
                 int num = -2147483648;
                 List<ServerSave> CopiedList = new List<ServerSave>();
 
@@ -717,22 +717,22 @@ namespace Fougerite
                     if (save2 != null)
                     {
                         bool flag;
-                        builder.Clear();
+                        openBuilder.Clear();
                         if ((flag = ((int) save2.REGED) == 1) || (((int) save2.REGED) == 2))
                         {
                             num++;
                             int sortOrder = num;
                             if (flag)
                             {
-                                save2.SaveInstance_NetworkView(ref builder, sortOrder);
+                                save2.SaveInstance_NetworkView(ref openBuilder, sortOrder);
                             }
                             else
                             {
-                                save2.SaveInstance_NGC(ref builder, sortOrder);
+                                save2.SaveInstance_NGC(ref openBuilder, sortOrder);
                             }
                         }
 
-                        save.AddInstanceObject(builder);
+                        save.AddInstanceObject(openBuilder);
                     }
                 }
             }

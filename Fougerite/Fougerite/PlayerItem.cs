@@ -181,10 +181,6 @@ namespace Fougerite
             {
                 return GetItemRef();
             }
-            set
-            {
-                RInventoryItem = value;
-            }
         }
 
         /// <summary>

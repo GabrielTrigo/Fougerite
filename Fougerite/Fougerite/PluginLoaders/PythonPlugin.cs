@@ -36,6 +36,7 @@ namespace Fougerite.PluginLoaders
         public PythonPlugin(string name, string code, DirectoryInfo rootdir) : base(name, rootdir)
         {
             Type = PluginType.Python;
+            Code = code;
 
             Load(code);
         }

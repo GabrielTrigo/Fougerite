@@ -140,7 +140,6 @@ namespace Fougerite
         /// </summary>
         /// <param name="url">Full URL to request (https://example.com/api). HTTPS uses WinHTTP, HTTP uses WebClient.</param>
         /// <param name="data">Request body payload to send.</param>
-        /// <param name="contentType">Content-Type header value. For JSON format specify 'application/json'. Defaults to 'application/x-www-form-urlencoded'.</param>
         /// <returns>Response body as a string, or error message on failure.</returns>
         [Obsolete("Use CreateAsyncHTTPRequest instead.", false)]
         public string POSTWithSSL(string url, string data)

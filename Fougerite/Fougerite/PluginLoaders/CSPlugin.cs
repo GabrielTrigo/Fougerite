@@ -31,7 +31,6 @@ namespace Fougerite.PluginLoaders
         /// <summary>
         /// Invoke the specified method and args.
         /// </summary>
-        /// <param name="method">Method.</param>
         /// <param name="args">Arguments.</param>
         /// <param name="func">Func.</param>
         public override object Invoke(string func, params object[] args)
@@ -78,17 +77,17 @@ namespace Fougerite.PluginLoaders
 
 
                 Assembly assembly = Assembly.Load(bin);
-                foreach (Type Type in assembly.GetExportedTypes())
+                foreach (Type type in assembly.GetExportedTypes())
                 {
-                    if (!Type.IsSubclassOf(typeof(Module)) || !Type.IsPublic || Type.IsAbstract)
+                    if (!type.IsSubclassOf(typeof(Module)) || !type.IsPublic || type.IsAbstract)
                         continue;
-                    Logger.LogDebug($"[Modules] Checked {Type.FullName}");
+                    Logger.LogDebug($"[Modules] Checked {type.FullName}");
                     
 
                     Module PluginInstance = null;
                     try
                     {
-                        PluginInstance = (Module) Activator.CreateInstance(Type);
+                        PluginInstance = (Module) Activator.CreateInstance(type);
                         PluginInstance.ModuleFolder = Path.Combine(Util.GetRootFolder(), $"Save\\{Name}");
                         
                         if (Config.GetValue("Modules", PluginInstance.Name) != null)
@@ -106,13 +105,13 @@ namespace Fougerite.PluginLoaders
                             Directory.CreateDirectory(PluginInstance.ModuleFolder);
                         }
                         
-                        Logger.LogDebug($"[Modules] Instance created: {Type.FullName}");
+                        Logger.LogDebug($"[Modules] Instance created: {type.FullName}");
                     }
                     catch (Exception ex)
                     {
                         // Broken plugins better stop the entire server init.
                         Logger.LogError(
-                            $"[Modules] Could not create an instance of plugin class \"{Type.FullName}\". {ex}");
+                            $"[Modules] Could not create an instance of plugin class \"{type.FullName}\". {ex}");
                     }
                     
                     if (PluginInstance != null)
@@ -123,7 +122,7 @@ namespace Fougerite.PluginLoaders
                         #pragma warning restore 618
                         Engine = PluginInstance;
                         Logger.LogDebug($"[Modules] Module added: {FileInfo.Name}");
-                        Globals = Type.GetMethods().Select(method => method.Name).ToList();
+                        Globals = type.GetMethods().Select(method => method.Name).ToList();
                         break;
                     }
                 }
