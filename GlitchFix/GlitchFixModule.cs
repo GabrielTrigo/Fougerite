@@ -101,8 +101,8 @@ namespace GlitchFix
                 }
                 if (!string.IsNullOrEmpty(cachedRaycast.collider.gameObject.name)) return;
                 if (cachedRaycast.point.y < player.Y) return;
-                Logger.LogDebug(player.Name + " tried to TELEPORT rock glitch at " + player.Location);
-                Server.GetServer().Broadcast(player.Name + " don't try to rock glitch =)");
+                Logger.LogDebug($"{player.Name} tried to TELEPORT rock glitch at {player.Location}");
+                Server.GetServer().Broadcast($"{player.Name} don't try to rock glitch =)");
                 foreach (Collider collider in Physics.OverlapSphere(player.Location, 3f))
                 {
                     if (collider.gameObject.name == "SleepingBagA(Clone)")
@@ -143,8 +143,8 @@ namespace GlitchFix
                 }
                 if (cachedRaycast.collider.gameObject.name != "") return;
                 if (cachedRaycast.point.y < player.Y) return;
-                Logger.LogDebug(player.Name + " tried to rock glitch at " + player.Location);
-                Server.GetServer().Broadcast(player.Name + " don't try to rock glitch =)");
+                Logger.LogDebug($"{player.Name} tried to rock glitch at {player.Location}");
+                Server.GetServer().Broadcast($"{player.Name} don't try to rock glitch =)");
                 foreach (Collider collider in Physics.OverlapSphere(player.Location, 3f))
                 {
                     if (collider.gameObject.name == "SleepingBagA(Clone)")
@@ -326,7 +326,7 @@ namespace GlitchFix
             }
             catch (Exception ex)
             {
-                Logger.LogDebug("[GlitchFix] Some error showed up. Report this. " + ex);
+                Logger.LogDebug($"[GlitchFix] Some error showed up. Report this. {ex}");
             }
         }
     }

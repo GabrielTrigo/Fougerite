@@ -12,8 +12,8 @@ namespace RustPP.Commands
                 var pl = Server.GetServer().GetCachePlayer(Arguments.argUser.userID);
                 for (int i = 1; i <= items; i++)
                 {
-                    string name = Core.config.GetSetting("AdminLoadout", "item" + i + "_name");
-                    string amount = Core.config.GetSetting("AdminLoadout", "item" + i + "_amount");
+                    string name = Core.config.GetSetting("AdminLoadout", $"item{i}_name");
+                    string amount = Core.config.GetSetting("AdminLoadout", $"item{i}_amount");
                     Arguments.Args = new string[] { name, amount };
                     string newargs = Arguments.ArgsStr;
                     inv.give(ref Arguments);

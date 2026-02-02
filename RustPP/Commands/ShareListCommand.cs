@@ -29,7 +29,7 @@ namespace RustPP
                         if (cache.ContainsKey(UID))
                         {
                             string name = cache[UID];
-                            names += name + ", ";
+                            names += $"{name}, ";
                         }
                         else
                         {

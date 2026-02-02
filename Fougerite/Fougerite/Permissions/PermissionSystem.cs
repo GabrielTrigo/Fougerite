@@ -59,7 +59,7 @@ namespace Fougerite.Permissions
             }
             catch (Exception ex)
             {
-                Logger.LogError("[PermissionSystem] ForceOffPermissions Error: " + ex);
+                Logger.LogError($"[PermissionSystem] ForceOffPermissions Error: {ex}");
             }
             finally
             {
@@ -89,7 +89,7 @@ namespace Fougerite.Permissions
             }
             catch (Exception ex)
             {
-                Logger.LogError("[PermissionSystem] RemoveForceOffPermissions Error: " + ex);
+                Logger.LogError($"[PermissionSystem] RemoveForceOffPermissions Error: {ex}");
             }
             finally
             {
@@ -113,7 +113,7 @@ namespace Fougerite.Permissions
             }
             catch (Exception ex)
             {
-                Logger.LogError("[PermissionSystem] HasPermissionsForcedOff Error: " + ex);
+                Logger.LogError($"[PermissionSystem] HasPermissionsForcedOff Error: {ex}");
             }
             finally
             {
@@ -142,7 +142,7 @@ namespace Fougerite.Permissions
             }
             catch (Exception ex)
             {
-                Logger.LogError("[PermissionSystem] HasDefaultPermissionsForcedOff Error: " + ex);
+                Logger.LogError($"[PermissionSystem] HasDefaultPermissionsForcedOff Error: {ex}");
             }
             finally
             {
@@ -166,7 +166,7 @@ namespace Fougerite.Permissions
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("[PermissionSystem] DisabledPermissions Error: " + ex);
+                    Logger.LogError($"[PermissionSystem] DisabledPermissions Error: {ex}");
                 }
                 finally
                 {
@@ -268,7 +268,7 @@ namespace Fougerite.Permissions
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("[PermissionSystem] ReloadPermissions Error: " + ex);
+                    Logger.LogError($"[PermissionSystem] ReloadPermissions Error: {ex}");
                 }
                 finally
                 {
@@ -345,7 +345,7 @@ namespace Fougerite.Permissions
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("[PermissionSystem] SaveToDisk Error: " + ex);
+                    Logger.LogError($"[PermissionSystem] SaveToDisk Error: {ex}");
                 }
                 finally
                 {
@@ -397,7 +397,7 @@ namespace Fougerite.Permissions
             }
             catch (Exception ex)
             {
-                Logger.LogError("[PermissionSystem] GetPermissionGroups Error: " + ex);
+                Logger.LogError($"[PermissionSystem] GetPermissionGroups Error: {ex}");
             }
             finally
             {
@@ -420,7 +420,7 @@ namespace Fougerite.Permissions
             }
             catch (Exception ex)
             {
-                Logger.LogError("[PermissionSystem] GetPermissionPlayers Error: " + ex);
+                Logger.LogError($"[PermissionSystem] GetPermissionPlayers Error: {ex}");
             }
             finally
             {
@@ -446,7 +446,7 @@ namespace Fougerite.Permissions
             }
             catch (Exception ex)
             {
-                Logger.LogError("[PermissionSystem] GetGroupByName Error: " + ex);
+                Logger.LogError($"[PermissionSystem] GetGroupByName Error: {ex}");
             }
             finally
             {
@@ -470,7 +470,7 @@ namespace Fougerite.Permissions
             }
             catch (Exception ex)
             {
-                Logger.LogError("[PermissionSystem] GetGroupByID Error: " + ex);
+                Logger.LogError($"[PermissionSystem] GetGroupByID Error: {ex}");
             }
             finally
             {
@@ -494,7 +494,7 @@ namespace Fougerite.Permissions
             }
             catch (Exception ex)
             {
-                Logger.LogError("[PermissionSystem] GetPlayerBySteamID Error: " + ex);
+                Logger.LogError($"[PermissionSystem] GetPlayerBySteamID Error: {ex}");
             }
             finally
             {
@@ -716,7 +716,7 @@ namespace Fougerite.Permissions
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("[PermissionSystem] CreatePermissionPlayer Error: " + ex);
+                    Logger.LogError($"[PermissionSystem] CreatePermissionPlayer Error: {ex}");
                 }
                 finally
                 {
@@ -762,7 +762,7 @@ namespace Fougerite.Permissions
             }
             catch (Exception ex)
             {
-                Logger.LogError("[PermissionSystem] RemovePermissionPlayer Error: " + ex);
+                Logger.LogError($"[PermissionSystem] RemovePermissionPlayer Error: {ex}");
             }
             finally
             {
@@ -790,7 +790,7 @@ namespace Fougerite.Permissions
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("[PermissionSystem] RemovePermissionPlayer (ulong) Error: " + ex);
+                    Logger.LogError($"[PermissionSystem] RemovePermissionPlayer (ulong) Error: {ex}");
                 }
                 finally
                 {
@@ -829,7 +829,7 @@ namespace Fougerite.Permissions
             }
             catch (Exception ex)
             {
-                Logger.LogError("[PermissionSystem] AddGroupToPlayer Error: " + ex);
+                Logger.LogError($"[PermissionSystem] AddGroupToPlayer Error: {ex}");
             }
             finally
             {
@@ -868,7 +868,7 @@ namespace Fougerite.Permissions
             }
             catch (Exception ex)
             {
-                Logger.LogError("[PermissionSystem] RemoveGroupFromPlayer Error: " + ex);
+                Logger.LogError($"[PermissionSystem] RemoveGroupFromPlayer Error: {ex}");
             }
             finally
             {
@@ -918,7 +918,7 @@ namespace Fougerite.Permissions
             }
             catch (Exception ex)
             {
-                Logger.LogError("[PermissionSystem] CreateGroup Error: " + ex);
+                Logger.LogError($"[PermissionSystem] CreateGroup Error: {ex}");
             }
             finally
             {
@@ -966,7 +966,7 @@ namespace Fougerite.Permissions
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("[PermissionSystem] RemoveGroup Error: " + ex);
+                    Logger.LogError($"[PermissionSystem] RemoveGroup Error: {ex}");
                 }
                 finally
                 {
@@ -1003,7 +1003,7 @@ namespace Fougerite.Permissions
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("[PermissionSystem] AddPermissionToGroup Error: " + ex);
+                    Logger.LogError($"[PermissionSystem] AddPermissionToGroup Error: {ex}");
                 }
                 finally
                 {
@@ -1041,7 +1041,7 @@ namespace Fougerite.Permissions
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("[PermissionSystem] RemovePermissionFromGroup Error: " + ex);
+                    Logger.LogError($"[PermissionSystem] RemovePermissionFromGroup Error: {ex}");
                 }
                 finally
                 {
@@ -1073,7 +1073,7 @@ namespace Fougerite.Permissions
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("[PermissionSystem] GroupHasPermission Error: " + ex);
+                    Logger.LogError($"[PermissionSystem] GroupHasPermission Error: {ex}");
                 }
                 finally
                 {
@@ -1105,7 +1105,7 @@ namespace Fougerite.Permissions
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("[PermissionSystem] SetGroupNickName Error: " + ex);
+                    Logger.LogError($"[PermissionSystem] SetGroupNickName Error: {ex}");
                 }
                 finally
                 {
@@ -1149,7 +1149,7 @@ namespace Fougerite.Permissions
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("[PermissionSystem] ChangeGroupName Error: " + ex);
+                    Logger.LogError($"[PermissionSystem] ChangeGroupName Error: {ex}");
                 }
                 finally
                 {
@@ -1210,7 +1210,7 @@ namespace Fougerite.Permissions
             }
             catch (Exception ex)
             {
-                Logger.LogError("[PermissionSystem] AddPermission Error: " + ex);
+                Logger.LogError($"[PermissionSystem] AddPermission Error: {ex}");
             }
             finally
             {
@@ -1269,7 +1269,7 @@ namespace Fougerite.Permissions
             }
             catch (Exception ex)
             {
-                Logger.LogError("[PermissionSystem] RemovePermission Error: " + ex);
+                Logger.LogError($"[PermissionSystem] RemovePermission Error: {ex}");
             }
             finally
             {

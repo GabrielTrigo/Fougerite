@@ -1,7 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Fougerite;
 using RustPP.Commands;
 using RustPP.Permissions;
@@ -204,7 +202,7 @@ namespace RustPP
                 int num = 1;
                 do
                 {
-                    string setting = config.GetSetting("Settings", "motd" + num);
+                    string setting = config.GetSetting("Settings", $"motd{num}");
                     if (setting != null)
                     {
                         player.MessageFrom(Core.Name, setting);

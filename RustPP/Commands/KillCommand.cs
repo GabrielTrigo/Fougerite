@@ -28,7 +28,7 @@ namespace RustPP.Commands
             }
             if (list.Count == 1)
             {
-                pl.MessageFrom(Core.Name, "No player matches the name: " + playerName);
+                pl.MessageFrom(Core.Name, $"No player matches the name: {playerName}");
                 return;
             }
             pl.MessageFrom(Core.Name, string.Format("{0}  player{1} {2}: ", ((list.Count - 1)).ToString(), (((list.Count - 1) > 1) ? "s match" : " matches"), playerName));
@@ -59,11 +59,11 @@ namespace RustPP.Commands
         {
             if (victim == myAdmin)
             {
-                myAdmin.MessageFrom(Core.Name, "Suicide isn't painless. " + Core.Name + " won't let you kill yourself.");
+                myAdmin.MessageFrom(Core.Name, $"Suicide isn't painless. {Core.Name} won't let you kill yourself.");
             }
             else if (Administrator.IsAdmin(victim.UID) && !Administrator.GetAdmin(victim.UID).HasPermission("RCON"))
             {
-                myAdmin.MessageFrom(Core.Name, victim.Name + " is an administrator. May I suggest a rock?");
+                myAdmin.MessageFrom(Core.Name, $"{victim.Name} is an administrator. May I suggest a rock?");
             }
             else
             {

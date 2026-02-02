@@ -17,7 +17,7 @@ namespace Fougerite.Patcher
         {
             Console.WriteLine(msg);
             File.AppendAllText("patcherLog.txt",
-                "[" + DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() + "] " + msg + "\r\n");
+                $"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}] {msg}\r\n");
         }
 
         public static void Log(Exception ex)
@@ -26,7 +26,7 @@ namespace Fougerite.Patcher
             Console.WriteLine(ex);
             Console.WriteLine("======| ======= |======\n");
             File.AppendAllText("patcherLog.txt",
-                "[" + DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() + "] " + ex + "\r\n");
+                $"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}] {ex}\r\n");
         }
     }
 }

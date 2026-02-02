@@ -39,7 +39,7 @@ namespace RustPP.Commands
                     {
                         Arguments.Args = new string[] { client.Name, pl.Name };
                         teleport.toplayer(ref Arguments);
-                        pl.MessageFrom(Core.Name, "You have teleported " + client.Name + " to your location");
+                        pl.MessageFrom(Core.Name, $"You have teleported {client.Name} to your location");
                         return;
                     }
 
@@ -50,10 +50,10 @@ namespace RustPP.Commands
             if (list.Count > 1)
             {
                 pl.MessageFrom(Core.Name,
-                    ((list.Count - 1)).ToString() + " Player" + (((list.Count - 1) > 1) ? "s" : "") + " were found: ");
+                    $"{((list.Count - 1))} Player{(((list.Count - 1) > 1) ? "s" : "")} were found: ");
                 for (int j = 1; j < list.Count; j++)
                 {
-                    pl.MessageFrom(Core.Name, j + " - " + list[j]);
+                    pl.MessageFrom(Core.Name, $"{j} - {list[j]}");
                 }
 
                 pl.MessageFrom(Core.Name, "0 - Cancel");
@@ -63,7 +63,7 @@ namespace RustPP.Commands
             }
             else
             {
-                pl.MessageFrom(Core.Name, "No player found with the name: " + playerName);
+                pl.MessageFrom(Core.Name, $"No player found with the name: {playerName}");
             }
         }
     }

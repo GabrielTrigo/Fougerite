@@ -31,7 +31,7 @@ namespace RustPP.Commands
 
             if (list.Count == 1)
             {
-                pl.MessageFrom(Core.Name, "No player matches the name: " + playerName);
+                pl.MessageFrom(Core.Name, $"No player matches the name: {playerName}");
                 return;
             }
 
@@ -72,7 +72,7 @@ namespace RustPP.Commands
                      && !Administrator.GetAdmin(myAdmin.UID).HasPermission("RCON")
                      && !PermissionSystem.GetPermissionSystem().PlayerHasPermission(myAdmin.UID, "RCON"))
             {
-                myAdmin.MessageFrom(Core.Name, badPlayer.Name + " is an administrator. You can't kick administrators.");
+                myAdmin.MessageFrom(Core.Name, $"{badPlayer.Name} is an administrator. You can't kick administrators.");
             }
             else
             {

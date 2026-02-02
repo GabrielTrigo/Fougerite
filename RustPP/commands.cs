@@ -29,7 +29,7 @@ public class rustpp : ConsoleSystem
     public static void shutdown(ref ConsoleSystem.Arg arg)
     {
         ShutDownCommand.StartShutdown();
-        arg.ReplyWith("Initiating Server Shutdown in " + ShutDownCommand.ShutdownTime + " seconds.");
+        arg.ReplyWith($"Initiating Server Shutdown in {ShutDownCommand.ShutdownTime} seconds.");
         //TimedEvents.shutdown();
     }
 }

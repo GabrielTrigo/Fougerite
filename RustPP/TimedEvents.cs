@@ -21,7 +21,7 @@ namespace RustPP
             {
                 for (int i = 0; i < amount; i++)
                 {
-                    Server.GetServer().BroadcastFrom(Core.Name, Core.config.GetSetting("Settings", "notice" + (i + 1)));
+                    Server.GetServer().BroadcastFrom(Core.Name, Core.config.GetSetting("Settings", $"notice{(i + 1)}"));
                 }
             }
         }
@@ -69,8 +69,8 @@ namespace RustPP
             }
             else
             {
-                Logger.Log("Server Shutting down in " + time + " seconds");
-                Server.GetServer().BroadcastFrom(Core.Name, "Server Shutting down in " + time + " seconds");
+                Logger.Log($"Server Shutting down in {time} seconds");
+                Server.GetServer().BroadcastFrom(Core.Name, $"Server Shutting down in {time} seconds");
             }
             time -= 10;
         }

@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Linq;
-using System.Security;
 using Fougerite;
 using Fougerite.Events;
 using RustPP.Commands;
@@ -16,7 +15,7 @@ namespace RustPP
             if (Core.config.GetBoolSetting("Settings", "pvp_death_broadcast"))
             {
                 char ch = '⊕';
-                Server.GetServer().BroadcastFrom(Core.Name, killer + " " + ch.ToString() + " " + victim + " (" + weapon + ")");
+                Server.GetServer().BroadcastFrom(Core.Name, $"{killer} {ch} {victim} ({weapon})");
             }
         }
 
@@ -161,7 +160,7 @@ namespace RustPP
                 {
                     foreach (var client in Fougerite.Server.GetServer().Players.Where(client => client.UID != pl.UID))
                     {
-                        client.MessageFrom(Core.Name, pl.Name + " " + RustPPModule.JoinMsg);
+                        client.MessageFrom(Core.Name, $"{pl.Name} {RustPPModule.JoinMsg}");
                     }
                 }
             }
@@ -183,7 +182,7 @@ namespace RustPP
                 {
                     foreach (var client in Fougerite.Server.GetServer().Players.Where(client => client.UID != user.UID))
                     {
-                        client.MessageFrom(Core.Name, user.Name + " " + RustPPModule.LeaveMsg);
+                        client.MessageFrom(Core.Name, $"{user.Name} {RustPPModule.LeaveMsg}");
                     }
                 }
             }

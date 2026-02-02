@@ -23,7 +23,7 @@ namespace RustPP.Commands
             Fougerite.Player recipient = Fougerite.Player.FindByName(search);
             if (recipient == null)
             {
-                sender.MessageFrom(Core.Name, "Couldn't find player " + search);
+                sender.MessageFrom(Core.Name, $"Couldn't find player {search}");
                 return;
             }
 
@@ -47,8 +47,8 @@ namespace RustPP.Commands
             }
             else
             {
-                recipient.MessageFrom("PrivateMessage", green + "(" + sender.Name + " -> You):  " + teal + message);
-                sender.MessageFrom("PrivateMessage", green + "(You -> " + recipient.Name + "):  " + teal + message);
+                recipient.MessageFrom("PrivateMessage", $"{green}({sender.Name} -> You):  {teal}{message}");
+                sender.MessageFrom("PrivateMessage", $"{green}(You -> {recipient.Name}):  {teal}{message}");
                 //Util.say(recipient.netPlayer, string.Format("\"PM from {0}\"", Arguments.argUser.displayName.Replace('"', 'ˮ')), string.Format("\"{0}\"", message));
                 //Util.say(Arguments.argUser.networkPlayer,string.Format("\"PM to {0}\"", recipient.netUser.displayName.Replace('"', 'ˮ')),string.Format("\"{0}\"", message));
                 Hashtable replies = (ChatCommand.GetCommand("r") as ReplyCommand).GetReplies();

@@ -7,7 +7,7 @@ namespace RustPP.Commands
         public override void Execute(ref ConsoleSystem.Arg Arguments, ref string[] ChatArguments)
         {
             var pl = Server.GetServer().GetCachePlayer(Arguments.argUser.userID);
-            pl.MessageFrom(Core.Name, "Ping: " + pl.Ping);
+            pl.MessageFrom(Core.Name, $"Ping: {pl.Ping}");
         }
     }
 }

@@ -27,7 +27,7 @@ namespace RustPP.Commands
             if (friendsList.isFriendWith(playerName))
             {
                 friendsList.RemoveFriend(playerName);
-                pl.MessageFrom(Core.Name, "You have removed " + playerName + " from your friends list.");
+                pl.MessageFrom(Core.Name, $"You have removed {playerName} from your friends list.");
                 if (friendsList.HasFriends())
                 {
                     command.GetFriendsLists()[pl.UID] = friendsList;

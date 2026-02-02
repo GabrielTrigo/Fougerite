@@ -56,7 +56,7 @@ namespace RustPP.Commands
 
             if (list.Count == 1)
             {
-                pl.MessageFrom(Core.Name, "No player matches the name: " + playerName);
+                pl.MessageFrom(Core.Name, $"No player matches the name: {playerName}");
                 return;
             }
 
@@ -94,7 +94,7 @@ namespace RustPP.Commands
             }
             else if (Administrator.IsAdmin(newAdmin.UserID))
             {
-                player.MessageFrom(Core.Name, newAdmin.DisplayName + " is already an administrator.");
+                player.MessageFrom(Core.Name, $"{newAdmin.DisplayName} is already an administrator.");
             }
             else
             {

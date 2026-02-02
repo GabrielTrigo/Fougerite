@@ -61,16 +61,16 @@ namespace RustPP.Commands
                         {
                             if (V3Equal(client.Location, Vector3.zero))
                             {
-                                pl.MessageFrom(Core.Name, client.Name + " is still loading and has null position!");
+                                pl.MessageFrom(Core.Name, $"{client.Name} is still loading and has null position!");
                                 return;
                             }
 
                             pl.TeleportTo(client, 1.5f, false);
-                            pl.MessageFrom(Core.Name, "You have teleported to " + client.Name);
+                            pl.MessageFrom(Core.Name, $"You have teleported to {client.Name}");
                         }
                         else
                         {
-                            pl.MessageFrom(Core.Name, client.Name + " seems to be offline");
+                            pl.MessageFrom(Core.Name, $"{client.Name} seems to be offline");
                         }
 
                         return;
@@ -83,10 +83,10 @@ namespace RustPP.Commands
             if (list.Count != 0)
             {
                 pl.MessageFrom(Core.Name,
-                    ((list.Count - 1)).ToString() + " Player" + (((list.Count - 1) > 1) ? "s" : "") + " were found: ");
+                    $"{((list.Count - 1))} Player{(((list.Count - 1) > 1) ? "s" : "")} were found: ");
                 for (int j = 1; j < list.Count; j++)
                 {
-                    pl.MessageFrom(Core.Name, j + " - " + list[j]);
+                    pl.MessageFrom(Core.Name, $"{j} - {list[j]}");
                 }
 
                 pl.MessageFrom(Core.Name, "0 - Cancel");
@@ -95,7 +95,7 @@ namespace RustPP.Commands
             }
             else
             {
-                pl.MessageFrom(Core.Name, "No player found with the name: " + playerName);
+                pl.MessageFrom(Core.Name, $"No player found with the name: {playerName}");
             }
         }
 

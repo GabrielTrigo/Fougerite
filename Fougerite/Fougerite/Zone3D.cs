@@ -194,7 +194,7 @@ namespace Fougerite
             }
             catch (Exception e)
             {
-                Logger.LogError("Zone3D ShowMarkers Error: " + e);
+                Logger.LogError($"Zone3D ShowMarkers Error: {e}");
             }
         }
 

@@ -37,7 +37,7 @@ namespace RustPP.Commands
                     World.GetWorld().ServerSaveHandler.ManualSave();
                     Fougerite.Server.GetServer().BroadcastFrom(Core.Name, "Saved Server Data!");
                     Fougerite.Server.GetServer().BroadcastFrom(Core.Name,
-                        "Server is shutting down in " + ShutdownTime + " seconds.");
+                        $"Server is shutting down in {ShutdownTime} seconds.");
                     _timer = Util.GetUtil().CreateTimer("Shutdown.Trigger", TriggerTime * 1000, Trigger, true, "RustPP");
                     _timer.Start();
                 }
@@ -63,7 +63,7 @@ namespace RustPP.Commands
 
             Fougerite.Hooks.IsShuttingDown = true;
             Fougerite.Server.GetServer()
-                .BroadcastFrom(Core.Name, "Server is shutting down in " + ShutdownTime + " seconds.");
+                .BroadcastFrom(Core.Name, $"Server is shutting down in {ShutdownTime} seconds.");
             _timer = Util.GetUtil().CreateTimer("Shutdown.Trigger", TriggerTime * 1000, Trigger, true, "RustPP");
             _timer.Start();
         }
@@ -84,7 +84,7 @@ namespace RustPP.Commands
             else
             {
                 Fougerite.Server.GetServer().BroadcastFrom(Core.Name,
-                    "Server is shutting down in " + (ShutdownTime - Time) + " seconds.");
+                    $"Server is shutting down in {(ShutdownTime - Time)} seconds.");
             }
         }
 

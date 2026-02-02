@@ -12,7 +12,7 @@ namespace RustPP.Commands
             World.GetWorld().ServerSaveHandler.ManualBackGroundSave();
             pl.MessageFrom(Core.Name, "Saved server global state!");
             //Helper.CreateSaves();
-            pl.MessageFrom(Core.Name, "Saved " + Core.Name + " data!");
+            pl.MessageFrom(Core.Name, $"Saved {Core.Name} data!");
         }
     }
 }

@@ -44,8 +44,8 @@ namespace RustPP.Commands
                 {
                     Arguments.Args = new string[]
                     {
-                        Core.config.GetSetting("StarterKit", "item" + (i + 1) + "_name"),
-                        Core.config.GetSetting("StarterKit", "item" + (i + 1) + "_amount")
+                        Core.config.GetSetting("StarterKit", $"item{(i + 1)}_name"),
+                        Core.config.GetSetting("StarterKit", $"item{(i + 1)}_amount")
                     };
                     ConsoleSystem.Arg arg = Arguments;
                     inv.give(ref arg);

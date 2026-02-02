@@ -32,7 +32,7 @@ namespace RustPP.Commands
 
             if (list.Count == 1)
             {
-                pl.MessageFrom(Core.Name, "No banned player matches the name: " + playerName);
+                pl.MessageFrom(Core.Name, $"No banned player matches the name: {playerName}");
                 return;
             }
 

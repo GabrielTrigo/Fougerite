@@ -22,7 +22,7 @@ namespace RustPP.Commands
                     break;
                 }
 
-                str = str + client.Name + ", ";
+                str = $"{str}{client.Name}, ";
                 if (num == 6)
                 {
                     num = 0;

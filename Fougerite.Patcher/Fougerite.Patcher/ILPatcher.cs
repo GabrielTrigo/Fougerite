@@ -1855,7 +1855,7 @@ namespace Fougerite.Patcher
 
         private MethodDefinition CloneMethod(MethodDefinition orig) // Method Backuping
         {
-            MethodDefinition definition = new MethodDefinition(orig.Name + "Original", orig.Attributes, orig.ReturnType);
+            MethodDefinition definition = new MethodDefinition($"{orig.Name}Original", orig.Attributes, orig.ReturnType);
             foreach (VariableDefinition definition2 in orig.Body.Variables)
             {
                 definition.Body.Variables.Add(definition2);

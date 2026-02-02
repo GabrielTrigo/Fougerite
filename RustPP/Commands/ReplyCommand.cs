@@ -20,7 +20,7 @@ namespace RustPP.Commands
                     Fougerite.Player recipient = Fougerite.Server.GetServer().FindPlayer(replyTo);
                     if (recipient == null)
                     {
-                        sender.MessageFrom(Core.Name, "Couldn't find player " + replyTo);
+                        sender.MessageFrom(Core.Name, $"Couldn't find player {replyTo}");
                         this.replies.Remove(sender.Name);
                         return;
                     }
@@ -32,8 +32,8 @@ namespace RustPP.Commands
                         return;
                     }
 
-                    recipient.MessageFrom("PrivateMessage", green + "(" + sender.Name + " -> You):  " + teal + message);
-                    sender.MessageFrom("PrivateMessage", green + "(You -> " + recipient.Name + "):  " + teal + message);
+                    recipient.MessageFrom("PrivateMessage", $"{green}({sender.Name} -> You):  {teal}{message}");
+                    sender.MessageFrom("PrivateMessage", $"{green}(You -> {recipient.Name}):  {teal}{message}");
                     if (this.replies.ContainsKey(replyTo))
                     {
                         this.replies[replyTo] = sender.Name;

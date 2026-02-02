@@ -23,7 +23,7 @@ namespace Fougerite.Patcher
 
             if (!firstPass && !secondPass) 
             {
-                Logger.Log("Fougerite Patcher V" + Version);
+                Logger.Log($"Fougerite Patcher V{Version}");
                 Logger.Log("No command specified.");
                 Logger.Log($"Launch patcher with args:");
                 Logger.Log("Patch fields: -1, -f, -update-fields");

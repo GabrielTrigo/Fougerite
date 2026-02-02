@@ -64,7 +64,7 @@ namespace PermissionManager
                     if (!player.Admin && !_permissionSystem.PlayerHasPermission(player, "pem.admin")) return;
                     if (args.Length == 0)
                     {
-                        player.MessageFrom("PermissionSystem", "=== PermissionSystem v" + Version + " ===");
+                        player.MessageFrom("PermissionSystem", $"=== PermissionSystem v{Version} ===");
                         player.MessageFrom("PermissionSystem", "/pem reload - Reloads all Permissions");
                         player.MessageFrom("PermissionSystem", "/pem newplayer - Creates a PermissionPlayer by name (online)");
                         player.MessageFrom("PermissionSystem", "/pem delplayer - Removes a PermissionPlayer by name (online)");
@@ -100,11 +100,12 @@ namespace PermissionManager
                             if (pl != null)
                             {
                                 _permissionSystem.CreatePermissionPlayer(pl);
-                                player.MessageFrom("PermissionSystem", "Permissions can now be assigned to this player! (" + playername + ")");
+                                player.MessageFrom("PermissionSystem",
+                                    $"Permissions can now be assigned to this player! ({playername})");
                             }
                             else
                             {
-                                player.MessageFrom("PermissionSystem", playername + " not found!");
+                                player.MessageFrom("PermissionSystem", $"{playername} not found!");
                             }
 
                             break;
@@ -126,7 +127,8 @@ namespace PermissionManager
                             }
                             
                             _permissionSystem.CreatePermissionPlayer(uid);
-                            player.MessageFrom("PermissionSystem", "Permissions can now be assigned to this player! (" + steamid + ")");
+                            player.MessageFrom("PermissionSystem",
+                                $"Permissions can now be assigned to this player! ({steamid})");
 
                             break;
                         }
@@ -151,12 +153,12 @@ namespace PermissionManager
                                 }
                                 
                                 bool success = _permissionSystem.RemovePermissionPlayer(pl);
-                                player.MessageFrom("PermissionSystem", success ? playername + " removed!"
-                                    : playername + " is not a PermissionPlayer!");
+                                player.MessageFrom("PermissionSystem", success ? $"{playername} removed!"
+                                    : $"{playername} is not a PermissionPlayer!");
                             }
                             else
                             {
-                                player.MessageFrom("PermissionSystem", playername + " not found!");
+                                player.MessageFrom("PermissionSystem", $"{playername} not found!");
                             }
 
                             break;
@@ -186,8 +188,8 @@ namespace PermissionManager
                             }
 
                             bool success = _permissionSystem.RemovePermissionPlayer(uid);
-                            player.MessageFrom("PermissionSystem", success ? steamid + " removed!"
-                                : steamid + " is not a PermissionPlayer!");
+                            player.MessageFrom("PermissionSystem", success ? $"{steamid} removed!"
+                                : $"{steamid} is not a PermissionPlayer!");
 
                             break;
                         }
@@ -215,12 +217,12 @@ namespace PermissionManager
                                         return;
                                     }
                                     bool success = _permissionSystem.AddPermission(pl, permission);
-                                    player.MessageFrom("PermissionSystem", success ? "Added for " + pl.Name + " permission: " + permission 
-                                        : pl.Name + " is not a PermissionPlayer!");
+                                    player.MessageFrom("PermissionSystem", success ? $"Added for {pl.Name} permission: {permission}"
+                                        : $"{pl.Name} is not a PermissionPlayer!");
                                 }
                                 else
                                 {
-                                    player.MessageFrom("PermissionSystem", target + " not found!");
+                                    player.MessageFrom("PermissionSystem", $"{target} not found!");
                                 }
                             }
                             else
@@ -233,8 +235,8 @@ namespace PermissionManager
                                     return;
                                 }
                                 bool success = _permissionSystem.AddPermission(uid, permission);
-                                player.MessageFrom("PermissionSystem", success ? "Added to " + uid + " permission: " + permission 
-                                    : target + " is not a PermissionPlayer!");
+                                player.MessageFrom("PermissionSystem", success ? $"Added to {uid} permission: {permission}"
+                                    : $"{target} is not a PermissionPlayer!");
                             }
                             break;
                         }
@@ -262,12 +264,12 @@ namespace PermissionManager
                                         return;
                                     }
                                     bool success = _permissionSystem.RemovePermission(pl, permission);
-                                    player.MessageFrom("PermissionSystem", success ? "Removed for " + pl.Name + " permission: " + permission 
-                                        : target + " is not a PermissionPlayer!");
+                                    player.MessageFrom("PermissionSystem", success ? $"Removed for {pl.Name} permission: {permission}"
+                                        : $"{target} is not a PermissionPlayer!");
                                 }
                                 else
                                 {
-                                    player.MessageFrom("PermissionSystem", target + " not found!");
+                                    player.MessageFrom("PermissionSystem", $"{target} not found!");
                                 }
                             }
                             else
@@ -280,8 +282,8 @@ namespace PermissionManager
                                     return;
                                 }
                                 bool success = _permissionSystem.RemovePermission(uid, permission);
-                                player.MessageFrom("PermissionSystem", success ? "Removed for " + uid + " permission: " + permission 
-                                    : target + " is not a PermissionPlayer!");
+                                player.MessageFrom("PermissionSystem", success ? $"Removed for {uid} permission: {permission}"
+                                    : $"{target} is not a PermissionPlayer!");
                             }
                             break;
                         }
@@ -304,16 +306,17 @@ namespace PermissionManager
                                     if (ppl != null)
                                     {
                                         var list = new List<string>(ppl.Permissions);
-                                        player.MessageFrom("PermissionSystem", "Perms: " + string.Join(", ", list.ToArray()));
+                                        player.MessageFrom("PermissionSystem",
+                                            $"Perms: {string.Join(", ", list.ToArray())}");
                                     }
                                     else
                                     {
-                                        player.MessageFrom("PermissionSystem", target + " is not a permissionplayer!");
+                                        player.MessageFrom("PermissionSystem", $"{target} is not a permissionplayer!");
                                     }
                                 }
                                 else
                                 {
-                                    player.MessageFrom("PermissionSystem", target + " not found!");
+                                    player.MessageFrom("PermissionSystem", $"{target} not found!");
                                 }
                             }
                             else
@@ -322,11 +325,12 @@ namespace PermissionManager
                                 if (ppl != null)
                                 {
                                     var list = new List<string>(ppl.Permissions);
-                                    player.MessageFrom("PermissionSystem", "Perms: " + string.Join(", ", list.ToArray()));
+                                    player.MessageFrom("PermissionSystem",
+                                        $"Perms: {string.Join(", ", list.ToArray())}");
                                 }
                                 else
                                 {
-                                    player.MessageFrom("PermissionSystem", target + " is not a permissionplayer!");
+                                    player.MessageFrom("PermissionSystem", $"{target} is not a permissionplayer!");
                                 }
                             }
                             break;
@@ -359,17 +363,17 @@ namespace PermissionManager
                                         }
                                         bool success = _permissionSystem
                                             .AddGroupToPlayer(ppl.SteamID, group);
-                                        player.MessageFrom("PermissionSystem", success ? "Added " + pl.Name + " to " + group 
-                                            : group + " doesn't exist!");
+                                        player.MessageFrom("PermissionSystem", success ? $"Added {pl.Name} to {group}"
+                                            : $"{group} doesn't exist!");
                                     }
                                     else
                                     {
-                                        player.MessageFrom("PermissionSystem", target + " is not a permissionplayer!");
+                                        player.MessageFrom("PermissionSystem", $"{target} is not a permissionplayer!");
                                     }
                                 }
                                 else
                                 {
-                                    player.MessageFrom("PermissionSystem", target + " not found!");
+                                    player.MessageFrom("PermissionSystem", $"{target} not found!");
                                 }
                             }
                             else
@@ -386,12 +390,12 @@ namespace PermissionManager
                                     }
                                     bool success = _permissionSystem
                                         .AddGroupToPlayer(ppl.SteamID, group);
-                                    player.MessageFrom("PermissionSystem", success ? "Added " + uid + " to " + group 
-                                        : group + " doesn't exist!");
+                                    player.MessageFrom("PermissionSystem", success ? $"Added {uid} to {group}"
+                                        : $"{group} doesn't exist!");
                                 }
                                 else
                                 {
-                                    player.MessageFrom("PermissionSystem", target + " is not a permissionplayer!");
+                                    player.MessageFrom("PermissionSystem", $"{target} is not a permissionplayer!");
                                 }
                             }
                             break;
@@ -425,17 +429,17 @@ namespace PermissionManager
                                         
                                         bool success = _permissionSystem
                                             .RemoveGroupFromPlayer(ppl.SteamID, group);
-                                        player.MessageFrom("PermissionSystem", success ? "Removed " + pl.Name + " from " + group 
+                                        player.MessageFrom("PermissionSystem", success ? $"Removed {pl.Name} from {group}"
                                             : "Group doesn't exist or user doesn't have It!");
                                     }
                                     else
                                     {
-                                        player.MessageFrom("PermissionSystem", target + " is not a permissionplayer!");
+                                        player.MessageFrom("PermissionSystem", $"{target} is not a permissionplayer!");
                                     }
                                 }
                                 else
                                 {
-                                    player.MessageFrom("PermissionSystem", target + " not found!");
+                                    player.MessageFrom("PermissionSystem", $"{target} not found!");
                                 }
                             }
                             else
@@ -453,12 +457,12 @@ namespace PermissionManager
                                     
                                     bool success = _permissionSystem
                                         .RemoveGroupFromPlayer(ppl.SteamID, group);
-                                    player.MessageFrom("PermissionSystem", success ? "Removed " + uid + " from " + group 
+                                    player.MessageFrom("PermissionSystem", success ? $"Removed {uid} from {group}"
                                         : "Group doesn't exist user doesn't have It!");
                                 }
                                 else
                                 {
-                                    player.MessageFrom("PermissionSystem", target + " is not a permissionplayer!");
+                                    player.MessageFrom("PermissionSystem", $"{target} is not a permissionplayer!");
                                 }
                             }
                             break;
@@ -479,7 +483,7 @@ namespace PermissionManager
                     if (!player.Admin && !_permissionSystem.PlayerHasPermission(player, "pem.admin")) return;
                     if (args.Length == 0)
                     {
-                        player.MessageFrom("PermissionSystem", "=== PermissionSystem v" + Version + " ===");
+                        player.MessageFrom("PermissionSystem", $"=== PermissionSystem v{Version} ===");
                         player.MessageFrom("PermissionSystem", "/pem createg - Creates a group");
                         player.MessageFrom("PermissionSystem", "/pem delg - Deletes a group");
                         player.MessageFrom("PermissionSystem", "/pem listpermsg - Lists the permissions of a group");
@@ -502,8 +506,8 @@ namespace PermissionManager
                             }
                             string group = string.Join(" ", Merge(args, 1)).Trim().Replace(" ", "_");
                             bool success = _permissionSystem.CreateGroup(group);
-                            player.MessageFrom("PermissionSystem", success ? "Group " + group + " created!"
-                                : group + " already exists!");
+                            player.MessageFrom("PermissionSystem", success ? $"Group {group} created!"
+                                : $"{group} already exists!");
                             break;
                         }
                         case "delg":
@@ -516,8 +520,8 @@ namespace PermissionManager
                             
                             string group = string.Join(" ", Merge(args, 1)).Trim();
                             bool success = _permissionSystem.RemoveGroup(group);
-                            player.MessageFrom("PermissionSystem", success ? "Group " + group + " deleted!"
-                                : "Failed to delete group: " + group + "! Maybe It doesn't exist, or It's the default group!");
+                            player.MessageFrom("PermissionSystem", success ? $"Group {group} deleted!"
+                                : $"Failed to delete group: {group}! Maybe It doesn't exist, or It's the default group!");
                             break;
                         }
                         case "listpermsg":
@@ -533,11 +537,11 @@ namespace PermissionManager
                             if (pgroup != null)
                             {
                                 var list = new List<string>(pgroup.GroupPermissions);
-                                player.MessageFrom("PermissionSystem", "Perms: " + string.Join(", ", list.ToArray()));
+                                player.MessageFrom("PermissionSystem", $"Perms: {string.Join(", ", list.ToArray())}");
                             }
                             else
                             {
-                                player.MessageFrom("PermissionSystem", "Group " + group + " doesn't exist!");
+                                player.MessageFrom("PermissionSystem", $"Group {group} doesn't exist!");
                             }
                             break;
                         }
@@ -553,8 +557,8 @@ namespace PermissionManager
                             string permission = args[2];
 
                             bool success = _permissionSystem.AddPermissionToGroup(group, permission);
-                            player.MessageFrom("PermissionSystem", success ? "Group " + group + " received permission: " + permission
-                                : "Failed to add " + permission + " to " + group + "!");
+                            player.MessageFrom("PermissionSystem", success ? $"Group {group} received permission: {permission}"
+                                : $"Failed to add {permission} to {group}!");
                             break;
                         }
                         case "delpermg":
@@ -569,9 +573,8 @@ namespace PermissionManager
                             string permission = args[2];
 
                             bool success = _permissionSystem.RemovePermissionFromGroup(group, permission);
-                            player.MessageFrom("PermissionSystem", success ? "Removed " + permission 
-                                + " from group: " + group
-                                : "Failed to remove " + permission + " from " + group + "!");
+                            player.MessageFrom("PermissionSystem", success ? $"Removed {permission} from group: {group}"
+                                : $"Failed to remove {permission} from {group}!");
                             break;
                         }
                         case "changenickg":
@@ -586,9 +589,8 @@ namespace PermissionManager
                             string nickname = args[2];
 
                             bool success = _permissionSystem.SetGroupNickName(group, nickname);
-                            player.MessageFrom("PermissionSystem", success ? "Changed " + group 
-                                + "'s nickname to: " + nickname
-                                : "Failed to change " + group + "'s nickname to " + nickname + "!");
+                            player.MessageFrom("PermissionSystem", success ? $"Changed {group}'s nickname to: {nickname}"
+                                : $"Failed to change {group}'s nickname to {nickname}!");
                             break;
                         }
                         case "changenameg":
@@ -603,9 +605,8 @@ namespace PermissionManager
                             string newname = string.Join(" ", Merge(args, 2)).Trim().Replace(" ", "_");
 
                             bool success = _permissionSystem.ChangeGroupName(group, newname);
-                            player.MessageFrom("PermissionSystem", success ? "Changed " + group 
-                                + "'s name to: " + newname
-                                : "Failed to change " + group + "'s name to " + newname + "!");
+                            player.MessageFrom("PermissionSystem", success ? $"Changed {group}'s name to: {newname}"
+                                : $"Failed to change {group}'s name to {newname}!");
                             break;
                         }
                         case "membersg":
@@ -632,12 +633,12 @@ namespace PermissionManager
                                     }
                                 }
                                 
-                                player.MessageFrom("PermissionSystem", pgroup.GroupName + "'s members: " 
-                                    + string.Join(", ", collectedPlayers.ToArray()));
+                                player.MessageFrom("PermissionSystem",
+                                    $"{pgroup.GroupName}'s members: {string.Join(", ", collectedPlayers.ToArray())}");
                             }
                             else
                             {
-                                player.MessageFrom("PermissionSystem", group + " doesn't exist!");
+                                player.MessageFrom("PermissionSystem", $"{group} doesn't exist!");
                             }
                             
                             break;

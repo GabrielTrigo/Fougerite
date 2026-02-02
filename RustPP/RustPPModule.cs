@@ -290,7 +290,7 @@ namespace RustPP
                 Fougerite.Hooks.talkerTimers.Add(p.UID, Environment.TickCount);
             }
 
-            Notice.Inventory(player, "☎ " + p.Name);
+            Notice.Inventory(player, $"☎ {p.Name}");
         }
 
         void OnServerShutdown()
@@ -372,7 +372,7 @@ namespace RustPP
                             }
                             catch (Exception ex)
                             {
-                                Logger.LogDebug("EntityHurt EX: " + ex);
+                                Logger.LogDebug($"EntityHurt EX: {ex}");
                             }
                         }
                         else Logger.LogDebug("he.Entity is null!");
@@ -403,7 +403,7 @@ namespace RustPP
                             }
                             catch (Exception ex)
                             {
-                                Logger.LogDebug("EntityHurt EX: " + ex);
+                                Logger.LogDebug($"EntityHurt EX: {ex}");
                             }
                         }
                         else Logger.LogDebug("he.Entity is null!");

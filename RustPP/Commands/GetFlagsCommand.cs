@@ -63,7 +63,7 @@ namespace RustPP.Commands
 
             if (list.Count == 1)
             {
-                pl.MessageFrom(Core.Name, playerName + " is not an administrator.");
+                pl.MessageFrom(Core.Name, $"{playerName} is not an administrator.");
                 return;
             }
 

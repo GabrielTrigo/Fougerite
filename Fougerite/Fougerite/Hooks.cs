@@ -3013,7 +3013,7 @@ namespace Fougerite
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("FlareThrowEvent Error: " + ex);
+                    Logger.LogError($"FlareThrowEvent Error: {ex}");
                 }
 
                 if (fe.Cancelled)
@@ -3788,7 +3788,7 @@ namespace Fougerite
             }
             catch (Exception ex)
             {
-                Logger.LogError("ConsumableUseEvent Callback Error: " + ex);
+                Logger.LogError($"ConsumableUseEvent Callback Error: {ex}");
             }
             
             if (consumeEvent.Cancelled)
@@ -3883,7 +3883,7 @@ namespace Fougerite
             }
             catch (Exception ex)
             {
-                Logger.LogError("MedikitUseEvent Error: " + ex);
+                Logger.LogError($"MedikitUseEvent Error: {ex}");
             }
             
             if (medEvent.Cancelled)
@@ -3934,7 +3934,7 @@ namespace Fougerite
             }
             catch (Exception ex)
             {
-                Logger.LogError("OnItemMod Callback Error: " + ex);
+                Logger.LogError($"OnItemMod Callback Error: {ex}");
             }
             
             held.RecalculateMods();
@@ -4004,7 +4004,7 @@ namespace Fougerite
             }
             catch (Exception ex)
             {
-                Logger.LogError("OnArmorEquip Error: " + ex);
+                Logger.LogError($"OnArmorEquip Error: {ex}");
             }
         }
 
@@ -4025,7 +4025,7 @@ namespace Fougerite
             }
             catch (Exception ex)
             {
-                Logger.LogError("OnArmorUnEquip Error: " + ex);
+                Logger.LogError($"OnArmorUnEquip Error: {ex}");
             }
         }
         
@@ -4047,7 +4047,7 @@ namespace Fougerite
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError("FlareIgniteEvent Error: " + ex);
+                        Logger.LogError($"FlareIgniteEvent Error: {ex}");
                     }
 
                     torchItem.Ignite();
@@ -4075,7 +4075,7 @@ namespace Fougerite
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError("BasicTorchIgniteEvent Error: " + ex);
+                        Logger.LogError($"BasicTorchIgniteEvent Error: {ex}");
                     }
                 }
             }
@@ -4213,7 +4213,7 @@ namespace Fougerite
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("HeatZoneEvent Error: " + ex);
+                    Logger.LogError($"HeatZoneEvent Error: {ex}");
                 }
 
                 if (!hze.Cancelled)
@@ -4247,7 +4247,7 @@ namespace Fougerite
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError("WorkZoneEvent Error: " + ex);
+                    Logger.LogError($"WorkZoneEvent Error: {ex}");
                 }
 
                 if (!wze.Cancelled)

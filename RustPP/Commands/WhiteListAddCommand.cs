@@ -48,7 +48,7 @@ namespace RustPP.Commands
 
             if (list.Count == 1)
             {
-                pl.MessageFrom(Core.Name, "No player found with the name: " + playerName);
+                pl.MessageFrom(Core.Name, $"No player found with the name: {playerName}");
                 return;
             }
 
@@ -85,7 +85,7 @@ namespace RustPP.Commands
         {
             if (Core.whiteList.Contains(white.UserID))
             {
-                myAdmin.MessageFrom(Core.Name, white.DisplayName + " is already whitelisted.");
+                myAdmin.MessageFrom(Core.Name, $"{white.DisplayName} is already whitelisted.");
             }
             else
             {

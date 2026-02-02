@@ -67,7 +67,7 @@ namespace RustPP.Commands
                 && !Administrator.GetAdmin(myAdmin.UID).HasPermission("RCON")
                 && !PermissionSystem.GetPermissionSystem().PlayerHasPermission(myAdmin.UID, "RCON"))
             {
-                myAdmin.MessageFrom(Core.Name, ban.DisplayName + " is an administrator. You can't ban administrators.");
+                myAdmin.MessageFrom(Core.Name, $"{ban.DisplayName} is an administrator. You can't ban administrators.");
                 return;
             }
 
