@@ -1621,11 +1621,17 @@ namespace Fougerite
             ParallelTimers.Clear();
         }
 
+        /// <summary>
+        /// Returns the current server time in milliseconds.
+        /// </summary>
         public ulong TimeInMillis
         {
             get { return NetCull.timeInMillis; }
         }
 
+        /// <summary>
+        /// Returns the current epoch time in seconds.
+        /// </summary>
         public double TimeEpoch
         {
             get
@@ -1635,21 +1641,33 @@ namespace Fougerite
             }
         }
 
+        /// <summary>
+        /// Returns the main thread ID.
+        /// </summary>
         public int MainThreadID
         {
             get { return Bootstrap.CurrentThread.ManagedThreadId; }
         }
 
+        /// <summary>
+        /// Returns the main thread.
+        /// </summary>
         public Thread MainThread
         {
             get { return Bootstrap.CurrentThread; }
         }
 
+        /// <summary>
+        /// Returns the current working thread.
+        /// </summary>
         public Thread CurrentWorkingThread
         {
             get { return Thread.CurrentThread; }
         }
 
+        /// <summary>
+        /// Returns the current working thread ID.
+        /// </summary>
         public int CurrentWorkingThreadID
         {
             get { return Thread.CurrentThread.ManagedThreadId; }
