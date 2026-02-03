@@ -381,9 +381,9 @@ namespace Fougerite
                 info = new FileInfo(autoSavePath);
             }
 
-            if ((info == null) || (info.Length == 0L))
+            if (info == null || info.Length == 0L)
             {
-                for (int i = 0; i < 20; i++)
+                for (int i = 0; i < ServerSaveHandler.SaveCopies; i++)
                 {
                     autoSavePath = $"{ServerSaveManager.autoSavePath}.old.{i}";
                     if (File.Exists(autoSavePath) && (new FileInfo(autoSavePath).Length > 0L))
