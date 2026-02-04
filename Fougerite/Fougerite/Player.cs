@@ -1291,7 +1291,7 @@ namespace Fougerite
         }
 
         /// <summary>
-        /// Gets or Sets the player's rad level
+        /// Gets the player's rad level
         /// </summary>
         public float RadLevel
         {
@@ -1305,11 +1305,59 @@ namespace Fougerite
                 return 0f;
             }
         }
-
+        
         /// <summary>
-        /// Adds radiation to the player.
+        /// Gets the player's water level.
         /// </summary>
-        /// <param name="amount"></param>
+        public float WaterLevel
+        {
+            get
+            {
+                if (IsOnline && IsAlive)
+                {
+                    return PlayerClient.controllable.GetComponent<Metabolism>().waterLevelLitre;
+                }
+
+                return 0f;
+            }
+        }
+        
+        /// <summary>
+        /// Gets the player's poison level.
+        /// </summary>
+        public float PoisonLevel
+        {
+            get
+            {
+                if (IsOnline && IsAlive)
+                {
+                    return PlayerClient.controllable.GetComponent<Metabolism>().poisonLevel;
+                }
+
+                return 0f;
+            }
+        }
+        
+        /// <summary>
+        /// Gets the player's anti-rad level.
+        /// </summary>
+        public float AntiRadLevel
+        {
+            get
+            {
+                if (IsOnline && IsAlive)
+                {
+                    return PlayerClient.controllable.GetComponent<Metabolism>().antiRads;
+                }
+
+                return 0f;
+            }
+        }
+        
+        /// <summary>
+        /// Adds radiation to the player. Negative values can be passed to reduce radiation.
+        /// </summary>
+        /// <param name="amount">The amount of radiation to add. Pass a negative value to decrease current radiation levels.</param>
         public void AddRads(float amount)
         {
             if (IsOnline && IsAlive)
@@ -1319,9 +1367,9 @@ namespace Fougerite
         }
 
         /// <summary>
-        /// Adds anti radiation to the player.
+        /// Adds anti radiation to the player. Negative values can be passed to reduce anti radiation.
         /// </summary>
-        /// <param name="amount"></param>
+        /// <param name="amount">The amount of anti-radiation to add. Pass a negative value to decrease current anti-radiation levels.</param>
         public void AddAntiRad(float amount)
         {
             if (IsOnline && IsAlive)
@@ -1331,9 +1379,9 @@ namespace Fougerite
         }
 
         /// <summary>
-        /// Adds water to the player.
+        /// Adds water to the player. Negative values can be passed to reduce hydration.
         /// </summary>
-        /// <param name="litres"></param>
+        /// <param name="litres">The amount of water to add in litres. Pass a negative value to decrease current hydration levels.</param>
         public void AddWater(float litres)
         {
             if (IsOnline && IsAlive)
