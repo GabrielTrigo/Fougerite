@@ -117,6 +117,14 @@ namespace Fougerite
         {
             get { return _uid.ToString(); }
         }
+        
+        /// <summary>
+        /// Returns the SteamID of the sleeper.
+        /// </summary>
+        public ulong UOwnerID
+        {
+            get { return _uid; }
+        }
 
         /// <summary>
         /// Returns the SteamID of the sleeper.
