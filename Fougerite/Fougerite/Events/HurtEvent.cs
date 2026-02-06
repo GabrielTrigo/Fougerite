@@ -268,7 +268,7 @@ namespace Fougerite.Events
             get { return _status; }
         }
 
-        [Obsolete("Sleeper is deprecated, please use VictimIsSleeper instead.")]
+        [Obsolete("Sleeper is deprecated, please use VictimIsSleeper instead.", false)]
         public bool Sleeper
         {
             get
