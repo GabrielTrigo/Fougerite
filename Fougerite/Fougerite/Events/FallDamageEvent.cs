@@ -6,11 +6,12 @@
     public class FallDamageEvent
     {
         private readonly float _fallspeed;
-        private readonly float _num;
         private readonly FallDamage _fd;
-        private readonly bool _flag;
-        private readonly bool _flag2;
+        private bool _flag;
+        private bool _flag2;
         private readonly Player _player;
+        private bool _cancelled;
+        private float _num;
 
         public FallDamageEvent(FallDamage fd, float speed, float num, bool flag, bool flag2)
         {
@@ -39,11 +40,13 @@
         }
 
         /// <summary>
-        /// Gets the damage of the fall damage.
+        /// Gets or sets the damage of the fall damage.
+        /// 10f + num * fd.maxHealth
         /// </summary>
         public float Num
         {
             get { return _num; }
+            set { _num = value; }
         }
 
         /// <summary>
@@ -56,18 +59,30 @@
         
         /// <summary>
         /// Checks if the player is going to bleed from this event.
+        /// Setting this to false will prevent the player from bleeding, but they will still take fall damage.
         /// </summary>
         public bool Bleeding
         {
             get { return _flag; }
+            set { _flag = value; }
         }
 
         /// <summary>
         /// Checks if the player is going to get broken legs from this event.
+        /// Setting this to false will prevent the player from getting broken legs, but they will still take fall damage.
         /// </summary>
         public bool BrokenLegs
         {
             get { return _flag2; }
+            set { _flag2 = value; }
+        }
+        
+        /// <summary>
+        /// Returns true if the whole event is cancelled, false otherwise.
+        /// </summary>
+        public bool Cancelled
+        {
+            get { return _cancelled; }
         }
 
         /// <summary>
@@ -75,17 +90,7 @@
         /// </summary>
         public void Cancel()
         {
-            if (_player.IsOnline)
-            {
-                if (BrokenLegs)
-                {
-                    _fd.ClearInjury();
-                }
-                if (Bleeding)
-                {
-                    _player.HumanBodyTakeDmg.SetBleedingLevel(0f);
-                }
-            }
+            _cancelled = true;
         }
     }
 }

@@ -1211,19 +1211,21 @@ namespace Fougerite.Patcher
 
         private void FallDamageHook()
         {
+            TypeDefinition falldamage = rustAssembly.MainModule.GetType("falldamage");
+            falldamage.IsPublic = true;
+            
             TypeDefinition FallDamage = rustAssembly.MainModule.GetType("FallDamage");
             MethodDefinition FallImpact = FallDamage.GetMethod("FallImpact");
             MethodDefinition method = hooksClass.GetMethod("FallDamage");
 
             ILProcessor iLProcessor = FallImpact.Body.GetILProcessor();
-            int Position = FallImpact.Body.Instructions.Count - 1;
-            iLProcessor.InsertBefore(FallImpact.Body.Instructions[Position],
-                Instruction.Create(OpCodes.Callvirt, this.rustAssembly.MainModule.Import(method)));
-            iLProcessor.InsertBefore(FallImpact.Body.Instructions[Position], Instruction.Create(OpCodes.Ldloc_2));
-            iLProcessor.InsertBefore(FallImpact.Body.Instructions[Position], Instruction.Create(OpCodes.Ldloc_1));
-            iLProcessor.InsertBefore(FallImpact.Body.Instructions[Position], Instruction.Create(OpCodes.Ldloc_0));
-            iLProcessor.InsertBefore(FallImpact.Body.Instructions[Position], Instruction.Create(OpCodes.Ldarg_1));
-            iLProcessor.InsertBefore(FallImpact.Body.Instructions[Position], Instruction.Create(OpCodes.Ldarg_0));
+            iLProcessor.Body.Instructions.Clear();
+            iLProcessor.Body.ExceptionHandlers.Clear();
+            iLProcessor.Body.Variables.Clear();
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_1));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Call, rustAssembly.MainModule.Import(method)));
+            iLProcessor.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
 
             MethodDefinition FallDamageCheck = hooksClass.GetMethod("FallDamageCheck");
 

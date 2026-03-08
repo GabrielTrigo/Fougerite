@@ -22,22 +22,20 @@ namespace Fougerite.Events
             _ue = use;
             _player = player;
             _np = nplayer;
-            foreach (Collider collider in Physics.OverlapSphere(lo._inventory.transform.position, 1.2f))
+            DeployableObject deployableObject = lo.GetComponent<DeployableObject>();
+            LootableObject lootableObject = lo.GetComponent<LootableObject>();
+
+            // Storages are deployables and lootables at the same time.
+            if (deployableObject != null)
             {
-                if (collider.GetComponent<DeployableObject>() != null)
-                {
-                    DeployableObject deployableObject = collider.GetComponent<DeployableObject>();
-                    _entity = EntityCache.GetInstance().GrabOrAllocate(deployableObject.GetInstanceID(), deployableObject);
-                    _isobject = true;
-                    break;
-                }
-                if (collider.GetComponent<LootableObject>() != null)
-                {
-                    LootableObject lootableObject = collider.GetComponent<LootableObject>();
-                    _entity = EntityCache.GetInstance().GrabOrAllocate(lootableObject.GetInstanceID(), lootableObject);
-                    _isobject = false;
-                    break;
-                }
+                _entity = EntityCache.GetInstance().GrabOrAllocate(deployableObject.GetInstanceID(), deployableObject);
+                _isobject = true;
+            }
+            // Bags are only lootables, not deployables.
+            else if (lootableObject != null)
+            {
+                _entity = EntityCache.GetInstance().GrabOrAllocate(lootableObject.GetInstanceID(), lootableObject);
+                _isobject = false;
             }
         }
 

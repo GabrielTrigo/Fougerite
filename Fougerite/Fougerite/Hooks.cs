@@ -1223,10 +1223,14 @@ namespace Fougerite
             }
         }
 
-        public static void FallDamage(FallDamage fd, float speed, float num, bool flag, bool flag2)
+        public static void FallDamage(FallDamage fd, float speed)
         {
             using (new Stopper(nameof(Hooks), nameof(FallDamage)))
             {
+                float num = (speed - falldamage.min_vel) / (falldamage.max_vel - falldamage.min_vel);
+                bool flag = num > 0.25f;
+                bool flag2 = num > 0.35f || UnityEngine.Random.Range(0, 3) == 0 || fd.healthFraction < 0.5f;
+                
                 FallDamageEvent fde = new FallDamageEvent(fd, speed, num, flag, flag2);
                 try
                 {
@@ -1235,6 +1239,21 @@ namespace Fougerite
                 catch (Exception ex)
                 {
                     Logger.LogError($"FallDamageEvent Error: {ex}");
+                }
+
+                if (!fde.Cancelled)
+                {
+                    if (fde.Bleeding)
+                    {
+                        fd.GetComponent<HumanBodyTakeDamage>().AddBleedingLevel(3f + (num - 0.25f) * 10f);
+                    }
+                    
+                    if (fde.BrokenLegs)
+                    {
+                        fd.AddLegInjury(1f);
+                    }
+                    
+                    TakeDamage.HurtSelf(fd.idMain, 10f + num * fd.maxHealth, null);
                 }
             }
         }
