@@ -1599,7 +1599,7 @@ namespace Fougerite.Patcher
             iLProcessorCallAirDropAt.Body.Variables.Clear();
             iLProcessorCallAirDropAt.Body.ExceptionHandlers.Clear();
             iLProcessorCallAirDropAt.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
-            iLProcessorCallAirDropAt.Body.Instructions.Add(Instruction.Create(OpCodes.Callvirt, this.rustAssembly.MainModule.Import(Airdrop)));
+            iLProcessorCallAirDropAt.Body.Instructions.Add(Instruction.Create(OpCodes.Call, this.rustAssembly.MainModule.Import(Airdrop)));
             iLProcessorCallAirDropAt.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
 
             TypeDefinition SupplyDropPlane = rustAssembly.MainModule.GetType("SupplyDropPlane");
