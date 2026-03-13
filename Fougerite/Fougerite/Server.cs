@@ -33,6 +33,11 @@ namespace Fougerite
         public static IEnumerable<string> ForceCallForCommands = new List<string>();
 
 
+        /// <summary>
+        /// This never should have happened, but back at the time I didn't know how to properly design this
+        /// There could have been an internal friend list API, but instead I made this,
+        /// and now we have plugins that depend on this, so we can't change it without breaking them.
+        /// </summary>
         public void LookForRustPP()
         {
             if (HRustPP) { return; }
@@ -43,6 +48,9 @@ namespace Fougerite
             }
         }
 
+        /// <summary>
+        /// Some very old banlist ini converter.
+        /// </summary>
         internal void UpdateBanlist()
         {
 #pragma warning disable CS0618
@@ -67,47 +75,68 @@ namespace Fougerite
             }
         }
 
+        /// <summary>
+        /// Bans an online player from the server, sends notifications, and logs the entry.
+        /// </summary>
+        /// <param name="player">The player instance to ban.</param>
+        /// <param name="Banner">The name of the admin or system issuing the ban.</param>
+        /// <param name="reason">The reason provided for the ban.</param>
+        /// <param name="Sender">The player instance of the admin (if applicable).</param>
+        /// <param name="AnnounceToServer">Whether to broadcast the ban to the entire server.</param>
         public void BanPlayer(Player player, string Banner = "Console", string reason = "You were banned.", Player Sender = null, bool AnnounceToServer = false)
         {
             bool cancel = Hooks.OnBanEventHandler(new BanEvent(player, Banner, reason, Sender));
-            if (cancel) 
+            if (cancel)
                 return;
-            
-            string red = "[color #FF0000]";
-            string green = "[color #009900]";
-            string white = "[color #FFFFFF]";
-            
+
+            const string red = "[color #FF0000]";
+            const string green = "[color #009900]";
+            const string white = "[color #FFFFFF]";
+
             if (player.IsOnline && !player.IsDisconnecting)
             {
                 player.Message($"{red} {reason}");
                 player.Message($"{red} Banned by: {Banner}");
                 player.Disconnect();
             }
+
             if (Sender != null)
             {
                 Sender.Message($"You banned {player.Name}");
                 Sender.Message($"Player's IP: {player.IP}");
                 Sender.Message($"Player's ID: {player.SteamID}");
             }
+
             if (!AnnounceToServer)
             {
 #pragma warning disable CS0618
-                foreach (Player pl in Players.Where(pl =>
-                             pl.Admin || pl.Moderator || PermissionSystem.GetPermissionSystem().PlayerHasPermission(pl, "bansystem.notification")))
-#pragma warning restore CS0618
+                var notifyList = Players.Where(pl => pl.Admin 
+                                                     || pl.Moderator 
+                                                     || PermissionSystem.GetPermissionSystem().PlayerHasPermission(pl, "bansystem.notification"));
+                foreach (Player pl in notifyList)
                 {
                     pl.Message($"{red}{player.Name}{white} was banned by: {green}{Banner}");
                     pl.Message($"{red} Reason: {reason}");
                 }
+#pragma warning restore CS0618
             }
             else
             {
                 Broadcast($"{red}{player.Name}{white} was banned by: {green}{Banner}");
                 Broadcast($"{red} Reason: {reason}");
             }
+
             BanPlayerIPandID(player.IP, player.SteamID, player.Name, reason, Banner);
         }
 
+        /// <summary>
+        /// Permanently bans a player by both IP and SteamID, logging both entries.
+        /// </summary>
+        /// <param name="ip">The IP address to ban.</param>
+        /// <param name="id">The SteamID to ban.</param>
+        /// <param name="name">The name of the player.</param>
+        /// <param name="reason">The ban reason.</param>
+        /// <param name="adminname">The admin name.</param>
         public void BanPlayerIPandID(string ip, string id, string name = "1", string reason = "You were banned.", string adminname = "Unknown")
         {
             bool cancel = Hooks.OnBanEventHandler(new BanEvent(ip, id, name, reason, adminname));
@@ -115,87 +144,142 @@ namespace Fougerite
                 return;
 
             string banLogPath = Path.Combine(Util.GetRootFolder(), "Save\\BanLog.log");
-            File.AppendAllText(banLogPath, $"[{DateTime.Now.ToShortDateString()} {DateTime.Now:HH:mm:ss}] {name}|{ip}|{adminname}|{reason}\r\n");
-            File.AppendAllText(banLogPath, $"[{DateTime.Now.ToShortDateString()} {DateTime.Now:HH:mm:ss}] {name}|{id}|{adminname}|{reason}\r\n");
+            string timestamp = $"[{DateTime.Now.ToShortDateString()} {DateTime.Now:HH:mm:ss}]";
+
+            File.AppendAllText(banLogPath, $"{timestamp} {name}|{ip}|{adminname}|{reason}\r\n");
+            File.AppendAllText(banLogPath, $"{timestamp} {name}|{id}|{adminname}|{reason}\r\n");
+
             DataStore.GetInstance().Add("Ips", ip, name);
             DataStore.GetInstance().Add("Ids", id, name);
         }
 
+        /// <summary>
+        /// Bans a specific IP address and logs the entry.
+        /// </summary>
+        /// <param name="ip">The IP address to ban.</param>
+        /// <param name="name">The name of the player associated with the IP.</param>
+        /// <param name="reason">The ban reason.</param>
+        /// <param name="adminname">The admin name.</param>
         public void BanPlayerIP(string ip, string name = "1", string reason = "You were banned.", string adminname = "Unknown")
         {
             bool cancel = Hooks.OnBanEventHandler(new BanEvent(ip, name, reason, adminname, false));
             if (cancel) 
                 return;
-            
-            File.AppendAllText(Path.Combine(Util.GetRootFolder(), "Save\\BanLog.log"),
-                $"[{DateTime.Now.ToShortDateString()} {DateTime.Now:HH:mm:ss}] {name}|{ip}|{adminname}|{reason}\r\n");
+
+            string timestamp = $"[{DateTime.Now.ToShortDateString()} {DateTime.Now:HH:mm:ss}]";
+            File.AppendAllText(Path.Combine(Util.GetRootFolder(), "Save\\BanLog.log"), $"{timestamp} {name}|{ip}|{adminname}|{reason}\r\n");
+
             DataStore.GetInstance().Add("Ips", ip, name);
         }
 
+        /// <summary>
+        /// Bans a specific SteamID and logs the entry.
+        /// </summary>
+        /// <param name="id">The SteamID to ban.</param>
+        /// <param name="name">The name of the player associated with the ID.</param>
+        /// <param name="reason">The ban reason.</param>
+        /// <param name="adminname">The admin name.</param>
         public void BanPlayerID(string id, string name = "1", string reason = "You were banned.", string adminname = "Unknown")
         {
             bool cancel = Hooks.OnBanEventHandler(new BanEvent(id, name, reason, adminname, true));
             if (cancel) 
-                return; 
-            
-            File.AppendAllText(Path.Combine(Util.GetRootFolder(), "Save\\BanLog.log"),
-                $"[{DateTime.Now.ToShortDateString()} {DateTime.Now:HH:mm:ss}] {name}|{id}|{adminname}|{reason}\r\n");
+                return;
+
+            string timestamp = $"[{DateTime.Now.ToShortDateString()} {DateTime.Now:HH:mm:ss}]";
+            File.AppendAllText(Path.Combine(Util.GetRootFolder(), "Save\\BanLog.log"), $"{timestamp} {name}|{id}|{adminname}|{reason}\r\n");
+
             DataStore.GetInstance().Add("Ids", id, name);
         }
 
+        /// <summary>
+        /// Checks if a SteamID is currently in the ban list.
+        /// </summary>
+        /// <param name="id">The SteamID to check.</param>
+        /// <returns>True if banned; otherwise, false.</returns>
         public bool IsBannedID(string id)
         {
-            return (DataStore.GetInstance().Get("Ids", id) != null);
+            return DataStore.GetInstance().Get("Ids", id) != null;
         }
 
+        /// <summary>
+        /// Checks if an IP address is currently in the ban list.
+        /// </summary>
+        /// <param name="ip">The IP address to check.</param>
+        /// <returns>True if banned; otherwise, false.</returns>
         public bool IsBannedIP(string ip)
         {
-            return (DataStore.GetInstance().Get("Ips", ip) != null);
+            return DataStore.GetInstance().Get("Ips", ip) != null;
         }
 
+        /// <summary>
+        /// Searches for bans associated with a name and removes the most recent IP and ID matches.
+        /// </summary>
+        /// <param name="name">The name to search for in the ban list.</param>
+        /// <param name="UnBanner">The name of the admin issuing the unban.</param>
+        /// <param name="Sender">The admin player instance (if applicable).</param>
+        /// <returns>True if any bans were removed; otherwise, false.</returns>
         public bool UnbanByName(string name, string UnBanner = "Console", Player Sender = null)
         {
             var ids = FindIDsOfName(name);
             var ips = FindIPsOfName(name);
-            string red = "[color #FF0000]";
-            string green = "[color #009900]";
-            string white = "[color #FFFFFF]";
+
+            const string red = "[color #FF0000]";
+            const string green = "[color #009900]";
+            const string white = "[color #FFFFFF]";
+
             if (ids.Count == 0 && ips.Count == 0)
             {
-                if (Sender != null) { Sender.Message($"{red}Couldn't find any names matching with {name}"); }
+                Sender?.Message($"{red}Couldn't find any names matching with {name}");
                 return false;
             }
+
 #pragma warning disable CS0618
-            foreach (Player pl in Players.Where(pl => 
-                         pl.Admin || pl.Moderator ||PermissionSystem.GetPermissionSystem().PlayerHasPermission(pl, "bansystem.notification")))
-#pragma warning restore CS0618
+            var notifyList = Players.Where(pl =>
+                pl.Admin || pl.Moderator || PermissionSystem.GetPermissionSystem()
+                    .PlayerHasPermission(pl, "bansystem.notification"));
+            foreach (Player pl in notifyList)
             {
                 pl.Message(
                     $"{red}{name}{white} was unbanned by: {green}{UnBanner}{white} Different matches: {ids.Count}");
             }
+#pragma warning restore CS0618
+
             if (ips.Count > 0)
             {
                 var iptub = ips.Last();
                 DataStore.GetInstance().Remove("Ips", iptub);
             }
+
             if (ids.Count > 0)
             {
                 var idtub = ids.Last();
                 DataStore.GetInstance().Remove("Ids", idtub);
             }
+
             return true;
         }
 
+        /// <summary>
+        /// Removes an IP address from the ban list.
+        /// </summary>
+        /// <param name="ip">The IP address to unban.</param>
+        /// <returns>True if the IP was found and removed; otherwise, false.</returns>
         public bool UnbanByIP(string ip)
-        { 
+        {
             if (DataStore.GetInstance().Get("Ips", ip) != null)
             {
                 DataStore.GetInstance().Remove("Ips", ip);
                 return true;
             }
+
             return false;
         }
 
+        /// <summary>
+        /// Removes a SteamID from the ban list.
+        /// </summary>
+        /// <param name="id">The SteamID to unban.</param>
+        /// <returns>True if the ID was found and removed; otherwise, false.</returns>
         public bool UnbanByID(string id)
         {
             if (DataStore.GetInstance().Get("Ids", id) != null)
@@ -203,6 +287,7 @@ namespace Fougerite
                 DataStore.GetInstance().Remove("Ids", id);
                 return true;
             }
+
             return false;
         }
 
