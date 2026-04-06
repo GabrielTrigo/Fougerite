@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -483,6 +484,129 @@ namespace Fougerite
             {
                 Logger.LogError($"[PostBlocking] {ex}");
                 return $"Error {ex.Message}";
+            }
+        }
+        
+        /// <summary>
+        /// Performs a synchronous HTTP GET request directly downloading the binary content into a file.
+        /// Blocks the calling thread until completion or timeout.
+        /// </summary>
+        public bool DownloadFileBlocking(string url, string destinationPath, float timeout = 30f)
+        {
+            IntPtr connectHandle = IntPtr.Zero;
+            IntPtr requestHandle = IntPtr.Zero;
+            GCHandle flagsPin = new GCHandle();
+            FileStream fs = null;
+
+            try
+            {
+                InitSession();
+
+                if (_sessionHandle == IntPtr.Zero)
+                {
+                    return false;
+                }
+
+                Uri uri;
+                try
+                {
+                    uri = new Uri(url);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+
+                ushort port = uri.Scheme == "https" ? INTERNET_DEFAULT_HTTPS_PORT : INTERNET_DEFAULT_HTTP_PORT;
+                uint flags = uri.Scheme == "https" ? WINHTTP_FLAG_SECURE : 0;
+
+                connectHandle = WinHttpConnect(_sessionHandle, uri.Host, port, 0);
+                if (connectHandle == IntPtr.Zero)
+                {
+                    return false;
+                }
+
+                string path = uri.PathAndQuery;
+                if (!string.IsNullOrEmpty(uri.Fragment)) path += uri.Fragment;
+
+                requestHandle = WinHttpOpenRequest(connectHandle, "GET", path, null, null, IntPtr.Zero, flags);
+                if (requestHandle == IntPtr.Zero)
+                {
+                    return false;
+                }
+
+                uint timeoutMs = timeout > 0 ? (uint)(timeout * 1000) : 30000;
+                byte[] timeoutBuf = BitConverter.GetBytes(timeoutMs);
+                GCHandle timeoutPin = GCHandle.Alloc(timeoutBuf, GCHandleType.Pinned);
+                WinHttpSetOption(requestHandle, WINHTTP_OPTION_CONNECT_TIMEOUT, timeoutPin.AddrOfPinnedObject(), sizeof(uint));
+                WinHttpSetOption(requestHandle, WINHTTP_OPTION_SEND_TIMEOUT, timeoutPin.AddrOfPinnedObject(), sizeof(uint));
+                WinHttpSetOption(requestHandle, WINHTTP_OPTION_RECEIVE_TIMEOUT, timeoutPin.AddrOfPinnedObject(), sizeof(uint));
+                timeoutPin.Free();
+
+                uint ignoreFlags = SECURITY_FLAG_IGNORE_UNKNOWN_CA | SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE |
+                                   SECURITY_FLAG_IGNORE_CERT_CN_INVALID | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID;
+
+                byte[] flagsBuffer = BitConverter.GetBytes(ignoreFlags);
+                flagsPin = GCHandle.Alloc(flagsBuffer, GCHandleType.Pinned);
+                IntPtr flagsPtr = flagsPin.AddrOfPinnedObject();
+
+                WinHttpSetOption(requestHandle, WINHTTP_OPTION_SECURITY_FLAGS, flagsPtr, sizeof(uint));
+
+                string headersString = $"Fougerite Mod (v{Bootstrap.Version}; https://fougerite.com)\r\n";
+                
+                bool sent = WinHttpSendRequest(requestHandle, headersString, (uint)headersString.Length, IntPtr.Zero, 0, 0, IntPtr.Zero);
+                if (!sent)
+                {
+                    return false;
+                }
+
+                bool received = WinHttpReceiveResponse(requestHandle, IntPtr.Zero);
+                if (!received)
+                {
+                    return false;
+                }
+
+                uint statusCode = 0;
+                uint bufLen = sizeof(uint);
+                uint index = 0;
+
+                GCHandle statusCodePin = GCHandle.Alloc(statusCode, GCHandleType.Pinned);
+                bool queryResult = WinHttpQueryHeaders(requestHandle, WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER, null, statusCodePin.AddrOfPinnedObject(), ref bufLen, ref index);
+                statusCode = (uint)Marshal.ReadInt32(statusCodePin.AddrOfPinnedObject());
+                statusCodePin.Free();
+
+                if (!queryResult || statusCode < 200 || statusCode >= 300)
+                {
+                    return false;
+                }
+
+                fs = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None);
+                byte[] buffer = new byte[BUFFER_SIZE];
+                uint bytesRead;
+
+                while (WinHttpReadData(requestHandle, buffer, (uint)BUFFER_SIZE, out bytesRead) && bytesRead > 0)
+                {
+                    fs.Write(buffer, 0, (int)bytesRead);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log($"[WinHttp Download] EXCEPTION: {ex}");
+                return false;
+            }
+            finally
+            {
+                if (fs != null)
+                {
+                    fs.Flush();
+                    fs.Close();
+                    fs.Dispose();
+                }
+                if (flagsPin != null && flagsPin.IsAllocated) flagsPin.Free();
+                if (requestHandle != IntPtr.Zero) WinHttpCloseHandle(requestHandle);
+                if (connectHandle != IntPtr.Zero) WinHttpCloseHandle(connectHandle);
             }
         }
     }
