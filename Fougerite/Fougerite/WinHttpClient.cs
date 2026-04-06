@@ -486,11 +486,15 @@ namespace Fougerite
                 return $"Error {ex.Message}";
             }
         }
-        
+
         /// <summary>
-        /// Performs a synchronous HTTP GET request directly downloading the binary content into a file.
-        /// Blocks the calling thread until completion or timeout.
+        /// Performs a synchronous HTTP GET request to download binary content from the specified URL directly into a file.
+        /// Blocks the calling thread until the operation completes or times out.
         /// </summary>
+        /// <param name="url">The URL of the file to download.</param>
+        /// <param name="destinationPath">The local file path where the downloaded content will be saved.</param>
+        /// <param name="timeout">The maximum time in seconds to wait for the operation to complete. Defaults to 30 seconds.</param>
+        /// <returns>True if the file is successfully downloaded, otherwise, false.</returns>
         public bool DownloadFileBlocking(string url, string destinationPath, float timeout = 30f)
         {
             IntPtr connectHandle = IntPtr.Zero;
